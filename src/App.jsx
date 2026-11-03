@@ -49,18 +49,7 @@ export default function App() {
   const data = mesesData[mesActual] || {
     ventas: 0, recaudacion: 0, presupuesto: 0, cumplimiento: 0,
     marketing: { importe: 0, alcances: 0, mensajes: 0 },
-    cartera: [],
-    cobranzasDetalle: {
-      solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-      cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
-      pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
-    }
-  };
-
-  const cobranzas = data.cobranzasDetalle || {
-    solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-    cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
-    pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
+    cartera: []
   };
 
   const generarAnalisisModoInteligente = () => {
@@ -343,11 +332,11 @@ export default function App() {
             </div>
           </div>
 
-          {/* Gráfico de Cartera y Cobranza */}
+          {/* GRÁFICO PRINCIPAL DE CARTERA Y COBRANZA */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
               <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0 }}>Cartera y Cobranza ({mesActual})</h3>
+              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0 }}>Cartera y Comercialización ({mesActual})</h3>
             </div>
             <div style={{ height: '220px' }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -362,7 +351,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* 1. SEGUIMIENTO VENTAS (POR MES) */}
+          {/* BLOQUE 1: SEGUIMIENTO VENTAS POR MES */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
@@ -405,45 +394,82 @@ export default function App() {
             </div>
           </div>
 
-          {/* 2. SEGUIMIENTO COBRANZAS (POR MES - ESTILO MULTICANAL) */}
+          {/* BLOQUE 2: SEGUIMIENTO COBRANZAS Y CARTERA */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
               <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
               <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas por Mes (Cartera y Bancos)
+                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas y Cartera ({mesActual})
               </h3>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {Object.keys(mesesData).map((mes) => {
-                const c = mesesData[mes].cobranzasDetalle || {
-                  solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-                  cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0, pagosRecurrentesPlaza: 0
-                };
-                return (
-                  <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#10b981', textTransform: 'uppercase' }}>{mes}</span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '8px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                        <span style={{ color: tema.subtexto }}>Solventes:</span>
-                        <strong style={{ color: tema.texto }}>{Number(c.solventes || 0).toLocaleString()}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                        <span style={{ color: tema.subtexto }}>Mora 1 Mes:</span>
-                        <strong style={{ color: '#f59e0b' }}>{Number(c.morosos1Mes || 0).toLocaleString()}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                        <span style={{ color: tema.subtexto }}>Mora +3M:</span>
-                        <strong style={{ color: '#ef4444' }}>{Number(c.morososMas3Meses || 0).toLocaleString()}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', borderTop: `1px solid ${tema.border}`, paddingTop: '4px', marginTop: '2px' }}>
-                        <span style={{ color: tema.subtexto }}>Recurrente Plaza:</span>
-                        <strong style={{ color: '#10b981' }}>${Number(c.pagosRecurrentesPlaza || 0).toLocaleString()}</strong>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+                <thead>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
+                    <th style={{ padding: '8px 12px' }}>Estatus de Cartera / Métrica</th>
+                    <th style={{ padding: '8px 12px' }}>Volumen / Fila 1</th>
+                    <th style={{ padding: '8px 12px' }}>Volumen / Fila 2</th>
+                    <th style={{ padding: '8px 12px' }}>Detalle / Monto Asociado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Clientes Solventes</td>
+                    <td style={{ padding: '8px 12px' }}>14.224</td>
+                    <td style={{ padding: '8px 12px' }}>7.358</td>
+                    <td style={{ padding: '8px 12px', color: '#10b981' }}>Al día</td>
+                  </tr>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 1 Mes</td>
+                    <td style={{ padding: '8px 12px' }}>1.149</td>
+                    <td style={{ padding: '8px 12px' }}>5.381</td>
+                    <td style={{ padding: '8px 12px', color: '#f59e0b' }}>Seguimiento temprano</td>
+                  </tr>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 2 Meses</td>
+                    <td style={{ padding: '8px 12px' }}>342</td>
+                    <td style={{ padding: '8px 12px' }}>369</td>
+                    <td style={{ padding: '8px 12px', color: '#f97316' }}>Gestión preventiva</td>
+                  </tr>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 3 Meses</td>
+                    <td style={{ padding: '8px 12px' }}>725</td>
+                    <td style={{ padding: '8px 12px' }}>602</td>
+                    <td style={{ padding: '8px 12px', color: '#ef4444' }}>Gestión avanzada</td>
+                  </tr>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora +3 Meses</td>
+                    <td style={{ padding: '8px 12px' }}>1.877</td>
+                    <td style={{ padding: '8px 12px' }}>4.484</td>
+                    <td style={{ padding: '8px 12px', color: '#ef4444' }}>Cartera pesada / judicial</td>
+                  </tr>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Cobrados Banesco</td>
+                    <td style={{ padding: '8px 12px' }}>27 clientes</td>
+                    <td style={{ padding: '8px 12px' }}>—</td>
+                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>$179.996,26 (Monto Cobrado)</td>
+                  </tr>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Cobrados BANFANB</td>
+                    <td style={{ padding: '8px 12px' }}>23 clientes</td>
+                    <td style={{ padding: '8px 12px' }}>—</td>
+                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>$89.569,07 (Monto Cobrado)</td>
+                  </tr>
+                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Pagos Recurrentes Banco Plaza</td>
+                    <td style={{ padding: '8px 12px' }}>—</td>
+                    <td style={{ padding: '8px 12px' }}>—</td>
+                    <td style={{ padding: '8px 12px', color: '#10b981' }}>$500.407,41 (2-3 Cuotas)</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Compromisos de Pago</td>
+                    <td style={{ padding: '8px 12px' }}>402 (1-3 Cuotas)</td>
+                    <td style={{ padding: '8px 12px' }}>0 (+3 Cuotas)</td>
+                    <td style={{ padding: '8px 12px', color: '#8b5cf6' }}>En proceso de cumplimiento</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
