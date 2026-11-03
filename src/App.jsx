@@ -49,8 +49,21 @@ export default function App() {
   const data = mesesData[mesActual] || {
     ventas: 0, recaudacion: 0, presupuesto: 0, cumplimiento: 0,
     marketing: { importe: 0, alcances: 0, mensajes: 0 },
-    cartera: []
+    cartera: [],
+    cobranzasDetalle: {
+      solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
+      cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
+      pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
+    }
   };
+
+  const cobranzas = data.cobranzasDetalle || {
+    solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
+    cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
+    pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
+  };
+
+  const listaMeses = Object.keys(mesesData);
 
   const generarAnalisisModoInteligente = () => {
     const { ventas, presupuesto, cumplimiento, marketing, cartera } = data;
@@ -360,7 +373,7 @@ export default function App() {
               </h3>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {Object.keys(mesesData).map((mes) => {
+              {listaMeses.map((mes) => {
                 const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
                 return (
                   <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
@@ -394,12 +407,12 @@ export default function App() {
             </div>
           </div>
 
-          {/* BLOQUE 2: SEGUIMIENTO COBRANZAS Y CARTERA */}
+          {/* BLOQUE 2: SEGUIMIENTO COBRANZAS Y CARTERA CON MESES EN LAS COLUMNAS */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
               <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
               <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas y Cartera ({mesActual})
+                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas y Cartera por Mes
               </h3>
             </div>
 
@@ -408,64 +421,74 @@ export default function App() {
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
                     <th style={{ padding: '8px 12px' }}>Estatus de Cartera / Métrica</th>
-                    <th style={{ padding: '8px 12px' }}>Volumen / Fila 1</th>
-                    <th style={{ padding: '8px 12px' }}>Volumen / Fila 2</th>
+                    {listaMeses.map(mes => (
+                      <th key={mes} style={{ padding: '8px 12px', textTransform: 'uppercase', color: '#818cf8' }}>{mes}</th>
+                    ))}
                     <th style={{ padding: '8px 12px' }}>Detalle / Monto Asociado</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Clientes Solventes</td>
-                    <td style={{ padding: '8px 12px' }}>14.224</td>
-                    <td style={{ padding: '8px 12px' }}>7.358</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.solventes || 0).toLocaleString()}</td>
+                    ))}
                     <td style={{ padding: '8px 12px', color: '#10b981' }}>Al día</td>
                   </tr>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 1 Mes</td>
-                    <td style={{ padding: '8px 12px' }}>1.149</td>
-                    <td style={{ padding: '8px 12px' }}>5.381</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos1Mes || 0).toLocaleString()}</td>
+                    ))}
                     <td style={{ padding: '8px 12px', color: '#f59e0b' }}>Seguimiento temprano</td>
                   </tr>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 2 Meses</td>
-                    <td style={{ padding: '8px 12px' }}>342</td>
-                    <td style={{ padding: '8px 12px' }}>369</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos2Meses || 0).toLocaleString()}</td>
+                    ))}
                     <td style={{ padding: '8px 12px', color: '#f97316' }}>Gestión preventiva</td>
                   </tr>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 3 Meses</td>
-                    <td style={{ padding: '8px 12px' }}>725</td>
-                    <td style={{ padding: '8px 12px' }}>602</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos3Meses || 0).toLocaleString()}</td>
+                    ))}
                     <td style={{ padding: '8px 12px', color: '#ef4444' }}>Gestión avanzada</td>
                   </tr>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora +3 Meses</td>
-                    <td style={{ padding: '8px 12px' }}>1.877</td>
-                    <td style={{ padding: '8px 12px' }}>4.484</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morososMas3Meses || 0).toLocaleString()}</td>
+                    ))}
                     <td style={{ padding: '8px 12px', color: '#ef4444' }}>Cartera pesada / judicial</td>
                   </tr>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Cobrados Banesco</td>
-                    <td style={{ padding: '8px 12px' }}>27 clientes</td>
-                    <td style={{ padding: '8px 12px' }}>—</td>
-                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>$179.996,26 (Monto Cobrado)</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanesco || 0)} clientes</td>
+                    ))}
+                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>Monto Banesco Cobrado</td>
                   </tr>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Cobrados BANFANB</td>
-                    <td style={{ padding: '8px 12px' }}>23 clientes</td>
-                    <td style={{ padding: '8px 12px' }}>—</td>
-                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>$89.569,07 (Monto Cobrado)</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanfanb || 0)} clientes</td>
+                    ))}
+                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>Monto BANFANB Cobrado</td>
                   </tr>
                   <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Pagos Recurrentes Banco Plaza</td>
-                    <td style={{ padding: '8px 12px' }}>—</td>
-                    <td style={{ padding: '8px 12px' }}>—</td>
-                    <td style={{ padding: '8px 12px', color: '#10b981' }}>$500.407,41 (2-3 Cuotas)</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>${Number(mesesData[mes]?.cobranzasDetalle?.pagosRecurrentesPlaza || 0).toLocaleString()}</td>
+                    ))}
+                    <td style={{ padding: '8px 12px', color: '#10b981' }}>2-3 Cuotas</td>
                   </tr>
                   <tr>
                     <td style={{ padding: '8px 12px', fontWeight: '600' }}>Compromisos de Pago</td>
-                    <td style={{ padding: '8px 12px' }}>402 (1-3 Cuotas)</td>
-                    <td style={{ padding: '8px 12px' }}>0 (+3 Cuotas)</td>
+                    {listaMeses.map(mes => (
+                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.compromiso123Cuotas || 0)} (1-3 Cuotas)</td>
+                    ))}
                     <td style={{ padding: '8px 12px', color: '#8b5cf6' }}>En proceso de cumplimiento</td>
                   </tr>
                 </tbody>
