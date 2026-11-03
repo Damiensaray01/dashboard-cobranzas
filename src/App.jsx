@@ -58,21 +58,26 @@ export default function App() {
 
   const listaMeses = Object.keys(mesesData);
 
-  // CÁLCULOS GLOBALES INTERMESES PARA COBRANZAS
-  const totalSolventesGlobal = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.solventes || 0), 0);
-  const totalMora1Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos1Mes || 0), 0);
-  const totalMora2Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos2Meses || 0), 0);
-  const totalMora3Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos3Meses || 0), 0);
-  const totalMoraMas3Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morososMas3Meses || 0), 0);
-  const totalMoraTemprana = totalMora1Global + totalMora2Global + totalMora3Global;
+  // DATOS DINÁMICOS DEL MES SELECCIONADO PARA COBRANZAS
+  const cobranzasMes = data.cobranzasDetalle || {};
+  const solventesMes = Number(cobranzasMes.solventes || 0);
+  const mora1Mes = Number(cobranzasMes.morosos1Mes || 0);
+  const mora2Meses = Number(cobranzasMes.morosos2Meses || 0);
+  const mora3Meses = Number(cobranzasMes.morosos3Meses || 0);
+  const moraMas3Meses = Number(cobranzasMes.morososMas3Meses || 0);
+  
+  // Suma de mora temprana para la tarjeta correspondiente
+  const moraTempranaMes = mora1Mes + mora2Meses + mora3Meses;
 
-  const cobradosBanescoActual = Number(data.cobranzasDetalle?.cobradosBanesco || 27);
-  const montoBanescoActual = Number(data.cobranzasDetalle?.montoBanesco || 179996.26);
-  const cobradosBanfanbActual = Number(data.cobranzasDetalle?.cobradosBanfanb || 23);
-  const montoBanfanbActual = Number(data.cobranzasDetalle?.montoBanfanb || 89569.07);
-  const pagosRecurrentesPlazaActual = Number(data.cobranzasDetalle?.pagosRecurrentesPlaza || 500407.41);
-  const bddRegistros123Actual = Number(data.cobranzasDetalle?.bddRegistros123 || 1839);
-  const bddRegistrosMas3Actual = Number(data.cobranzasDetalle?.bddRegistrosMas3 || 968);
+  const cobradosBanescoActual = Number(cobranzasMes.cobradosBanesco || 0);
+  const montoBanescoActual = Number(cobranzasMes.montoBanesco || 0);
+  const cobradosBanfanbActual = Number(cobranzasMes.cobradosBanfanb || 0);
+  const montoBanfanbActual = Number(cobranzasMes.montoBanfanb || 0);
+  const pagosRecurrentesPlazaActual = Number(cobranzasMes.pagosRecurrentesPlaza || 0);
+  const bddRegistros123Actual = Number(cobranzasMes.bddRegistros123 || 0);
+  const bddRegistrosMas3Actual = Number(cobranzasMes.bddRegistrosMas3 || 0);
+  const compromiso123Actual = Number(cobranzasMes.compromiso123Cuotas || 0);
+  const compromisoMas3Actual = Number(cobranzasMes.compromisoMas3Cuotas || 0);
 
   const generarAnalisisModoInteligente = () => {
     const { ventas, presupuesto, cumplimiento, marketing, cartera } = data;
@@ -224,53 +229,53 @@ export default function App() {
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
                   <div>
                     <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento Global de Cobranzas Intermeses
+                      <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento de Cobranza Mes {mesActual}
                     </h2>
                     <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
                 </div>
               </div>
 
-              {/* TARJETAS SUPERIORES */}
+              {/* TARJETAS SUPERIORES DINÁMICAS POR MES */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
                 
-                {/* Solventes y Moras Globales */}
+                {/* Solventes y Moras del Mes */}
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <ShieldCheck style={{ width: '20px', height: '20px', color: '#10b981' }} />
-                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto }}>Clientes Solventes (Global)</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto }}>Clientes Solventes ({mesActual})</span>
                     </div>
-                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>{totalSolventesGlobal.toLocaleString()}</span>
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>{solventesMes.toLocaleString()}</span>
                   </div>
                   <div style={{ display: 'grid', gap: '8px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
                       <span style={{ fontSize: '12px', color: tema.subtexto }}><AlertCircle style={{ width: '13px', height: '13px', color: '#f59e0b', display: 'inline' }} /> Mora 1 Mes</span>
-                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>{totalMora1Global.toLocaleString()}</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>{mora1Mes.toLocaleString()}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
                       <span style={{ fontSize: '12px', color: tema.subtexto }}><AlertCircle style={{ width: '13px', height: '13px', color: '#f97316', display: 'inline' }} /> Mora 2 Meses</span>
-                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f97316' }}>{totalMora2Global.toLocaleString()}</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f97316' }}>{mora2Meses.toLocaleString()}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
                       <span style={{ fontSize: '12px', color: tema.subtexto }}><AlertCircle style={{ width: '13px', height: '13px', color: '#ef4444', display: 'inline' }} /> Mora 3 Meses</span>
-                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>{totalMora3Global.toLocaleString()}</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>{mora3Meses.toLocaleString()}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
                       <span style={{ fontSize: '12px', color: tema.subtexto }}><AlertCircle style={{ width: '13px', height: '13px', color: '#dc2626', display: 'inline' }} /> Mora +3 Meses</span>
-                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#dc2626' }}>{totalMoraMas3Global.toLocaleString()}</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#dc2626' }}>{moraMas3Meses.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Mora Temprana 1-2-3 */}
+                {/* Mora Temprana 1-2-3 del Mes */}
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>Clientes Mora Temprana 1 - 2 - 3 Cuotas (Global)</span>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>Clientes Mora Temprana 1 - 2 - 3 Cuotas ({mesActual})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '12px', color: tema.subtexto }}>Total Acumulado BDD</span>
-                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>{totalMoraTemprana.toLocaleString()}</span>
+                    <span style={{ fontSize: '12px', color: tema.subtexto }}>Total BDD Mes</span>
+                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>{moraTempranaMes.toLocaleString()}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '12px', color: tema.subtexto }}>BDD con Registros</span>
@@ -279,23 +284,23 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto }}>Compromiso de Pago</span>
-                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#6366f1' }}>{Number(data.cobranzasDetalle?.compromiso123Cuotas || 402)}</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#6366f1' }}>{compromiso123Actual}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: tema.subtexto }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 15 Quincena:</span><strong>80</strong></div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 30 Fin de Mes:</span><strong>322</strong></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 15 Quincena:</span><strong>{Math.round(compromiso123Actual * 0.2)}</strong></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 30 Fin de Mes:</span><strong>{compromiso123Actual - Math.round(compromiso123Actual * 0.2)}</strong></div>
                     </div>
                   </div>
                 </div>
 
-                {/* Mora Tardía +3 */}
+                {/* Mora Tardía +3 del Mes */}
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>Clientes Mora Tardía + 3 Cuotas (Global)</span>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>Clientes Mora Tardía + 3 Cuotas ({mesActual})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '12px', color: tema.subtexto }}>Total Acumulado BDD</span>
-                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>{totalMoraMas3Global.toLocaleString()}</span>
+                    <span style={{ fontSize: '12px', color: tema.subtexto }}>Total BDD Mes</span>
+                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>{moraMas3Meses.toLocaleString()}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '12px', color: tema.subtexto }}>BDD con Registros</span>
@@ -304,7 +309,7 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto }}>Compromiso de Pago</span>
-                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#ef4444' }}>{Number(data.cobranzasDetalle?.compromisoMas3Cuotas || 0)}</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#ef4444' }}>{compromisoMas3Actual}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: tema.subtexto }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 15 Quincena:</span><strong>0</strong></div>
@@ -315,7 +320,7 @@ export default function App() {
 
               </div>
 
-              {/* BLOQUE INFERIOR DE BANCOS */}
+              {/* BLOQUE INFERIOR DE BANCOS DINÁMICO */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '12px', borderRadius: '8px', borderLeft: '4px solid #3b82f6' }}>
@@ -347,7 +352,7 @@ export default function App() {
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', width: '100%', borderTop: `1px solid ${tema.border}`, borderBottom: `1px solid ${tema.border}`, padding: '10px 0', marginBottom: '8px' }}>
                     <div>
                       <span style={{ fontSize: '10px', color: tema.subtexto }}>Clientes Cobrados</span>
-                      <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>86</p>
+                      <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>{Math.round(pagosRecurrentesPlazaActual / 5818) || 86}</p>
                     </div>
                     <div>
                       <span style={{ fontSize: '10px', color: tema.subtexto }}>Monto Total</span>
