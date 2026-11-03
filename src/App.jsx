@@ -51,18 +51,9 @@ export default function App() {
     marketing: { importe: 0, alcances: 0, mensajes: 0 },
     cartera: [],
     cobranzasDetalle: {
-      solventes: 14224,
-      morosos1Mes: 1149,
-      morosos2Meses: 842,
-      morosos3Meses: 726,
-      morososMas3Meses: 1877,
-      cobradosBanesco: 27,
-      cobradosBanfanb: 23,
-      montoBanesco: 179996.26,
-      montoBanfanb: 89569.07,
-      pagosRecurrentesPlaza: 500407.41,
-      compromiso123Cuotas: 402,
-      compromisoMas3Cuotas: 0
+      solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
+      cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
+      pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
     }
   };
 
@@ -371,7 +362,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* 1. SEGUIMIENTO VENTAS (ARRIBA) */}
+          {/* 1. SEGUIMIENTO VENTAS (POR MES) */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
@@ -414,85 +405,45 @@ export default function App() {
             </div>
           </div>
 
-          {/* 2. SEGUIMIENTO COBRANZAS (ABAJO) */}
+          {/* 2. SEGUIMIENTO COBRANZAS (POR MES - ESTILO MULTICANAL) */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
               <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas ({mesActual})
+                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas por Mes (Cartera y Bancos)
               </h3>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
-              
-              <div style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <CheckCircle2 style={{ width: '13px', height: '13px' }} /> Estatus de Cartera
-                </span>
-                <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Solventes:</span>
-                    <strong style={{ fontSize: '11px' }}>{cobranzas.solventes.toLocaleString()}</strong>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+              {Object.keys(mesesData).map((mes) => {
+                const c = mesesData[mes].cobranzasDetalle || {
+                  solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
+                  cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0, pagosRecurrentesPlaza: 0
+                };
+                return (
+                  <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
+                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#10b981', textTransform: 'uppercase' }}>{mes}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                        <span style={{ color: tema.subtexto }}>Solventes:</span>
+                        <strong style={{ color: tema.texto }}>{Number(c.solventes || 0).toLocaleString()}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                        <span style={{ color: tema.subtexto }}>Mora 1 Mes:</span>
+                        <strong style={{ color: '#f59e0b' }}>{Number(c.morosos1Mes || 0).toLocaleString()}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                        <span style={{ color: tema.subtexto }}>Mora +3M:</span>
+                        <strong style={{ color: '#ef4444' }}>{Number(c.morososMas3Meses || 0).toLocaleString()}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', borderTop: `1px solid ${tema.border}`, paddingTop: '4px', marginTop: '2px' }}>
+                        <span style={{ color: tema.subtexto }}>Recurrente Plaza:</span>
+                        <strong style={{ color: '#10b981' }}>${Number(c.pagosRecurrentesPlaza || 0).toLocaleString()}</strong>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Mora 1 Mes:</span>
-                    <strong style={{ fontSize: '11px', color: '#f59e0b' }}>{cobranzas.morosos1Mes.toLocaleString()}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Mora 2 Meses:</span>
-                    <strong style={{ fontSize: '11px', color: '#f97316' }}>{cobranzas.morosos2Meses.toLocaleString()}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Mora +3 Meses:</span>
-                    <strong style={{ fontSize: '11px', color: '#ef4444' }}>{cobranzas.morososMas3Meses.toLocaleString()}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Building2 style={{ width: '13px', height: '13px' }} /> Recaudación Bancaria
-                </span>
-                <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Clientes Banesco:</span>
-                    <strong style={{ fontSize: '11px' }}>{cobranzas.cobradosBanesco} clientes</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Monto Banesco:</span>
-                    <strong style={{ fontSize: '11px', color: '#3b82f6' }}>${cobranzas.montoBanesco.toLocaleString()}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Clientes BANFANB:</span>
-                    <strong style={{ fontSize: '11px' }}>{cobranzas.cobradosBanfanb} clientes</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Monto BANFANB:</span>
-                    <strong style={{ fontSize: '11px', color: '#3b82f6' }}>${cobranzas.montoBanfanb.toLocaleString()}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#8b5cf6', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <FileCheck style={{ width: '13px', height: '13px' }} /> Compromisos & Recurrentes
-                </span>
-                <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Recurrente Banco Plaza:</span>
-                    <strong style={{ fontSize: '11px', color: '#10b981' }}>${cobranzas.pagosRecurrentesPlaza.toLocaleString()}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Compromiso 1-3 Cuotas:</span>
-                    <strong style={{ fontSize: '11px' }}>{cobranzas.compromiso123Cuotas} clientes</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', color: tema.subtexto }}>Compromiso +3 Cuotas:</span>
-                    <strong style={{ fontSize: '11px' }}>{cobranzas.compromisoMas3Cuotas} clientes</strong>
-                  </div>
-                </div>
-              </div>
-
+                );
+              })}
             </div>
           </div>
 
