@@ -4,7 +4,7 @@ import {
   Building2, BarChart3, PieChart as PieIcon,
   MessageSquare, DollarSignIcon, Share2, LineChart as LineIcon,
   LayoutDashboard, TrendingUpIcon, Bot, Sparkles, CheckCircle2, AlertTriangle, Calendar,
-  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity, CreditCard, FileCheck
+  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity, CreditCard, FileCheck, Layers
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -21,6 +21,7 @@ export default function App() {
   const [mesesData, setMesesData] = useState({});
   const [mesActual, setMesActual] = useState("Septiembre");
   const [pestañaActiva, setPestañaActiva] = useState("mensual");
+  const [subCategoria, setSubCategoria] = useState("ventas"); // Nuevo filtro por categoría: ventas, marketing, cobranzas
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -49,18 +50,7 @@ export default function App() {
   const data = mesesData[mesActual] || {
     ventas: 0, recaudacion: 0, presupuesto: 0, cumplimiento: 0,
     marketing: { importe: 0, alcances: 0, mensajes: 0 },
-    cartera: [],
-    cobranzasDetalle: {
-      solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-      cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
-      pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
-    }
-  };
-
-  const cobranzas = data.cobranzasDetalle || {
-    solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-    cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
-    pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
+    cartera: []
   };
 
   const listaMeses = Object.keys(mesesData);
@@ -263,7 +253,7 @@ export default function App() {
           <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
           <Bot style={{ width: '18px', height: '18px', color: '#818cf8' }} />
           <Sparkles style={{ width: '14px', height: '14px', color: '#f59e0b' }} />
-          <span>Resumen de Análisis - {pestañaActiva === "mensual" ? mesActual : "Tendencia Global y Trimestral"}</span>
+          <span>Resumen de Análisis - {pestañaActiva === "mensual" ? `${mesActual} (${subCategoria.toUpperCase()})` : "Tendencia Global y Trimestral"}</span>
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '8px' }}>
@@ -278,12 +268,54 @@ export default function App() {
         </div>
       </div>
 
-      {/* PESTAÑA 1: VISTA MENSUAL */}
+      {/* PESTAÑA 1: VISTA MENSUAL CON SEGMENTACIÓN POR CATEGORÍA */}
       {pestañaActiva === "mensual" && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+          {/* BARRA SUPERIOR DE SELECTOR DE MESES Y CATEGORÍAS */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
+            
+            {/* Categorías (Segmentación solicitada) */}
+            <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+              <button
+                onClick={() => setSubCategoria("ventas")}
+                style={{
+                  padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
+                  backgroundColor: subCategoria === "ventas" ? '#f97316' : 'transparent',
+                  color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto,
+                  display: 'flex', alignItems: 'center', gap: '6px'
+                }}
+              >
+                <TrendingUp style={{ width: '14px', height: '14px' }} /> 📈 Ventas
+              </button>
+
+              <button
+                onClick={() => setSubCategoria("marketing")}
+                style={{
+                  padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
+                  backgroundColor: subCategoria === "marketing" ? '#14b8a6' : 'transparent',
+                  color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto,
+                  display: 'flex', alignItems: 'center', gap: '6px'
+                }}
+              >
+                <Users style={{ width: '14px', height: '14px' }} /> 📢 Marketing
+              </button>
+
+              <button
+                onClick={() => setSubCategoria("cobranzas")}
+                style={{
+                  padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
+                  backgroundColor: subCategoria === "cobranzas" ? '#3b82f6' : 'transparent',
+                  color: subCategoria === "cobranzas" ? '#ffffff' : tema.subtexto,
+                  display: 'flex', alignItems: 'center', gap: '6px'
+                }}
+              >
+                <CreditCard style={{ width: '14px', height: '14px' }} /> 💳 Cobranzas
+              </button>
+            </div>
+
+            {/* Selector de Mes */}
             <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
-              {Object.keys(mesesData).map((mes) => (
+              {listaMeses.map((mes) => (
                 <button
                   key={mes}
                   onClick={() => setMesActual(mes)}
@@ -298,210 +330,214 @@ export default function App() {
             </div>
           </div>
 
-          {/* TARJETAS SUPERIORES DE MÉTRICAS */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '16px' }}>
-            <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
+          {/* ----------------------------------------------------------------- */}
+          {/* CATEGORÍA 1: VENTAS                                               */}
+          {/* ----------------------------------------------------------------- */}
+          {subCategoria === "ventas" && (
+            <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '10px', padding: '14px', color: '#fff' }}>
                   <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
+                  <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
+                  <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Presupuesto: {data.presupuesto}</p>
                 </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><TrendingUp style={{ width: '16px', height: '16px' }} /></div>
-              </div>
-              <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Presupuesto: {data.presupuesto}</p>
-            </div>
 
-            <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
-                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
+                <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '10px', padding: '14px', color: '#fff' }}>
+                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación Total</p>
+                  <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
+                  <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Banco Plaza & Banfanb</p>
                 </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><DollarSign style={{ width: '16px', height: '16px' }} /></div>
-              </div>
-              <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Banco Plaza & Banfanb</p>
-            </div>
 
-            <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
+                <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '10px', padding: '14px', color: '#fff' }}>
                   <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
+                  <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
+                  <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Meta alcanzada</p>
                 </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Award style={{ width: '16px', height: '16px' }} /></div>
               </div>
-              <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Meta alcanzada</p>
-            </div>
 
-            <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              {/* Gráfico Cartera y Comercialización */}
+              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                  <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0 }}>Cartera y Comercialización ({mesActual})</h3>
+                </div>
+                <div style={{ height: '260px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={data.cartera}>
+                      <XAxis dataKey="name" stroke={tema.subtexto} fontSize={11} />
+                      <YAxis stroke={tema.subtexto} fontSize={11} />
+                      <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '6px', color: tema.texto, fontSize: '11px' }} />
+                      <Bar dataKey="asignado" fill="#6366f1" radius={[3, 3, 0, 0]} name="Asignado" />
+                      <Bar dataKey="cobrado" fill="#10b981" radius={[3, 3, 0, 0]} name="Cobrado" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ----------------------------------------------------------------- */}
+          {/* CATEGORÍA 2: MARKETING                                            */}
+          {/* ----------------------------------------------------------------- */}
+          {subCategoria === "marketing" && (
+            <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
+              <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '10px', padding: '16px', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
+                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcance General de Marketing ({mesActual})</p>
+                  <h3 style={{ fontSize: '28px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()} personas</h3>
                 </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Users style={{ width: '16px', height: '16px' }} /></div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: '12px', margin: 0, opacity: 0.9 }}>Mensajes: <strong>{data.marketing.mensajes}</strong></p>
+                  <p style={{ fontSize: '12px', margin: '2px 0 0 0', opacity: 0.9 }}>Importe: <strong>${data.marketing.importe}</strong></p>
+                </div>
               </div>
-              <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Mensajes: {data.marketing.mensajes}</p>
-            </div>
-          </div>
 
-          {/* GRÁFICO PRINCIPAL DE CARTERA Y COBRANZA */}
-          <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0 }}>Cartera y Comercialización ({mesActual})</h3>
-            </div>
-            <div style={{ height: '220px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.cartera}>
-                  <XAxis dataKey="name" stroke={tema.subtexto} fontSize={10} />
-                  <YAxis stroke={tema.subtexto} fontSize={10} />
-                  <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '6px', color: tema.texto, fontSize: '11px' }} />
-                  <Bar dataKey="asignado" fill="#6366f1" radius={[3, 3, 0, 0]} name="Asignado" />
-                  <Bar dataKey="cobrado" fill="#10b981" radius={[3, 3, 0, 0]} name="Cobrado" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* BLOQUE 1: SEGUIMIENTO VENTAS POR MES */}
-          <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Seguimiento Ventas por Canal de Marketing
-              </h3>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {listaMeses.map((mes) => {
-                const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
-                return (
-                  <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase' }}>{mes}</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#1e3a8a', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <DollarSignIcon style={{ width: '12px', height: '12px', color: '#60a5fa' }} />
+              {/* Seguimiento por Canal de Marketing */}
+              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                  <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Seguimiento de Ventas por Canal de Marketing (Histórico por Mes)
+                  </h3>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px' }}>
+                  {listaMeses.map((mes) => {
+                    const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
+                    return (
+                      <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase' }}>{mes}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ backgroundColor: '#1e3a8a', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
+                              <DollarSignIcon style={{ width: '12px', height: '12px', color: '#60a5fa' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>${m.importe}</p>
+                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Importe</span>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ backgroundColor: '#854d0e', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
+                              <Share2 style={{ width: '12px', height: '12px', color: '#facc15' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
+                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Alcance</span>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ backgroundColor: '#0284c7', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
+                              <MessageSquare style={{ width: '12px', height: '12px', color: '#38bdf8' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
+                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Mensajes</span>
+                          </div>
                         </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>${m.importe}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Importe</span>
                       </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#854d0e', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <Share2 style={{ width: '12px', height: '12px', color: '#facc15' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Alcance</span>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#0284c7', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <MessageSquare style={{ width: '12px', height: '12px', color: '#38bdf8' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Mensajes</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* BLOQUE 2: SEGUIMIENTO COBRANZAS Y CARTERA CON MESES EN LAS COLUMNAS */}
-          <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas y Cartera por Mes
-              </h3>
-            </div>
+          {/* ----------------------------------------------------------------- */}
+          {/* CATEGORÍA 3: COBRANZAS                                            */}
+          {/* ----------------------------------------------------------------- */}
+          {subCategoria === "cobranzas" && (
+            <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
+              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                  <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Detallado de Cobranzas y Cartera por Mes
+                  </h3>
+                </div>
 
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
-                    <th style={{ padding: '8px 12px' }}>Estatus de Cartera / Métrica</th>
-                    {listaMeses.map(mes => (
-                      <th key={mes} style={{ padding: '8px 12px', textTransform: 'uppercase', color: '#818cf8' }}>{mes}</th>
-                    ))}
-                    <th style={{ padding: '8px 12px' }}>Detalle / Monto Asociado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Clientes Solventes</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.solventes || 0).toLocaleString()}</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#10b981' }}>Al día</td>
-                  </tr>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 1 Mes</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos1Mes || 0).toLocaleString()}</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#f59e0b' }}>Seguimiento temprano</td>
-                  </tr>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 2 Meses</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos2Meses || 0).toLocaleString()}</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#f97316' }}>Gestión preventiva</td>
-                  </tr>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora 3 Meses</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos3Meses || 0).toLocaleString()}</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#ef4444' }}>Gestión avanzada</td>
-                  </tr>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Mora +3 Meses</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morososMas3Meses || 0).toLocaleString()}</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#ef4444' }}>Cartera pesada / judicial</td>
-                  </tr>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Cobrados Banesco</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanesco || 0)} clientes</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>Monto Banesco Cobrado</td>
-                  </tr>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Cobrados BANFANB</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanfanb || 0)} clientes</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#3b82f6' }}>Monto BANFANB Cobrado</td>
-                  </tr>
-                  <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Pagos Recurrentes Banco Plaza</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>${Number(mesesData[mes]?.cobranzasDetalle?.pagosRecurrentesPlaza || 0).toLocaleString()}</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#10b981' }}>2-3 Cuotas</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '8px 12px', fontWeight: '600' }}>Compromisos de Pago</td>
-                    {listaMeses.map(mes => (
-                      <td key={mes} style={{ padding: '8px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.compromiso123Cuotas || 0)} (1-3 Cuotas)</td>
-                    ))}
-                    <td style={{ padding: '8px 12px', color: '#8b5cf6' }}>En proceso de cumplimiento</td>
-                  </tr>
-                </tbody>
-              </table>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
+                        <th style={{ padding: '10px 12px' }}>Estatus de Cartera / Métrica</th>
+                        {listaMeses.map(mes => (
+                          <th key={mes} style={{ padding: '10px 12px', textTransform: 'uppercase', color: '#818cf8' }}>{mes}</th>
+                        ))}
+                        <th style={{ padding: '10px 12px' }}>Detalle / Monto Asociado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Clientes Solventes</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.solventes || 0).toLocaleString()}</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#10b981' }}>Al día</td>
+                      </tr>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora 1 Mes</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos1Mes || 0).toLocaleString()}</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#f59e0b' }}>Seguimiento temprano</td>
+                      </tr>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora 2 Meses</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos2Meses || 0).toLocaleString()}</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#f97316' }}>Gestión preventiva</td>
+                      </tr>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora 3 Meses</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos3Meses || 0).toLocaleString()}</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#ef4444' }}>Gestión avanzada</td>
+                      </tr>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora +3 Meses</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morososMas3Meses || 0).toLocaleString()}</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#ef4444' }}>Cartera pesada / judicial</td>
+                      </tr>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Cobrados Banesco</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanesco || 0)} clientes</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#3b82f6' }}>Monto Banesco Cobrado</td>
+                      </tr>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Cobrados BANFANB</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanfanb || 0)} clientes</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#3b82f6' }}>Monto BANFANB Cobrado</td>
+                      </tr>
+                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Pagos Recurrentes Banco Plaza</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>${Number(mesesData[mes]?.cobranzasDetalle?.pagosRecurrentesPlaza || 0).toLocaleString()}</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#10b981' }}>2-3 Cuotas</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Compromisos de Pago</td>
+                        {listaMeses.map(mes => (
+                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.compromiso123Cuotas || 0)} (1-3 Cuotas)</td>
+                        ))}
+                        <td style={{ padding: '10px 12px', color: '#8b5cf6' }}>En proceso de cumplimiento</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       )}
 
       {/* PESTAÑA 2: EVOLUCIÓN INTERMESES */}
       {pestañaActiva === "evolucion" && (
-        <div style={{ display: 'grid', gap: '16px' }}>
+        <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
             <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
