@@ -4,7 +4,7 @@ import {
   Building2, BarChart3, PieChart as PieIcon,
   MessageSquare, DollarSignIcon, Share2, LineChart as LineIcon,
   LayoutDashboard, TrendingUpIcon, Bot, Sparkles, CheckCircle2, AlertTriangle, Calendar,
-  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity, CreditCard, Clock, FileCheck
+  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity, CreditCard, FileCheck
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -72,7 +72,6 @@ export default function App() {
     pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
   };
 
-  // Motor de Análisis Inteligente
   const generarAnalisisModoInteligente = () => {
     const { ventas, presupuesto, cumplimiento, marketing, cartera } = data;
     const analisis = [];
@@ -165,22 +164,12 @@ export default function App() {
   if (modoInicio) {
     return (
       <div style={{ ...fondoEstilo, color: tema.texto, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'sans-serif' }}>
-        
         <div style={{ position: 'absolute', top: '24px', right: '24px' }}>
           <button
             onClick={() => setTemaOscuro(!temaOscuro)}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: tema.card,
-              color: tema.texto,
-              border: `1px solid ${tema.border}`,
-              padding: '8px 16px',
-              borderRadius: '20px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: tema.card, color: tema.texto,
+              border: `1px solid ${tema.border}`, padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
             {temaOscuro ? <Sun style={{ width: '16px', height: '16px', color: '#f59e0b' }} /> : <Moon style={{ width: '16px', height: '16px', color: '#6366f1' }} />}
@@ -189,41 +178,24 @@ export default function App() {
         </div>
 
         <div style={{ maxWidth: '650px', textAlign: 'center', backgroundColor: tema.card, padding: '48px 36px', borderRadius: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-          
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
             <img src="/logo2.png" alt="Logo 2" style={{ height: '70px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
             <img src="/logo3.png" alt="Logo 3" style={{ height: '70px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
           </div>
-
           <h1 style={{ fontSize: '32px', fontWeight: '800', margin: '0 0 12px 0', background: 'linear-gradient(to right, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Seguros Horizonte
           </h1>
-          
           <h2 style={{ fontSize: '18px', fontWeight: '600', color: tema.texto, margin: '0 0 16px 0' }}>
             Plataforma de Control Comercial & Cobranzas
           </h2>
-
           <p style={{ fontSize: '14px', color: tema.subtexto, lineHeight: '1.6', marginBottom: '32px' }}>
             Consolidado analítico en tiempo real sincronizado dinámicamente con Google Sheets. Monitorea la efectividad de ventas, recuperación de cartera, rendimiento de banca y campañas de marketing.
           </p>
-
           <button
             onClick={() => setModoInicio(false)}
             style={{
-              width: '100%',
-              padding: '14px 28px',
-              borderRadius: '14px',
-              fontSize: '15px',
-              fontWeight: 'bold',
-              color: '#ffffff',
-              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.5)'
+              width: '100%', padding: '14px 28px', borderRadius: '14px', fontSize: '15px', fontWeight: 'bold', color: '#ffffff',
+              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.5)'
             }}
           >
             Ingresar al Dashboard <ArrowRight style={{ width: '18px', height: '18px' }} />
@@ -256,8 +228,7 @@ export default function App() {
             onClick={() => setPestañaActiva("mensual")}
             style={{
               display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
-              backgroundColor: pestañaActiva === "mensual" ? '#4f46e5' : 'transparent',
-              color: pestañaActiva === "mensual" ? '#ffffff' : tema.subtexto
+              backgroundColor: pestañaActiva === "mensual" ? '#4f46e5' : 'transparent', color: pestañaActiva === "mensual" ? '#ffffff' : tema.subtexto
             }}
           >
             <LayoutDashboard style={{ width: '14px', height: '14px' }} /> Vista Mensual
@@ -267,8 +238,7 @@ export default function App() {
             onClick={() => setPestañaActiva("evolucion")}
             style={{
               display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
-              backgroundColor: pestañaActiva === "evolucion" ? '#4f46e5' : 'transparent',
-              color: pestañaActiva === "evolucion" ? '#ffffff' : tema.subtexto
+              backgroundColor: pestañaActiva === "evolucion" ? '#4f46e5' : 'transparent', color: pestañaActiva === "evolucion" ? '#ffffff' : tema.subtexto
             }}
           >
             <TrendingUpIcon style={{ width: '14px', height: '14px' }} /> Evolución Intermeses
@@ -326,8 +296,7 @@ export default function App() {
                   onClick={() => setMesActual(mes)}
                   style={{
                     padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none',
-                    backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent',
-                    color: mesActual === mes ? '#ffffff' : tema.subtexto
+                    backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto
                   }}
                 >
                   {mes}
@@ -380,10 +349,6 @@ export default function App() {
               </ResponsiveContainer>
             </div>
           </div>
-
-          {/* ------------------------------------------------------------- */}
-          {/* BLOQUE INFERIOR SEGMENTADO: SEGUIMIENTO VENTAS & COBRANZAS    */}
-          {/* ------------------------------------------------------------- */}
 
           {/* 1. SEGUIMIENTO VENTAS (ARRIBA) */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
@@ -439,7 +404,6 @@ export default function App() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
               
-              {/* Tarjeta 1: Clientes por Estatus */}
               <div style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
                 <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <CheckCircle2 style={{ width: '13px', height: '13px' }} /> Estatus de Cartera
@@ -464,7 +428,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Tarjeta 2: Cobros por Banco */}
               <div style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
                 <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Building2 style={{ width: '13px', height: '13px' }} /> Recaudación Bancaria
@@ -489,7 +452,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Tarjeta 3: Compromisos y Recurrentes */}
               <div style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
                 <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#8b5cf6', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <FileCheck style={{ width: '13px', height: '13px' }} /> Compromisos & Recurrentes
@@ -542,7 +504,7 @@ export default function App() {
             <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-                <h3 style={{ fontSize: '15px', fontWeight: '600', color tema.texto, margin: 0 }}>Comportamiento Trimestral</h3>
+                <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0 }}>Comportamiento Trimestral</h3>
               </div>
               <div style={{ height: '200px' }}>
                 <ResponsiveContainer width="100%" height="100%">
