@@ -18,7 +18,7 @@ export default function App() {
   const [modoInicio, setModoInicio] = useState(true);
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
-  const [mesActual, setMesActual] = useState("9");
+  const [mesActual, setMesActual] = useState("Septiembre");
   const [pestañaActiva, setPestañaActiva] = useState("mensual");
   const [subCategoria, setSubCategoria] = useState("marketing");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -58,13 +58,26 @@ export default function App() {
 
   const listaMeses = Object.keys(mesesData);
 
-  // CÁLCULOS GLOBALES INTERMESES PARA COBRANZAS
+  // Mapeo de nombres de mes para la interfaz
+  const obtenerNombreMes = (key) => {
+    const mapaMeses = {
+      "7": "Agosto",
+      "8": "Agosto",
+      "9": "Septiembre",
+      "10": "Octubre",
+      "Agosto": "Agosto",
+      "Septiembre": "Septiembre",
+      "Octubre": "Octubre"
+    };
+    return mapaMeses[key] || `Mes ${key}`;
+  };
+
+  // CÁLCULOS GLOBALES PARA COBRANZAS
   const totalSolventesGlobal = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.solventes || 0), 0);
   const totalMora1Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos1Mes || 0), 0);
   const totalMora2Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos2Meses || 0), 0);
   const totalMora3Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos3Meses || 0), 0);
   const totalMoraMas3Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morososMas3Meses || 0), 0);
-  const totalMoraTemprana = totalMora1Global + totalMora2Global + totalMora3Global;
 
   const cobranzasMes = data.cobranzasDetalle || {};
   const solventesMes = Number(cobranzasMes.solventes || 0);
@@ -84,26 +97,26 @@ export default function App() {
   const compromiso123Actual = Number(cobranzasMes.compromiso123Cuotas || 0);
   const compromisoMas3Actual = Number(cobranzasMes.compromisoMas3Cuotas || 0);
 
-  // CÁLCULOS GLOBALES PARA MARKETING (TOTALES DE LA TABLA)
+  // CÁLCULOS GLOBALES PARA MARKETING
   const totalImporteMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.importe || 0), 0);
   const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances || 0), 0);
   const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes || 0), 0);
 
   const generarAnalisisModoInteligente = () => {
-    const { ventas, presupuesto, cumplimiento, marketing, cartera } = data;
+    const { ventas, presupuesto, cumplimiento } = data;
     const analisis = [];
     if (cumplimiento >= 75) {
-      analisis.push({ tipo: 'exito', texto: `Excelente rendimiento en ${mesActual}: Cumplimiento del ${cumplimiento}% con ${ventas} ventas efectivas.` });
+      analisis.push({ tipo: 'exito', texto: `Excelente rendimiento en ${obtenerNombreMes(mesActual)}: Cumplimiento del ${cumplimiento}% con ${ventas} ventas efectivas.` });
     } else if (cumplimiento > 0) {
-      analisis.push({ tipo: 'alerta', texto: `Rendimiento en ${mesActual}: ${ventas} ventas alcanzadas (${cumplimiento}% de la meta de ${presupuesto}).` });
+      analisis.push({ tipo: 'alerta', texto: `Rendimiento en ${obtenerNombreMes(mesActual)}: ${ventas} ventas alcanzadas (${cumplimiento}% de la meta de ${presupuesto}).` });
     } else {
-      analisis.push({ tipo: 'info', texto: `Total de ventas registradas en ${mesActual}: ${ventas} pólizas generadas.` });
+      analisis.push({ tipo: 'info', texto: `Total de ventas registradas en ${obtenerNombreMes(mesActual)}: ${ventas} pólizas generadas.` });
     }
     return analisis;
   };
 
   const listaAnalisis = generarAnalisisModoInteligente();
-  const ventasGlobalesData = Object.keys(mesesData).map(mes => ({ name: mes, value: mesesData[mes].ventas }));
+  const ventasGlobalesData = Object.keys(mesesData).map(mes => ({ name: obtenerNombreMes(mes), value: mesesData[mes].ventas }));
   const trimestralData = [
     { trimestre: "T3 (Jul - Sep)", Ventas: (mesesData["Julio"]?.ventas || 0) + (mesesData["Agosto"]?.ventas || 0) + (mesesData["Septiembre"]?.ventas || 0) },
     { trimestre: "T4 (Oct - Dic)", Ventas: (mesesData["Octubre"]?.ventas || 0) }
@@ -192,7 +205,7 @@ export default function App() {
             </div>
             <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
               {listaMeses.map((mes) => (
-                <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{mes}</button>
+                <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{obtenerNombreMes(mes)}</button>
               ))}
             </div>
           </div>
@@ -201,7 +214,7 @@ export default function App() {
             <div style={{ display: 'grid', gap: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
                 <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '12px', padding: '16px', color: '#fff' }}>
-                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Ventas Generadas ({mesActual})</p>
+                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Ventas Generadas ({obtenerNombreMes(mesActual)})</p>
                   <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{data.ventas}</h3>
                   <p style={{ fontSize: '11px', margin: '8px 0 0 0' }}>Presupuesto: {data.presupuesto}</p>
                 </div>
@@ -218,7 +231,7 @@ export default function App() {
           )}
 
           {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 2: MARKETING (Con Observaciones de la IA Global y por Mes) */}
+          {/* CATEGORÍA 2: MARKETING                                           */}
           {/* ----------------------------------------------------------------- */}
           {subCategoria === "marketing" && (
             <div style={{ display: 'grid', gap: '20px', animation: 'fadeIn 0.3s ease-in-out' }}>
@@ -254,7 +267,7 @@ export default function App() {
                         }}
                       >
                         <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#14b8a6', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
-                          Mes {mes} {esActivo && '⭐'}
+                          {obtenerNombreMes(mes)} {esActivo && '⭐'}
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
@@ -304,10 +317,10 @@ export default function App() {
                         const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(20, 184, 166, 0.15)' : 'rgba(20, 184, 166, 0.08)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>MES {mes.toUpperCase()} {mes === mesActual && '⭐'}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>${m.importe} $</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>${m.importe.toLocaleString()} $</td>
                             <td style={{ padding: '12px 10px' }}>{m.alcances.toLocaleString()}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{m.mensajes}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</td>
                           </tr>
                         );
                       })}
@@ -322,7 +335,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* BLOQUE DE OBSERVACIONES DE LA IA (GLOBAL Y POR MES) */}
+              {/* BLOQUE DE OBSERVACIONES Y ANÁLISIS DE LA IA */}
               <div style={{ backgroundColor: tema.iaBg, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.iaBorder}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px', marginBottom: '14px' }}>
                   <Bot style={{ width: '18px', height: '18px', color: '#818cf8' }} />
@@ -335,15 +348,15 @@ export default function App() {
                   <div style={{ backgroundColor: tema.card, padding: '12px 16px', borderRadius: '10px', borderLeft: '4px solid #3b82f6' }}>
                     <h5 style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', margin: '0 0 4px 0', textTransform: 'uppercase' }}>🌐 Explicación Global Acumulada</h5>
                     <p style={{ fontSize: '12px', color: tema.texto, lineHeight: '1.5', margin: 0 }}>
-                      El comportamiento operativo de marketing muestra un escalamiento proporcional entre inversión y respuesta de audiencia. Con una inversión acumulada de <strong>${totalImporteMarketing} $</strong>, el alcance total de la campaña alcanzó <strong>{totalAlcanceMarketing.toLocaleString()}</strong> impresiones, consolidando <strong>{totalMensajesMarketing.toLocaleString()}</strong> mensajes totales en el periodo analizado.
+                      El comportamiento operativo de marketing muestra un escalamiento proporcional entre inversión y respuesta de audiencia. Con una inversión acumulada de <strong>${totalImporteMarketing.toLocaleString()} $</strong>, el alcance total de la campaña alcanzó <strong>{totalAlcanceMarketing.toLocaleString()}</strong> impresiones, consolidando <strong>{totalMensajesMarketing.toLocaleString()}</strong> mensajes totales en el periodo analizado.
                     </p>
                   </div>
 
                   {/* Análisis Específico del Mes Seleccionado */}
                   <div style={{ backgroundColor: tema.card, padding: '12px 16px', borderRadius: '10px', borderLeft: '4px solid #14b8a6' }}>
-                    <h5 style={{ fontSize: '12px', fontWeight: 'bold', color: '#14b8a6', margin: '0 0 4px 0', textTransform: 'uppercase' }}>📅 Análisis Específico - Mes {mesActual}</h5>
+                    <h5 style={{ fontSize: '12px', fontWeight: 'bold', color: '#14b8a6', margin: '0 0 4px 0', textTransform: 'uppercase' }}>📅 Análisis Específico - {obtenerNombreMes(mesActual)}</h5>
                     <p style={{ fontSize: '12px', color: tema.texto, lineHeight: '1.5', margin: 0 }}>
-                      Durante el <strong>Mes {mesActual}</strong>, se registró un importe de inversión de <strong>${data.marketing.importe} $</strong>, generando un alcance de <strong>{data.marketing.alcances.toLocaleString()}</strong> usuarios y un total de <strong>{data.marketing.mensajes}</strong> mensajes efectivos. Este mes representa una eficiencia operativa clave en el rendimiento del canal digital de Seguros Horizonte.
+                      Durante <strong>{obtenerNombreMes(mesActual)}</strong>, se registró un importe de inversión de <strong>${data.marketing.importe.toLocaleString()} $</strong>, generando un alcance de <strong>{data.marketing.alcances.toLocaleString()}</strong> usuarios y un total de <strong>{data.marketing.mensajes.toLocaleString()}</strong> mensajes efectivos. Este periodo representa una eficiencia operativa clave en el rendimiento del canal digital de Seguros Horizonte.
                     </p>
                   </div>
                 </div>
@@ -359,7 +372,7 @@ export default function App() {
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
                   <div>
                     <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento de Cobranza Mes {mesActual}
+                      <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento de Cobranza Mes {obtenerNombreMes(mesActual)}
                     </h2>
                     <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
@@ -374,7 +387,7 @@ export default function App() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <ShieldCheck style={{ width: '20px', height: '20px', color: '#10b981' }} />
-                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto }}>Clientes Solventes (Mes {mesActual})</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto }}>Clientes Solventes ({obtenerNombreMes(mesActual)})</span>
                     </div>
                     <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>{solventesMes.toLocaleString()}</span>
                   </div>
@@ -401,7 +414,7 @@ export default function App() {
                 {/* Mora Temprana 1-2-3 del Mes */}
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>Clientes Mora Temprana 1 - 2 - 3 Cuotas (Mes {mesActual})</span>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>Clientes Mora Temprana 1 - 2 - 3 Cuotas ({obtenerNombreMes(mesActual)})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '12px', color: tema.subtexto }}>Total BDD Mes</span>
@@ -426,7 +439,7 @@ export default function App() {
                 {/* Mora Tardía +3 del Mes */}
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>Clientes Mora Tardía + 3 Cuotas (Mes {mesActual})</span>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>Clientes Mora Tardía + 3 Cuotas ({obtenerNombreMes(mesActual)})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '12px', color: tema.subtexto }}>Total BDD Mes</span>
