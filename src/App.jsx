@@ -103,21 +103,6 @@ export default function App() {
     value: mesesData[mes].ventas
   }));
 
-  const evolucionData = Object.keys(mesesData).map(mes => {
-    const carteras = mesesData[mes].cartera || [];
-    const getCobrado = (cat) => carteras.find(c => c.name === cat)?.cobrado || 0;
-
-    return {
-      mes: mes,
-      Ventas: mesesData[mes].ventas || 0,
-      Recaudación: (mesesData[mes].recaudacion || 0) / 1000000,
-      Marketing: getCobrado('Marketing'),
-      'BDD Abierta': getCobrado('BDD Abierta'),
-      'BDD General': getCobrado('BDD General'),
-      'BDD +3M': getCobrado('BDD +3M')
-    };
-  });
-
   const trimestralData = [
     { trimestre: "T3 (Jul - Sep)", Ventas: (mesesData["Julio"]?.ventas || 0) + (mesesData["Agosto"]?.ventas || 0) + (mesesData["Septiembre"]?.ventas || 0) },
     { trimestre: "T4 (Oct - Dic)", Ventas: (mesesData["Octubre"]?.ventas || 0) }
@@ -268,13 +253,13 @@ export default function App() {
         </div>
       </div>
 
-      {/* PESTAÑA 1: VISTA MENSUAL CON SEGMENTACIÓN POR CATEGORÍA */}
+      {/* PESTAÑA 1: VISTA MENSUAL CON CATEGORÍAS */}
       {pestañaActiva === "mensual" && (
         <div>
           {/* BARRA SUPERIOR DE SELECTOR DE MESES Y CATEGORÍAS */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             
-            {/* Categorías (Segmentación) */}
+            {/* Pestañas por Categoría con Iconos Mejorados */}
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
               <button
                 onClick={() => setSubCategoria("ventas")}
@@ -285,7 +270,7 @@ export default function App() {
                   display: 'flex', alignItems: 'center', gap: '6px'
                 }}
               >
-                <TrendingUp style={{ width: '14px', height: '14px' }} /> 📈 Ventas
+                <TrendingUp style={{ width: '14px', height: '14px' }} /> Ventas
               </button>
 
               <button
@@ -297,7 +282,7 @@ export default function App() {
                   display: 'flex', alignItems: 'center', gap: '6px'
                 }}
               >
-                <Users style={{ width: '14px', height: '14px' }} /> 📢 Marketing
+                <Users style={{ width: '14px', height: '14px' }} /> Marketing
               </button>
 
               <button
@@ -309,7 +294,7 @@ export default function App() {
                   display: 'flex', alignItems: 'center', gap: '6px'
                 }}
               >
-                <CreditCard style={{ width: '14px', height: '14px' }} /> 💳 Cobranzas
+                <CreditCard style={{ width: '14px', height: '14px' }} /> Cobranzas
               </button>
             </div>
 
@@ -331,169 +316,96 @@ export default function App() {
           </div>
 
           {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 1: VENTAS                                               */}
+          {/* CATEGORÍA 1: VENTAS (Visión Global y Comportamiento Mejorado)       */}
           {/* ----------------------------------------------------------------- */}
           {subCategoria === "ventas" && (
             <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-                <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+                <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '12px', padding: '16px', color: '#fff', boxShadow: '0 4px 15px rgba(249,115,22,0.2)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
-                      <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
+                      <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
+                      <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{data.ventas}</h3>
                     </div>
-                    <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><TrendingUp style={{ width: '16px', height: '16px' }} /></div>
+                    <div style={{ padding: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px' }}><TrendingUp style={{ width: '18px', height: '18px' }} /></div>
                   </div>
-                  <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Presupuesto: {data.presupuesto}</p>
+                  <p style={{ fontSize: '11px', margin: '8px 0 0 0', opacity: 0.9 }}>Presupuesto: {data.presupuesto}</p>
                 </div>
 
-                <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
+                <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '12px', padding: '16px', color: '#fff', boxShadow: '0 4px 15px rgba(59,130,246,0.2)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
-                      <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
+                      <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación Total</p>
+                      <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
                     </div>
-                    <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><DollarSign style={{ width: '16px', height: '16px' }} /></div>
+                    <div style={{ padding: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px' }}><DollarSign style={{ width: '18px', height: '18px' }} /></div>
                   </div>
-                  <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Banco Plaza & Banfanb</p>
+                  <p style={{ fontSize: '11px', margin: '8px 0 0 0', opacity: 0.9 }}>Banco Plaza & Banfanb</p>
                 </div>
 
-                <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
+                <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '12px', padding: '16px', color: '#fff', boxShadow: '0 4px 15px rgba(147,51,234,0.2)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
-                      <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
+                      <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento Global</p>
+                      <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{data.cumplimiento}%</h3>
                     </div>
-                    <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Award style={{ width: '16px', height: '16px' }} /></div>
+                    <div style={{ padding: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px' }}><Award style={{ width: '18px', height: '18px' }} /></div>
                   </div>
-                  <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Meta alcanzada</p>
-                </div>
-
-                <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
-                      <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
-                    </div>
-                    <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Users style={{ width: '16px', height: '16px' }} /></div>
-                  </div>
-                  <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Mensajes: {data.marketing.mensajes}</p>
+                  <p style={{ fontSize: '11px', margin: '8px 0 0 0', opacity: 0.9 }}>Meta alcanzada</p>
                 </div>
               </div>
 
               {/* Gráfico Cartera y Comercialización */}
-              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0 }}>Cartera y Comercialización ({mesActual})</h3>
+              <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                  <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0 }}>Cartera y Comercialización Global ({mesActual})</h3>
                 </div>
-                <div style={{ height: '260px' }}>
+                <div style={{ height: '280px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data.cartera}>
                       <XAxis dataKey="name" stroke={tema.subtexto} fontSize={11} />
                       <YAxis stroke={tema.subtexto} fontSize={11} />
-                      <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '6px', color: tema.texto, fontSize: '11px' }} />
-                      <Bar dataKey="asignado" fill="#6366f1" radius={[3, 3, 0, 0]} name="Asignado" />
-                      <Bar dataKey="cobrado" fill="#10b981" radius={[3, 3, 0, 0]} name="Cobrado" />
+                      <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
+                      <Bar dataKey="asignado" fill="#6366f1" radius={[4, 4, 0, 0]} name="Asignado" />
+                      <Bar dataKey="cobrado" fill="#10b981" radius={[4, 4, 0, 0]} name="Cobrado" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              {/* SEGUIMIENTO DE VENTAS POR CANAL DE MARKETING (CON LAS TARJETAS POR MES RESTAURADAS) */}
-              <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Seguimiento Ventas por Canal de Marketing
-                  </h3>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-                  {listaMeses.map((mes) => {
-                    const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
-                    return (
-                      <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase' }}>{mes}</span>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#1e3a8a', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                              <DollarSignIcon style={{ width: '12px', height: '12px', color: '#60a5fa' }} />
-                            </div>
-                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>${m.importe}</p>
-                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Importe</span>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#854d0e', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                              <Share2 style={{ width: '12px', height: '12px', color: '#facc15' }} />
-                            </div>
-                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
-                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Alcance</span>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#0284c7', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                              <MessageSquare style={{ width: '12px', height: '12px', color: '#38bdf8' }} />
-                            </div>
-                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
-                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Mensajes</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-            </div>
-          )}
-
-          {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 2: MARKETING                                            */}
-          {/* ----------------------------------------------------------------- */}
-          {subCategoria === "marketing" && (
-            <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
-              <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '10px', padding: '16px', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcance General de Marketing ({mesActual})</p>
-                  <h3 style={{ fontSize: '28px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()} personas</h3>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '12px', margin: 0, opacity: 0.9 }}>Mensajes: <strong>{data.marketing.mensajes}</strong></p>
-                  <p style={{ fontSize: '12px', margin: '2px 0 0 0', opacity: 0.9 }}>Importe: <strong>${data.marketing.importe}</strong></p>
-                </div>
-              </div>
-
-              {/* Seguimiento por Canal de Marketing */}
-              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+              {/* Seguimiento de Ventas por Canal de Marketing */}
+              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-                  <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Seguimiento de Ventas por Canal de Marketing (Histórico por Mes)
+                  <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Comportamiento de Ventas por Canal de Marketing (Histórico)
                   </h3>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px' }}>
                   {listaMeses.map((mes) => {
                     const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
                     return (
-                      <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
+                      <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '10px', padding: '12px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase' }}>{mes}</span>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#1e3a8a', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                              <DollarSignIcon style={{ width: '12px', height: '12px', color: '#60a5fa' }} />
+                            <div style={{ backgroundColor: '#1e3a8a', padding: '5px', borderRadius: '6px', display: 'inline-block', marginBottom: '3px' }}>
+                              <DollarSignIcon style={{ width: '13px', height: '13px', color: '#60a5fa' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>${m.importe}</p>
                             <span style={{ fontSize: '9px', color: tema.subtexto }}>Importe</span>
                           </div>
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#854d0e', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                              <Share2 style={{ width: '12px', height: '12px', color: '#facc15' }} />
+                            <div style={{ backgroundColor: '#854d0e', padding: '5px', borderRadius: '6px', display: 'inline-block', marginBottom: '3px' }}>
+                              <Share2 style={{ width: '13px', height: '13px', color: '#facc15' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
                             <span style={{ fontSize: '9px', color: tema.subtexto }}>Alcance</span>
                           </div>
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#0284c7', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                              <MessageSquare style={{ width: '12px', height: '12px', color: '#38bdf8' }} />
+                            <div style={{ backgroundColor: '#0284c7', padding: '5px', borderRadius: '6px', display: 'inline-block', marginBottom: '3px' }}>
+                              <MessageSquare style={{ width: '13px', height: '13px', color: '#38bdf8' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
                             <span style={{ fontSize: '9px', color: tema.subtexto }}>Mensajes</span>
@@ -508,92 +420,156 @@ export default function App() {
           )}
 
           {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 3: COBRANZAS                                            */}
+          {/* CATEGORÍA 2: MARKETING (Visión y Espacio Mejorados)               */}
+          {/* ----------------------------------------------------------------- */}
+          {subCategoria === "marketing" && (
+            <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
+              <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '12px', padding: '20px 24px', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 6px 20px rgba(20,184,166,0.25)' }}>
+                <div>
+                  <p style={{ fontSize: '12px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcance General de Marketing ({mesActual})</p>
+                  <h3 style={{ fontSize: '32px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{data.marketing.alcances.toLocaleString()} personas</h3>
+                </div>
+                <div style={{ textAlign: 'right', backgroundColor: 'rgba(0,0,0,0.15)', padding: '10px 16px', borderRadius: '10px' }}>
+                  <p style={{ fontSize: '12px', margin: 0, opacity: 0.95 }}>Mensajes: <strong>{data.marketing.mensajes}</strong></p>
+                  <p style={{ fontSize: '12px', margin: '4px 0 0 0', opacity: 0.95 }}>Inversión Importe: <strong>${data.marketing.importe}</strong></p>
+                </div>
+              </div>
+
+              {/* Espacio optimizado para Seguimiento por Canal de Marketing */}
+              <div style={{ backgroundColor: tema.card, padding: '20px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Users style={{ width: '18px', height: '18px', color: '#14b8a6' }} /> Monitoreo y Rendimiento de Canales de Marketing (Histórico por Mes)
+                  </h3>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  {listaMeses.map((mes) => {
+                    const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
+                    return (
+                      <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '10px', padding: '16px', border: `1px solid ${tema.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{mes}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ backgroundColor: '#1e3a8a', padding: '6px', borderRadius: '8px', display: 'inline-block', marginBottom: '4px' }}>
+                              <DollarSignIcon style={{ width: '14px', height: '14px', color: '#60a5fa' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '12px', fontWeight: 'bold' }}>${m.importe}</p>
+                            <span style={{ fontSize: '10px', color: tema.subtexto }}>Importe</span>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ backgroundColor: '#854d0e', padding: '6px', borderRadius: '8px', display: 'inline-block', marginBottom: '4px' }}>
+                              <Share2 style={{ width: '14px', height: '14px', color: '#facc15' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '12px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
+                            <span style={{ fontSize: '10px', color: tema.subtexto }}>Alcance</span>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ backgroundColor: '#0284c7', padding: '6px', borderRadius: '8px', display: 'inline-block', marginBottom: '4px' }}>
+                              <MessageSquare style={{ width: '14px', height: '14px', color: '#38bdf8' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '12px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
+                            <span style={{ fontSize: '10px', color: tema.subtexto }}>Mensajes</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ----------------------------------------------------------------- */}
+          {/* CATEGORÍA 3: COBRANZAS (Icono y Visión de Pestaña Mejorados)      */}
           {/* ----------------------------------------------------------------- */}
           {subCategoria === "cobranzas" && (
             <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
-              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-                  <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-                  <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Detallado de Cobranzas y Cartera por Mes
+              <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                  <div style={{ padding: '6px', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} />
+                  </div>
+                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: tema.texto, margin: 0 }}>
+                    Seguimiento Detallado de Cobranzas y Cartera por Mes
                   </h3>
                 </div>
 
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
                     <thead>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
-                        <th style={{ padding: '10px 12px' }}>Estatus de Cartera / Métrica</th>
+                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                        <th style={{ padding: '12px 14px' }}>Estatus de Cartera / Métrica</th>
                         {listaMeses.map(mes => (
-                          <th key={mes} style={{ padding: '10px 12px', textTransform: 'uppercase', color: '#818cf8' }}>{mes}</th>
+                          <th key={mes} style={{ padding: '12px 14px', textTransform: 'uppercase', color: '#818cf8', fontWeight: 'bold' }}>{mes}</th>
                         ))}
-                        <th style={{ padding: '10px 12px' }}>Detalle / Monto Asociado</th>
+                        <th style={{ padding: '12px 14px' }}>Detalle / Monto Asociado</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Clientes Solventes</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Clientes Solventes</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.solventes || 0).toLocaleString()}</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.solventes || 0).toLocaleString()}</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#10b981' }}>Al día</td>
+                        <td style={{ padding: '12px 14px', color: '#10b981', fontWeight: '500' }}>Al día</td>
                       </tr>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora 1 Mes</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora 1 Mes</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos1Mes || 0).toLocaleString()}</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos1Mes || 0).toLocaleString()}</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#f59e0b' }}>Seguimiento temprano</td>
+                        <td style={{ padding: '12px 14px', color: '#f59e0b', fontWeight: '500' }}>Seguimiento temprano</td>
                       </tr>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora 2 Meses</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora 2 Meses</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos2Meses || 0).toLocaleString()}</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos2Meses || 0).toLocaleString()}</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#f97316' }}>Gestión preventiva</td>
+                        <td style={{ padding: '12px 14px', color: '#f97316', fontWeight: '500' }}>Gestión preventiva</td>
                       </tr>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora 3 Meses</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora 3 Meses</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos3Meses || 0).toLocaleString()}</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos3Meses || 0).toLocaleString()}</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#ef4444' }}>Gestión avanzada</td>
+                        <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: '500' }}>Gestión avanzada</td>
                       </tr>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Mora +3 Meses</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora +3 Meses</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morososMas3Meses || 0).toLocaleString()}</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morososMas3Meses || 0).toLocaleString()}</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#ef4444' }}>Cartera pesada / judicial</td>
+                        <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: '500' }}>Cartera pesada / judicial</td>
                       </tr>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Cobrados Banesco</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Cobrados Banesco</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanesco || 0)} clientes</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanesco || 0)} clientes</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#3b82f6' }}>Monto Banesco Cobrado</td>
+                        <td style={{ padding: '12px 14px', color: '#3b82f6', fontWeight: '500' }}>Monto Banesco Cobrado</td>
                       </tr>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Cobrados BANFANB</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Cobrados BANFANB</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanfanb || 0)} clientes</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanfanb || 0)} clientes</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#3b82f6' }}>Monto BANFANB Cobrado</td>
+                        <td style={{ padding: '12px 14px', color: '#3b82f6', fontWeight: '500' }}>Monto BANFANB Cobrado</td>
                       </tr>
                       <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Pagos Recurrentes Banco Plaza</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Pagos Recurrentes Banco Plaza</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>${Number(mesesData[mes]?.cobranzasDetalle?.pagosRecurrentesPlaza || 0).toLocaleString()}</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>${Number(mesesData[mes]?.cobranzasDetalle?.pagosRecurrentesPlaza || 0).toLocaleString()}</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#10b981' }}>2-3 Cuotas</td>
+                        <td style={{ padding: '12px 14px', color: '#10b981', fontWeight: '500' }}>2-3 Cuotas</td>
                       </tr>
                       <tr>
-                        <td style={{ padding: '10px 12px', fontWeight: '600' }}>Compromisos de Pago</td>
+                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Compromisos de Pago</td>
                         {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '10px 12px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.compromiso123Cuotas || 0)} (1-3 Cuotas)</td>
+                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.compromiso123Cuotas || 0)} (1-3 Cuotas)</td>
                         ))}
-                        <td style={{ padding: '10px 12px', color: '#8b5cf6' }}>En proceso de cumplimiento</td>
+                        <td style={{ padding: '12px 14px', color: '#8b5cf6', fontWeight: '500' }}>En proceso de cumplimiento</td>
                       </tr>
                     </tbody>
                   </table>
@@ -618,9 +594,6 @@ export default function App() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={ventasGlobalesData} innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                      {ventasGlobalesData.link && ventasGlobalesData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
                       {ventasGlobalesData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
