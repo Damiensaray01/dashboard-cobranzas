@@ -4,7 +4,7 @@ import {
   Building2, BarChart3, PieChart as PieIcon,
   MessageSquare, DollarSignIcon, Share2, LineChart as LineIcon,
   LayoutDashboard, TrendingUpIcon, Bot, Sparkles, CheckCircle2, AlertTriangle, Calendar,
-  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity, CreditCard, FileCheck, Layers
+  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity, CreditCard, FileCheck, Layers, AlertCircle, Clock
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -50,7 +50,12 @@ export default function App() {
   const data = mesesData[mesActual] || {
     ventas: 0, recaudacion: 0, presupuesto: 0, cumplimiento: 0,
     marketing: { importe: 0, alcances: 0, mensajes: 0 },
-    cartera: []
+    cartera: [],
+    cobranzasDetalle: {
+      solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
+      cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
+      pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
+    }
   };
 
   const listaMeses = Object.keys(mesesData);
@@ -259,7 +264,7 @@ export default function App() {
           {/* BARRA SUPERIOR DE SELECTOR DE MESES Y CATEGORÍAS */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             
-            {/* Pestañas por Categoría con Iconos Mejorados */}
+            {/* Pestañas por Categoría */}
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
               <button
                 onClick={() => setSubCategoria("ventas")}
@@ -316,7 +321,7 @@ export default function App() {
           </div>
 
           {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 1: VENTAS (Visión Global y Comportamiento Mejorado)       */}
+          {/* CATEGORÍA 1: VENTAS                                               */}
           {/* ----------------------------------------------------------------- */}
           {subCategoria === "ventas" && (
             <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
@@ -373,54 +378,11 @@ export default function App() {
                   </ResponsiveContainer>
                 </div>
               </div>
-
-              {/* Seguimiento de Ventas por Canal de Marketing */}
-              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-                  <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Comportamiento de Ventas por Canal de Marketing (Histórico)
-                  </h3>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px' }}>
-                  {listaMeses.map((mes) => {
-                    const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
-                    return (
-                      <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '10px', padding: '12px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase' }}>{mes}</span>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#1e3a8a', padding: '5px', borderRadius: '6px', display: 'inline-block', marginBottom: '3px' }}>
-                              <DollarSignIcon style={{ width: '13px', height: '13px', color: '#60a5fa' }} />
-                            </div>
-                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>${m.importe}</p>
-                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Importe</span>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#854d0e', padding: '5px', borderRadius: '6px', display: 'inline-block', marginBottom: '3px' }}>
-                              <Share2 style={{ width: '13px', height: '13px', color: '#facc15' }} />
-                            </div>
-                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
-                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Alcance</span>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ backgroundColor: '#0284c7', padding: '5px', borderRadius: '6px', display: 'inline-block', marginBottom: '3px' }}>
-                              <MessageSquare style={{ width: '13px', height: '13px', color: '#38bdf8' }} />
-                            </div>
-                            <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
-                            <span style={{ fontSize: '9px', color: tema.subtexto }}>Mensajes</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
           )}
 
           {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 2: MARKETING (Visión y Espacio Mejorados)               */}
+          {/* CATEGORÍA 2: MARKETING                                            */}
           {/* ----------------------------------------------------------------- */}
           {subCategoria === "marketing" && (
             <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
@@ -435,7 +397,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Espacio optimizado para Seguimiento por Canal de Marketing */}
               <div style={{ backgroundColor: tema.card, padding: '20px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
@@ -481,100 +442,187 @@ export default function App() {
           )}
 
           {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 3: COBRANZAS (Icono y Visión de Pestaña Mejorados)      */}
+          {/* CATEGORÍA 3: COBRANZAS (Nuevo Modelo Estilo Dashboard Ejecutivo)    */}
           {/* ----------------------------------------------------------------- */}
           {subCategoria === "cobranzas" && (
-            <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '16px' }}>
-              <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                  <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-                  <div style={{ padding: '6px', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} />
+            <div style={{ animation: 'fadeIn 0.3s ease-in-out', display: 'grid', gap: '20px' }}>
+              
+              {/* Título de la Sección de Cobranzas */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                  <div>
+                    <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento Cobranza Mes {mesActual}
+                    </h2>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: tema.texto, margin: 0 }}>
-                    Seguimiento Detallado de Cobranzas y Cartera por Mes
-                  </h3>
-                </div>
-
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
-                    <thead>
-                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
-                        <th style={{ padding: '12px 14px' }}>Estatus de Cartera / Métrica</th>
-                        {listaMeses.map(mes => (
-                          <th key={mes} style={{ padding: '12px 14px', textTransform: 'uppercase', color: '#818cf8', fontWeight: 'bold' }}>{mes}</th>
-                        ))}
-                        <th style={{ padding: '12px 14px' }}>Detalle / Monto Asociado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Clientes Solventes</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.solventes || 0).toLocaleString()}</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#10b981', fontWeight: '500' }}>Al día</td>
-                      </tr>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora 1 Mes</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos1Mes || 0).toLocaleString()}</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#f59e0b', fontWeight: '500' }}>Seguimiento temprano</td>
-                      </tr>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora 2 Meses</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos2Meses || 0).toLocaleString()}</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#f97316', fontWeight: '500' }}>Gestión preventiva</td>
-                      </tr>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora 3 Meses</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morosos3Meses || 0).toLocaleString()}</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: '500' }}>Gestión avanzada</td>
-                      </tr>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Mora +3 Meses</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.morososMas3Meses || 0).toLocaleString()}</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#ef4444', fontWeight: '500' }}>Cartera pesada / judicial</td>
-                      </tr>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Cobrados Banesco</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanesco || 0)} clientes</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#3b82f6', fontWeight: '500' }}>Monto Banesco Cobrado</td>
-                      </tr>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Cobrados BANFANB</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.cobradosBanfanb || 0)} clientes</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#3b82f6', fontWeight: '500' }}>Monto BANFANB Cobrado</td>
-                      </tr>
-                      <tr style={{ borderBottom: `1px solid ${tema.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Pagos Recurrentes Banco Plaza</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>${Number(mesesData[mes]?.cobranzasDetalle?.pagosRecurrentesPlaza || 0).toLocaleString()}</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#10b981', fontWeight: '500' }}>2-3 Cuotas</td>
-                      </tr>
-                      <tr>
-                        <td style={{ padding: '12px 14px', fontWeight: '600' }}>Compromisos de Pago</td>
-                        {listaMeses.map(mes => (
-                          <td key={mes} style={{ padding: '12px 14px' }}>{Number(mesesData[mes]?.cobranzasDetalle?.compromiso123Cuotas || 0)} (1-3 Cuotas)</td>
-                        ))}
-                        <td style={{ padding: '12px 14px', color: '#8b5cf6', fontWeight: '500' }}>En proceso de cumplimiento</td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
               </div>
+
+              {/* BLOQUE SUPERIOR DE TARJETAS DE COBRANZA */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                
+                {/* 1. Clientes Solventes y Desglose de Mora */}
+                <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <ShieldCheck style={{ width: '20px', height: '20px', color: '#10b981' }} />
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto }}>Clientes Solventes</span>
+                    </div>
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>{Number(data.cobranzasDetalle?.solventes || 14224).toLocaleString()}</span>
+                  </div>
+
+                  <div style={{ display: 'grid', gap: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
+                      <span style={{ fontSize: '12px', color: tema.subtexto, display: 'flex', alignItems: 'center', gap: '6px' }}><AlertCircle style={{ width: '13px', height: '13px', color: '#f59e0b' }} /> Mora 1 Mes</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>{Number(data.cobranzasDetalle?.morosos1Mes || 1149).toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
+                      <span style={{ fontSize: '12px', color: tema.subtexto, display: 'flex', alignItems: 'center', gap: '6px' }}><AlertCircle style={{ width: '13px', height: '13px', color: '#f97316' }} /> Mora 2 Meses</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f97316' }}>{Number(data.cobranzasDetalle?.morosos2Meses || 842).toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
+                      <span style={{ fontSize: '12px', color: tema.subtexto, display: 'flex', alignItems: 'center', gap: '6px' }}><AlertCircle style={{ width: '13px', height: '13px', color: '#ef4444' }} /> Mora 3 Meses</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>{Number(data.cobranzasDetalle?.morosos3Meses || 725).toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '8px 12px', borderRadius: '8px' }}>
+                      <span style={{ fontSize: '12px', color: tema.subtexto, display: 'flex', alignItems: 'center', gap: '6px' }}><AlertCircle style={{ width: '13px', height: '13px', color: '#dc2626' }} /> Mora +3 Meses</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#dc2626' }}>{Number(data.cobranzasDetalle?.morososMas3Meses || 1877).toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ backgroundColor: 'rgba(79, 70, 229, 0.1)', padding: '10px 12px', borderRadius: '8px', borderLeft: '3px solid #4f46e5' }}>
+                    <p style={{ fontSize: '11px', color: tema.texto, margin: 0, lineHeight: '1.4' }}>
+                      La cartera total alcanza los <strong>18.817</strong> clientes, de los cuales el <strong>75,48%</strong> se mantiene solvente, situando la morosidad activa en 4.613 casos.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 2. Clientes Mora Temprana 1 - 2 - 3 Cuotas */}
+                <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>Clientes Mora Temprana 1 - 2 - 3 Cuotas</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: tema.subtexto }}>BDD Inicial</span>
+                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>2.716</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: tema.subtexto }}>BDD con Registros</span>
+                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>1.839</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '10px 12px', borderRadius: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto }}>% Compromiso de Pago</span>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>14,80%</span>
+                  </div>
+
+                  {/* Compromisos de Pago con Fechas */}
+                  <div style={{ backgroundColor: tema.bg, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto }}>Compromiso de Pago</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#6366f1' }}>402</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: tema.subtexto }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>📅 15 Septiembre:</span>
+                        <strong style={{ color: tema.texto }}>80</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>📅 30 Septiembre:</span>
+                        <strong style={{ color: tema.texto }}>322</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Clientes Mora Tardía + 3 Cuotas */}
+                <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>Clientes Mora Tardía + 3 Cuotas</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: tema.subtexto }}>BDD Inicial</span>
+                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>1.877</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: tema.subtexto }}>BDD con Registros</span>
+                    <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>968</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '10px 12px', borderRadius: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto }}>% Compromiso de Pago</span>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#ef4444' }}>0,00%</span>
+                  </div>
+
+                  {/* Compromisos de Pago con Fechas */}
+                  <div style={{ backgroundColor: tema.bg, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto }}>Compromiso de Pago</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#ef4444' }}>0</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: tema.subtexto }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>📅 15 Septiembre:</span>
+                        <strong style={{ color: tema.texto }}>0</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>📅 30 Septiembre:</span>
+                        <strong style={{ color: tema.texto }}>0</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* BLOQUE INFERIOR DE BANCOS Y RECAUDACIONES */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                
+                {/* Banesco y BANFANB */}
+                <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '12px', borderRadius: '8px', borderLeft: '4px solid #3b82f6' }}>
+                    <div>
+                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase' }}>Clientes Cobrados Banesco</span>
+                      <h4 style={{ fontSize: '20px', fontWeight: 'bold', color: tema.texto, margin: '2px 0 0 0' }}>{Number(data.cobranzasDetalle?.cobradosBanesco || 27)}</h4>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '10px', color: tema.subtexto }}>Monto Banesco</span>
+                      <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>BsF 179.996,26</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.bg, padding: '12px', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>
+                    <div>
+                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#ef4444', textTransform: 'uppercase' }}>Clientes Cobrados BANFANB</span>
+                      <h4 style={{ fontSize: '20px', fontWeight: 'bold', color: tema.texto, margin: '2px 0 0 0' }}>{Number(data.cobranzasDetalle?.cobradosBanfanb || 23)}</h4>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '10px', color: tema.subtexto }}>Monto BANFANB</span>
+                      <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>BsF 89.569,07</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pagos Recurrentes Banco Plaza */}
+                <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.subtexto, textTransform: 'uppercase', marginBottom: '4px' }}>Pagos Recurrentes Clientes Mora Temprana 2 - 3 Cuotas</span>
+                  <h4 style={{ fontSize: '16px', fontWeight: 'bold', color: '#3b82f6', margin: '0 0 10px 0' }}>BANCO PLAZA</h4>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', width: '100%', borderTop: `1px solid ${tema.border}`, borderBottom: `1px solid ${tema.border}`, padding: '10px 0', marginBottom: '8px' }}>
+                    <div>
+                      <span style={{ fontSize: '10px', color: tema.subtexto }}>Clientes Cobrados</span>
+                      <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>86</p>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '10px', color: tema.subtexto }}>Monto Total</span>
+                      <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>BsF 500.407,41</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           )}
 
