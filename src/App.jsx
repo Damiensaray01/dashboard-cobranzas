@@ -58,15 +58,20 @@ export default function App() {
 
   const listaMeses = Object.keys(mesesData);
 
-  // DATOS DINÁMICOS DEL MES SELECCIONADO PARA COBRANZAS
+  // CÁLCULOS GLOBALES INTERMESES PARA COBRANZAS
+  const totalSolventesGlobal = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.solventes || 0), 0);
+  const totalMora1Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos1Mes || 0), 0);
+  const totalMora2Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos2Meses || 0), 0);
+  const totalMora3Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morosos3Meses || 0), 0);
+  const totalMoraMas3Global = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.cobranzasDetalle?.morososMas3Meses || 0), 0);
+  const totalMoraTemprana = totalMora1Global + totalMora2Global + totalMora3Global;
+
   const cobranzasMes = data.cobranzasDetalle || {};
   const solventesMes = Number(cobranzasMes.solventes || 0);
   const mora1Mes = Number(cobranzasMes.morosos1Mes || 0);
   const mora2Meses = Number(cobranzasMes.morosos2Meses || 0);
   const mora3Meses = Number(cobranzasMes.morosos3Meses || 0);
   const moraMas3Meses = Number(cobranzasMes.morososMas3Meses || 0);
-  
-  // Suma de mora temprana para la tarjeta correspondiente
   const moraTempranaMes = mora1Mes + mora2Meses + mora3Meses;
 
   const cobradosBanescoActual = Number(cobranzasMes.cobradosBanesco || 0);
@@ -78,6 +83,11 @@ export default function App() {
   const bddRegistrosMas3Actual = Number(cobranzasMes.bddRegistrosMas3 || 0);
   const compromiso123Actual = Number(cobranzasMes.compromiso123Cuotas || 0);
   const compromisoMas3Actual = Number(cobranzasMes.compromisoMas3Cuotas || 0);
+
+  // CÁLCULOS GLOBALES PARA MARKETING (TOTALES DE LA TABLA)
+  const totalImporteMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.importe || 0), 0);
+  const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances || 0), 0);
+  const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes || 0), 0);
 
   const generarAnalisisModoInteligente = () => {
     const { ventas, presupuesto, cumplimiento, marketing, cartera } = data;
@@ -207,18 +217,127 @@ export default function App() {
             </div>
           )}
 
+          {/* ----------------------------------------------------------------- */}
+          {/* CATEGORÍA 2: MARKETING (Modelo Dinámico y Corporativo de Referencia) */}
+          {/* ----------------------------------------------------------------- */}
           {subCategoria === "marketing" && (
-            <div style={{ display: 'grid', gap: '16px' }}>
-              <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '12px', padding: '20px 24px', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontSize: '12px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Alcance General de Marketing ({mesActual})</p>
-                  <h3 style={{ fontSize: '32px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{data.marketing.alcances.toLocaleString()} personas</h3>
+            <div style={{ display: 'grid', gap: '20px', animation: 'fadeIn 0.3s ease-in-out' }}>
+              
+              {/* BLOQUE SUPERIOR ESTILO TARJETAS POR MES */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
+                  <div>
+                    <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Users style={{ width: '18px', height: '18px', color: '#14b8a6' }} /> Comportamiento Operativo por Mes - Marketing
+                    </h2>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguros Horizonte, S.A.</p>
+                  </div>
                 </div>
-                <div style={{ textAlign: 'right', backgroundColor: 'rgba(0,0,0,0.15)', padding: '10px 16px', borderRadius: '10px' }}>
-                  <p style={{ fontSize: '12px', margin: 0 }}>Mensajes: <strong>{data.marketing.mensajes}</strong></p>
-                  <p style={{ fontSize: '12px', margin: '4px 0 0 0' }}>Inversión: <strong>${data.marketing.importe}</strong></p>
+
+                {/* Tarjetas de meses flotantes */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+                  {listaMeses.map((mes) => {
+                    const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
+                    const esActivo = mes === mesActual;
+                    return (
+                      <div 
+                        key={mes} 
+                        onClick={() => setMesActual(mes)}
+                        style={{ 
+                          backgroundColor: esActivo ? (temaOscuro ? '#334155' : '#f1f5f9') : tema.bg, 
+                          borderRadius: '12px', 
+                          padding: '16px', 
+                          border: esActivo ? '2px solid #14b8a6' : `1px solid ${tema.border}`,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          boxShadow: esActivo ? '0 4px 12px rgba(20, 184, 166, 0.2)' : 'none'
+                        }}
+                      >
+                        <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#14b8a6', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
+                          {mes} {esActivo && '⭐'}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
+                          {/* Importe */}
+                          <div style={{ backgroundColor: '#1e3a8a', padding: '8px 4px', borderRadius: '8px', color: '#fff' }}>
+                            <div style={{ fontSize: '10px', color: '#93c5fd', marginBottom: '2px', display: 'flex', justifyContent: 'center' }}><DollarSignIcon style={{ width: '12px', height: '12px' }} /></div>
+                            <span style={{ fontSize: '12px', fontWeight: 'bold' }}>${m.importe}</span>
+                          </div>
+                          {/* Alcance */}
+                          <div style={{ backgroundColor: '#854d0e', padding: '8px 4px', borderRadius: '8px', color: '#fff' }}>
+                            <div style={{ fontSize: '10px', color: '#fde047', marginBottom: '2px', display: 'flex', justifyContent: 'center' }}><Share2 style={{ width: '12px', height: '12px' }} /></div>
+                            <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</span>
+                          </div>
+                          {/* Mensajes */}
+                          <div style={{ backgroundColor: '#0f172a', padding: '8px 4px', borderRadius: '8px', color: '#fff', border: '1px solid #475569' }}>
+                            <div style={{ fontSize: '10px', color: '#38bdf8', marginBottom: '2px', display: 'flex', justifyContent: 'center' }}><MessageSquare style={{ width: '12px', height: '12px' }} /></div>
+                            <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{m.mensajes}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Leyenda */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '11px', color: tema.subtexto, borderTop: `1px solid ${tema.border}`, paddingTop: '12px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', backgroundColor: '#1e3a8a', borderRadius: '50%' }}></span> IMPORTE TOTAL</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', backgroundColor: '#ca8a04', borderRadius: '50%' }}></span> ALCANCE</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', backgroundColor: '#0f172a', borderRadius: '50%' }}></span> MENSAJES</span>
                 </div>
               </div>
+
+              {/* TABLA RESUMEN SEGUIMIENTO MARKETING */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
+                  SEGUIMIENTO MARKETING
+                </h3>
+
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                        <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
+                        <th style={{ padding: '10px' }}>IMPORTE TOTAL</th>
+                        <th style={{ padding: '10px' }}>ALCANCE</th>
+                        <th style={{ padding: '10px' }}>MENSAJES</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {listaMeses.map((mes) => {
+                        const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
+                        return (
+                          <tr key={mes} style={{ borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(20, 184, 166, 0.1)' : 'rgba(20, 184, 166, 0.05)') : 'transparent' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>{mes.toUpperCase()}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>${m.importe} $</td>
+                            <td style={{ padding: '12px 10px' }}>{m.alcances.toLocaleString()}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{m.mensajes}</td>
+                          </tr>
+                        );
+                      })}
+                      {/* Fila Total */}
+                      <tr style={{ borderTop: `2px solid ${tema.border}`, fontWeight: 'bold', backgroundColor: tema.bg }}>
+                        <td style={{ padding: '14px 10px', textAlign: 'left', color: '#14b8a6' }}>TOTAL</td>
+                        <td style={{ padding: '14px 10px', color: '#3b82f6' }}>${totalImporteMarketing.toLocaleString()} $</td>
+                        <td style={{ padding: '14px 10px', color: '#ca8a04' }}>{totalAlcanceMarketing.toLocaleString()}</td>
+                        <td style={{ padding: '14px 10px', color: '#10b981' }}>{totalMensajesMarketing.toLocaleString()}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* BLOQUE DE OBSERVACIONES */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                  OBSERVACIONES
+                </h4>
+                <p style={{ fontSize: '12px', color: tema.subtexto, lineHeight: '1.6', margin: 0 }}>
+                  • El comportamiento operativo de marketing muestra un escalamiento proporcional entre inversión y respuesta de audiencia. Con una inversión acumulada de <strong>${totalImporteMarketing} $</strong>, el alcance total de la campaña alcanzó <strong>{totalAlcanceMarketing.toLocaleString()}</strong> impresiones, consolidando <strong>{totalMensajesMarketing.toLocaleString()}</strong> mensajes totales. El tránsito entre los meses refleja la optimización del canal digital como principal motor de captación del proyecto.
+                </p>
+              </div>
+
             </div>
           )}
 
