@@ -4,7 +4,7 @@ import {
   Building2, BarChart3, PieChart as PieIcon,
   MessageSquare, DollarSignIcon, Share2, LineChart as LineIcon,
   LayoutDashboard, TrendingUpIcon, Bot, Sparkles, CheckCircle2, AlertTriangle, Calendar,
-  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity, CreditCard, FileCheck
+  Sun, Moon, ArrowRight, ShieldCheck, Zap, Activity
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -49,20 +49,10 @@ export default function App() {
   const data = mesesData[mesActual] || {
     ventas: 0, recaudacion: 0, presupuesto: 0, cumplimiento: 0,
     marketing: { importe: 0, alcances: 0, mensajes: 0 },
-    cartera: [],
-    cobranzasDetalle: {
-      solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-      cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
-      pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
-    }
+    cartera: [], bancos: []
   };
 
-  const cobranzas = data.cobranzasDetalle || {
-    solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-    cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
-    pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0
-  };
-
+  // Motor de Análisis Inteligente
   const generarAnalisisModoInteligente = () => {
     const { ventas, presupuesto, cumplimiento, marketing, cartera } = data;
     const analisis = [];
@@ -155,12 +145,22 @@ export default function App() {
   if (modoInicio) {
     return (
       <div style={{ ...fondoEstilo, color: tema.texto, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'sans-serif' }}>
+        
         <div style={{ position: 'absolute', top: '24px', right: '24px' }}>
           <button
             onClick={() => setTemaOscuro(!temaOscuro)}
             style={{
-              display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: tema.card, color: tema.texto,
-              border: `1px solid ${tema.border}`, padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: tema.card,
+              color: tema.texto,
+              border: `1px solid ${tema.border}`,
+              padding: '8px 16px',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
             {temaOscuro ? <Sun style={{ width: '16px', height: '16px', color: '#f59e0b' }} /> : <Moon style={{ width: '16px', height: '16px', color: '#6366f1' }} />}
@@ -169,24 +169,41 @@ export default function App() {
         </div>
 
         <div style={{ maxWidth: '650px', textAlign: 'center', backgroundColor: tema.card, padding: '48px 36px', borderRadius: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+          
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
             <img src="/logo2.png" alt="Logo 2" style={{ height: '70px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
             <img src="/logo3.png" alt="Logo 3" style={{ height: '70px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
           </div>
+
           <h1 style={{ fontSize: '32px', fontWeight: '800', margin: '0 0 12px 0', background: 'linear-gradient(to right, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Seguros Horizonte
           </h1>
+          
           <h2 style={{ fontSize: '18px', fontWeight: '600', color: tema.texto, margin: '0 0 16px 0' }}>
             Plataforma de Control Comercial & Cobranzas
           </h2>
+
           <p style={{ fontSize: '14px', color: tema.subtexto, lineHeight: '1.6', marginBottom: '32px' }}>
             Consolidado analítico en tiempo real sincronizado dinámicamente con Google Sheets. Monitorea la efectividad de ventas, recuperación de cartera, rendimiento de banca y campañas de marketing.
           </p>
+
           <button
             onClick={() => setModoInicio(false)}
             style={{
-              width: '100%', padding: '14px 28px', borderRadius: '14px', fontSize: '15px', fontWeight: 'bold', color: '#ffffff',
-              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.5)'
+              width: '100%',
+              padding: '14px 28px',
+              borderRadius: '14px',
+              fontSize: '15px',
+              fontWeight: 'bold',
+              color: '#ffffff',
+              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.5)'
             }}
           >
             Ingresar al Dashboard <ArrowRight style={{ width: '18px', height: '18px' }} />
@@ -219,7 +236,8 @@ export default function App() {
             onClick={() => setPestañaActiva("mensual")}
             style={{
               display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
-              backgroundColor: pestañaActiva === "mensual" ? '#4f46e5' : 'transparent', color: pestañaActiva === "mensual" ? '#ffffff' : tema.subtexto
+              backgroundColor: pestañaActiva === "mensual" ? '#4f46e5' : 'transparent',
+              color: pestañaActiva === "mensual" ? '#ffffff' : tema.subtexto
             }}
           >
             <LayoutDashboard style={{ width: '14px', height: '14px' }} /> Vista Mensual
@@ -229,7 +247,8 @@ export default function App() {
             onClick={() => setPestañaActiva("evolucion")}
             style={{
               display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
-              backgroundColor: pestañaActiva === "evolucion" ? '#4f46e5' : 'transparent', color: pestañaActiva === "evolucion" ? '#ffffff' : tema.subtexto
+              backgroundColor: pestañaActiva === "evolucion" ? '#4f46e5' : 'transparent',
+              color: pestañaActiva === "evolucion" ? '#ffffff' : tema.subtexto
             }}
           >
             <TrendingUpIcon style={{ width: '14px', height: '14px' }} /> Evolución Intermeses
@@ -287,7 +306,8 @@ export default function App() {
                   onClick={() => setMesActual(mes)}
                   style={{
                     padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none',
-                    backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto
+                    backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent',
+                    color: mesActual === mes ? '#ffffff' : tema.subtexto
                   }}
                 >
                   {mes}
@@ -296,54 +316,32 @@ export default function App() {
             </div>
           </div>
 
-          {/* TARJETAS SUPERIORES DE MÉTRICAS */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '16px' }}>
             <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><TrendingUp style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
+              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Presupuesto: {data.presupuesto}</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
-                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><DollarSign style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Banco Plaza & Banfanb</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Award style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
+              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Meta alcanzada</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Users style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
+              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Mensajes: {data.marketing.mensajes}</p>
             </div>
           </div>
 
-          {/* Gráfico de Cartera y Cobranza */}
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
               <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
@@ -361,92 +359,6 @@ export default function App() {
               </ResponsiveContainer>
             </div>
           </div>
-
-          {/* 1. SEGUIMIENTO VENTAS (POR MES) */}
-          <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Seguimiento Ventas por Canal de Marketing
-              </h3>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {Object.keys(mesesData).map((mes) => {
-                const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
-                return (
-                  <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase' }}>{mes}</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#1e3a8a', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <DollarSignIcon style={{ width: '12px', height: '12px', color: '#60a5fa' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>${m.importe}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Importe</span>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#854d0e', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <Share2 style={{ width: '12px', height: '12px', color: '#facc15' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Alcance</span>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#0284c7', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <MessageSquare style={{ width: '12px', height: '12px', color: '#38bdf8' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Mensajes</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 2. SEGUIMIENTO COBRANZAS (POR MES - ESTILO MULTICANAL) */}
-          <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <CreditCard style={{ width: '16px', height: '16px', color: '#10b981' }} /> Seguimiento Cobranzas por Mes (Cartera y Bancos)
-              </h3>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {Object.keys(mesesData).map((mes) => {
-                const c = mesesData[mes].cobranzasDetalle || {
-                  solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-                  cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0, pagosRecurrentesPlaza: 0
-                };
-                return (
-                  <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#10b981', textTransform: 'uppercase' }}>{mes}</span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '8px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                        <span style={{ color: tema.subtexto }}>Solventes:</span>
-                        <strong style={{ color: tema.texto }}>{Number(c.solventes || 0).toLocaleString()}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                        <span style={{ color: tema.subtexto }}>Mora 1 Mes:</span>
-                        <strong style={{ color: '#f59e0b' }}>{Number(c.morosos1Mes || 0).toLocaleString()}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                        <span style={{ color: tema.subtexto }}>Mora +3M:</span>
-                        <strong style={{ color: '#ef4444' }}>{Number(c.morososMas3Meses || 0).toLocaleString()}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', borderTop: `1px solid ${tema.border}`, paddingTop: '4px', marginTop: '2px' }}>
-                        <span style={{ color: tema.subtexto }}>Recurrente Plaza:</span>
-                        <strong style={{ color: '#10b981' }}>${Number(c.pagosRecurrentesPlaza || 0).toLocaleString()}</strong>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
         </div>
       )}
 
