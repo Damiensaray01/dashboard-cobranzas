@@ -18,9 +18,9 @@ export default function App() {
   const [modoInicio, setModoInicio] = useState(true);
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
-  const [mesActual, setMesActual] = useState("Septiembre");
+  const [mesActual, setMesActual] = useState("9");
   const [pestañaActiva, setPestañaActiva] = useState("mensual");
-  const [subCategoria, setSubCategoria] = useState("ventas");
+  const [subCategoria, setSubCategoria] = useState("marketing");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchSheetData = async () => {
@@ -218,7 +218,7 @@ export default function App() {
           )}
 
           {/* ----------------------------------------------------------------- */}
-          {/* CATEGORÍA 2: MARKETING (Modelo Dinámico y Corporativo de Referencia) */}
+          {/* CATEGORÍA 2: MARKETING (Con Observaciones de la IA Global y por Mes) */}
           {/* ----------------------------------------------------------------- */}
           {subCategoria === "marketing" && (
             <div style={{ display: 'grid', gap: '20px', animation: 'fadeIn 0.3s ease-in-out' }}>
@@ -235,7 +235,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Tarjetas de meses flotantes */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '20px' }}>
                   {listaMeses.map((mes) => {
                     const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
@@ -255,21 +254,18 @@ export default function App() {
                         }}
                       >
                         <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#14b8a6', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
-                          {mes} {esActivo && '⭐'}
+                          Mes {mes} {esActivo && '⭐'}
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
-                          {/* Importe */}
                           <div style={{ backgroundColor: '#1e3a8a', padding: '8px 4px', borderRadius: '8px', color: '#fff' }}>
                             <div style={{ fontSize: '10px', color: '#93c5fd', marginBottom: '2px', display: 'flex', justifyContent: 'center' }}><DollarSignIcon style={{ width: '12px', height: '12px' }} /></div>
                             <span style={{ fontSize: '12px', fontWeight: 'bold' }}>${m.importe}</span>
                           </div>
-                          {/* Alcance */}
                           <div style={{ backgroundColor: '#854d0e', padding: '8px 4px', borderRadius: '8px', color: '#fff' }}>
                             <div style={{ fontSize: '10px', color: '#fde047', marginBottom: '2px', display: 'flex', justifyContent: 'center' }}><Share2 style={{ width: '12px', height: '12px' }} /></div>
                             <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</span>
                           </div>
-                          {/* Mensajes */}
                           <div style={{ backgroundColor: '#0f172a', padding: '8px 4px', borderRadius: '8px', color: '#fff', border: '1px solid #475569' }}>
                             <div style={{ fontSize: '10px', color: '#38bdf8', marginBottom: '2px', display: 'flex', justifyContent: 'center' }}><MessageSquare style={{ width: '12px', height: '12px' }} /></div>
                             <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{m.mensajes}</span>
@@ -280,7 +276,6 @@ export default function App() {
                   })}
                 </div>
 
-                {/* Leyenda */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '11px', color: tema.subtexto, borderTop: `1px solid ${tema.border}`, paddingTop: '12px' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', backgroundColor: '#1e3a8a', borderRadius: '50%' }}></span> IMPORTE TOTAL</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', backgroundColor: '#ca8a04', borderRadius: '50%' }}></span> ALCANCE</span>
@@ -308,17 +303,16 @@ export default function App() {
                       {listaMeses.map((mes) => {
                         const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
                         return (
-                          <tr key={mes} style={{ borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(20, 184, 166, 0.1)' : 'rgba(20, 184, 166, 0.05)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>{mes.toUpperCase()}</td>
+                          <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(20, 184, 166, 0.15)' : 'rgba(20, 184, 166, 0.08)') : 'transparent' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>MES {mes.toUpperCase()} {mes === mesActual && '⭐'}</td>
                             <td style={{ padding: '12px 10px', fontWeight: '600' }}>${m.importe} $</td>
                             <td style={{ padding: '12px 10px' }}>{m.alcances.toLocaleString()}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{m.mensajes}</td>
                           </tr>
                         );
                       })}
-                      {/* Fila Total */}
                       <tr style={{ borderTop: `2px solid ${tema.border}`, fontWeight: 'bold', backgroundColor: tema.bg }}>
-                        <td style={{ padding: '14px 10px', textAlign: 'left', color: '#14b8a6' }}>TOTAL</td>
+                        <td style={{ padding: '14px 10px', textAlign: 'left', color: '#14b8a6' }}>TOTAL ACUMULADO</td>
                         <td style={{ padding: '14px 10px', color: '#3b82f6' }}>${totalImporteMarketing.toLocaleString()} $</td>
                         <td style={{ padding: '14px 10px', color: '#ca8a04' }}>{totalAlcanceMarketing.toLocaleString()}</td>
                         <td style={{ padding: '14px 10px', color: '#10b981' }}>{totalMensajesMarketing.toLocaleString()}</td>
@@ -328,14 +322,31 @@ export default function App() {
                 </div>
               </div>
 
-              {/* BLOQUE DE OBSERVACIONES */}
-              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>
-                  OBSERVACIONES
-                </h4>
-                <p style={{ fontSize: '12px', color: tema.subtexto, lineHeight: '1.6', margin: 0 }}>
-                  • El comportamiento operativo de marketing muestra un escalamiento proporcional entre inversión y respuesta de audiencia. Con una inversión acumulada de <strong>${totalImporteMarketing} $</strong>, el alcance total de la campaña alcanzó <strong>{totalAlcanceMarketing.toLocaleString()}</strong> impresiones, consolidando <strong>{totalMensajesMarketing.toLocaleString()}</strong> mensajes totales. El tránsito entre los meses refleja la optimización del canal digital como principal motor de captación del proyecto.
-                </p>
+              {/* BLOQUE DE OBSERVACIONES DE LA IA (GLOBAL Y POR MES) */}
+              <div style={{ backgroundColor: tema.iaBg, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.iaBorder}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px', marginBottom: '14px' }}>
+                  <Bot style={{ width: '18px', height: '18px', color: '#818cf8' }} />
+                  <Sparkles style={{ width: '14px', height: '14px', color: '#f59e0b' }} />
+                  <span>OBSERVACIONES Y ANÁLISIS DE IA (GLOBAL Y POR MES SELECCIONADO)</span>
+                </div>
+
+                <div style={{ display: 'grid', gap: '12px' }}>
+                  {/* Análisis Global */}
+                  <div style={{ backgroundColor: tema.card, padding: '12px 16px', borderRadius: '10px', borderLeft: '4px solid #3b82f6' }}>
+                    <h5 style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', margin: '0 0 4px 0', textTransform: 'uppercase' }}>🌐 Explicación Global Acumulada</h5>
+                    <p style={{ fontSize: '12px', color: tema.texto, lineHeight: '1.5', margin: 0 }}>
+                      El comportamiento operativo de marketing muestra un escalamiento proporcional entre inversión y respuesta de audiencia. Con una inversión acumulada de <strong>${totalImporteMarketing} $</strong>, el alcance total de la campaña alcanzó <strong>{totalAlcanceMarketing.toLocaleString()}</strong> impresiones, consolidando <strong>{totalMensajesMarketing.toLocaleString()}</strong> mensajes totales en el periodo analizado.
+                    </p>
+                  </div>
+
+                  {/* Análisis Específico del Mes Seleccionado */}
+                  <div style={{ backgroundColor: tema.card, padding: '12px 16px', borderRadius: '10px', borderLeft: '4px solid #14b8a6' }}>
+                    <h5 style={{ fontSize: '12px', fontWeight: 'bold', color: '#14b8a6', margin: '0 0 4px 0', textTransform: 'uppercase' }}>📅 Análisis Específico - Mes {mesActual}</h5>
+                    <p style={{ fontSize: '12px', color: tema.texto, lineHeight: '1.5', margin: 0 }}>
+                      Durante el <strong>Mes {mesActual}</strong>, se registró un importe de inversión de <strong>${data.marketing.importe} $</strong>, generando un alcance de <strong>{data.marketing.alcances.toLocaleString()}</strong> usuarios y un total de <strong>{data.marketing.mensajes}</strong> mensajes efectivos. Este mes representa una eficiencia operativa clave en el rendimiento del canal digital de Seguros Horizonte.
+                    </p>
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -363,7 +374,7 @@ export default function App() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <ShieldCheck style={{ width: '20px', height: '20px', color: '#10b981' }} />
-                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto }}>Clientes Solventes ({mesActual})</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto }}>Clientes Solventes (Mes {mesActual})</span>
                     </div>
                     <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>{solventesMes.toLocaleString()}</span>
                   </div>
@@ -390,7 +401,7 @@ export default function App() {
                 {/* Mora Temprana 1-2-3 del Mes */}
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>Clientes Mora Temprana 1 - 2 - 3 Cuotas ({mesActual})</span>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f59e0b' }}>Clientes Mora Temprana 1 - 2 - 3 Cuotas (Mes {mesActual})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '12px', color: tema.subtexto }}>Total BDD Mes</span>
@@ -415,7 +426,7 @@ export default function App() {
                 {/* Mora Tardía +3 del Mes */}
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>Clientes Mora Tardía + 3 Cuotas ({mesActual})</span>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#ef4444' }}>Clientes Mora Tardía + 3 Cuotas (Mes {mesActual})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '12px', color: tema.subtexto }}>Total BDD Mes</span>
