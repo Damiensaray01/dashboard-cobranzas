@@ -305,28 +305,49 @@ export default function App() {
             </div>
           </div>
 
+          {/* TARJETAS SUPERIORES DE MÉTRICAS */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '16px' }}>
             <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
-              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
+                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
+                </div>
+                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><TrendingUp style={{ width: '16px', height: '16px' }} /></div>
+              </div>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Presupuesto: {data.presupuesto}</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
-              <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
+                </div>
+                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><DollarSign style={{ width: '16px', height: '16px' }} /></div>
+              </div>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Banco Plaza & Banfanb</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
-              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
+                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
+                </div>
+                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Award style={{ width: '16px', height: '16px' }} /></div>
+              </div>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Meta alcanzada</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
-              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
+                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
+                </div>
+                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Users style={{ width: '16px', height: '16px' }} /></div>
+              </div>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Mensajes: {data.marketing.mensajes}</p>
             </div>
           </div>
