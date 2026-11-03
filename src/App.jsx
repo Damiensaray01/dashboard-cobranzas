@@ -32,7 +32,7 @@ export default function App() {
       setMesesData(data);
       const mesesDisponibles = Object.keys(data);
       if (mesesDisponibles.length > 0 && !data[mesActual]) {
-        setMesesData(mesesDisponibles[mesesDisponibles.length - 1]);
+        setMesActual(mesesDisponibles[mesesDisponibles.length - 1]);
       }
     } catch (error) {
       console.error("Error cargando datos de Google Sheets:", error);
@@ -122,7 +122,7 @@ export default function App() {
   ];
 
   const tema = {
-    bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)', // Semi-transparente para ver el logo5 de fondo
+    bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
     card: temaOscuro ? '#1e293b' : '#ffffff',
     border: temaOscuro ? '#334155' : '#e2e8f0',
     texto: temaOscuro ? '#f8fafc' : '#0f172a',
@@ -132,10 +132,9 @@ export default function App() {
     iaTexto: temaOscuro ? '#a5b4fc' : '#3730a3'
   };
 
-  // Estilo común para la imagen de fondo (logo5)
   const fondoEstilo = {
     minHeight: '100vh',
-    backgroundImage: `url('/logo5.png')`, // Ruta de tu logo 5
+    backgroundImage: `url('/logo5.png')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -143,9 +142,6 @@ export default function App() {
     transition: 'all 0.3s ease'
   };
 
-  // -----------------------------------------------------------------
-  // PANTALLA DE INICIO (PRINCIPAL CON LOGO2 Y LOGO3)
-  // -----------------------------------------------------------------
   if (modoInicio) {
     return (
       <div style={{ ...fondoEstilo, color: tema.texto, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'sans-serif' }}>
@@ -172,12 +168,11 @@ export default function App() {
           </button>
         </div>
 
-        <div style={{ maxWidth: '650px', textAlign: 'center', backgroundColor: tema.card, padding: '48px 36px', borderRadius: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 20px 40px rgba(0,0,0,0.3)', animation: 'fadeIn 0.5s ease-out' }}>
+        <div style={{ maxWidth: '650px', textAlign: 'center', backgroundColor: tema.card, padding: '48px 36px', borderRadius: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
           
-          {/* Contenedor principal con logo2 y logo3 */}
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
-            <img src="/logo2.png" alt="Logo 2" style={{ height: '55px', objectFit: 'contain' }} />
-            <img src="/logo3.png" alt="Logo 3" style={{ height: '55px', objectFit: 'contain' }} />
+            <img src="/logo2.png" alt="Logo 2" style={{ height: '70px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+            <img src="/logo3.png" alt="Logo 3" style={{ height: '70px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
           </div>
 
           <h1 style={{ fontSize: '32px', fontWeight: '800', margin: '0 0 12px 0', background: 'linear-gradient(to right, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -191,21 +186,6 @@ export default function App() {
           <p style={{ fontSize: '14px', color: tema.subtexto, lineHeight: '1.6', marginBottom: '32px' }}>
             Consolidado analítico en tiempo real sincronizado dinámicamente con Google Sheets. Monitorea la efectividad de ventas, recuperación de cartera, rendimiento de banca y campañas de marketing.
           </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '32px' }}>
-            <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: tema.bg, border: `1px solid ${tema.border}` }}>
-              <Zap style={{ width: '20px', height: '20px', color: '#f59e0b', margin: '0 auto 6px auto' }} />
-              <span style={{ fontSize: '12px', fontWeight: '600', display: 'block' }}>Sincronización</span>
-            </div>
-            <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: tema.bg, border: `1px solid ${tema.border}` }}>
-              <Activity style={{ width: '20px', height: '20px', color: '#10b981', margin: '0 auto 6px auto' }} />
-              <span style={{ fontSize: '12px', fontWeight: '600', display: 'block' }}>Modo Inteligente</span>
-            </div>
-            <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: tema.bg, border: `1px solid ${tema.border}` }}>
-              <ShieldCheck style={{ width: '20px', height: '20px', color: '#3b82f6', margin: '0 auto 6px auto' }} />
-              <span style={{ fontSize: '12px', fontWeight: '600', display: 'block' }}>Datos En Vivo</span>
-            </div>
-          </div>
 
           <button
             onClick={() => setModoInicio(false)}
@@ -223,13 +203,11 @@ export default function App() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '10px',
-              boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.5)',
-              transition: 'all 0.2s'
+              boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.5)'
             }}
           >
             Ingresar al Dashboard <ArrowRight style={{ width: '18px', height: '18px' }} />
           </button>
-
         </div>
       </div>
     );
@@ -242,11 +220,10 @@ export default function App() {
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px', backgroundColor: tema.card, padding: '10px 16px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button onClick={() => setModoInicio(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.subtexto, display: 'flex', alignItems: 'center' }} title="Volver al inicio">
-            {/* Logo2 al lado de los títulos principales / navegación */}
-            <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
+            <img src="/logo2.png" alt="Logo 2" style={{ height: '40px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
           </button>
           <div>
-            <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
               Dashboard Comercial & Cobranzas
             </h1>
             <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguros Horizonte - Sincronizado en Vivo</p>
@@ -258,18 +235,9 @@ export default function App() {
           <button
             onClick={() => setPestañaActiva("mensual")}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '6px',
-              fontSize: '12px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              border: 'none',
+              display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
               backgroundColor: pestañaActiva === "mensual" ? '#4f46e5' : 'transparent',
-              color: pestañaActiva === "mensual" ? '#ffffff' : tema.subtexto,
-              transition: 'all 0.3s ease'
+              color: pestañaActiva === "mensual" ? '#ffffff' : tema.subtexto
             }}
           >
             <LayoutDashboard style={{ width: '14px', height: '14px' }} /> Vista Mensual
@@ -278,18 +246,9 @@ export default function App() {
           <button
             onClick={() => setPestañaActiva("evolucion")}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '6px',
-              fontSize: '12px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              border: 'none',
+              display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none',
               backgroundColor: pestañaActiva === "evolucion" ? '#4f46e5' : 'transparent',
-              color: pestañaActiva === "evolucion" ? '#ffffff' : tema.subtexto,
-              transition: 'all 0.3s ease'
+              color: pestañaActiva === "evolucion" ? '#ffffff' : tema.subtexto
             }}
           >
             <TrendingUpIcon style={{ width: '14px', height: '14px' }} /> Evolución Intermeses
@@ -299,17 +258,7 @@ export default function App() {
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={() => setTemaOscuro(!temaOscuro)}
-            style={{
-              padding: '6px 10px',
-              borderRadius: '8px',
-              backgroundColor: tema.bg,
-              color: tema.texto,
-              border: `1px solid ${tema.border}`,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
+            style={{ padding: '6px 10px', borderRadius: '8px', backgroundColor: tema.bg, color: tema.texto, border: `1px solid ${tema.border}`, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
             {temaOscuro ? <Sun style={{ width: '14px', height: '14px', color: '#f59e0b' }} /> : <Moon style={{ width: '14px', height: '14px', color: '#6366f1' }} />}
           </button>
@@ -317,19 +266,7 @@ export default function App() {
           <button
             onClick={fetchSheetData}
             disabled={isRefreshing}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#4f46e5',
-              color: '#ffffff',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              fontSize: '12px',
-              fontWeight: '600',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#4f46e5', color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', border: 'none', cursor: 'pointer' }}
           >
             <RefreshCw style={{ width: '13px', height: '13px', animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
             {isRefreshing ? 'Sincronizando...' : 'Actualizar'}
@@ -337,10 +274,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* Banner de Resumen de Análisis con Logo2 al lado del título */}
+      {/* Banner de Resumen de Análisis */}
       <div style={{ backgroundColor: tema.iaBg, borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', border: `1px solid ${tema.iaBorder}`, display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px' }}>
-          <img src="/logo2.png" alt="Logo 2" style={{ height: '20px', objectFit: 'contain' }} />
+          <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
           <Bot style={{ width: '18px', height: '18px', color: '#818cf8' }} />
           <Sparkles style={{ width: '14px', height: '14px', color: '#f59e0b' }} />
           <span>Resumen de Análisis - {pestañaActiva === "mensual" ? mesActual : "Tendencia Global y Trimestral"}</span>
@@ -360,8 +297,7 @@ export default function App() {
 
       {/* PESTAÑA 1: VISTA MENSUAL */}
       {pestañaActiva === "mensual" && (
-        <div style={{ animation: 'fadeIn 0.4s ease-in-out' }}>
-          
+        <div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
             <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
               {Object.keys(mesesData).map((mes) => (
@@ -369,15 +305,9 @@ export default function App() {
                   key={mes}
                   onClick={() => setMesActual(mes)}
                   style={{
-                    padding: '5px 12px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    border: 'none',
+                    padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none',
                     backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent',
-                    color: mesActual === mes ? '#ffffff' : tema.subtexto,
-                    transition: 'all 0.2s'
+                    color: mesActual === mes ? '#ffffff' : tema.subtexto
                   }}
                 >
                   {mes}
@@ -388,56 +318,34 @@ export default function App() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '16px' }}>
             <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><TrendingUp style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Ventas Generadas ({mesActual})</p>
+              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.ventas}</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Presupuesto: {data.presupuesto}</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
-                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><DollarSign style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Recaudación</p>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '4px 0 0 0' }}>${data.recaudacion.toLocaleString()}</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Banco Plaza & Banfanb</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Award style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>% Cumplimiento</p>
+              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.cumplimiento}%</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Meta alcanzada</p>
             </div>
 
             <div style={{ background: 'linear-gradient(to bottom right, #14b8a6, #059669)', borderRadius: '10px', padding: '12px', color: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
-                </div>
-                <div style={{ padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px' }}><Users style={{ width: '16px', height: '16px' }} /></div>
-              </div>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', margin: 0, opacity: 0.9 }}>Alcances Marketing</p>
+              <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '4px 0 0 0' }}>{data.marketing.alcances.toLocaleString()}</h3>
               <p style={{ fontSize: '10px', margin: '6px 0 0 0', opacity: 0.9 }}>Mensajes: {data.marketing.mensajes}</p>
             </div>
           </div>
 
           <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '22px', objectFit: 'contain' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <BarChart3 style={{ width: '16px', height: '16px', color: '#818cf8' }} /> Cartera y Cobranza ({mesActual})
-              </h3>
+              <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0 }}>Cartera y Cobranza ({mesActual})</h3>
             </div>
             <div style={{ height: '220px' }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -451,66 +359,19 @@ export default function App() {
               </ResponsiveContainer>
             </div>
           </div>
-
-          <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '22px', objectFit: 'contain' }} />
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Users style={{ width: '16px', height: '16px', color: '#14b8a6' }} /> Seguimiento por Canal de Marketing
-              </h3>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {Object.keys(mesesData).map((mes) => {
-                const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
-                return (
-                  <div key={mes} style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '10px', border: `1px solid ${tema.border}` }}>
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#818cf8', textTransform: 'uppercase' }}>{mes}</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#1e3a8a', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <DollarSignIcon style={{ width: '12px', height: '12px', color: '#60a5fa' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>${m.importe}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Importe</span>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#854d0e', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <Share2 style={{ width: '12px', height: '12px', color: '#facc15' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.alcances.toLocaleString()}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Alcance</span>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ backgroundColor: '#0284c7', padding: '4px', borderRadius: '6px', display: 'inline-block', marginBottom: '2px' }}>
-                          <MessageSquare style={{ width: '12px', height: '12px', color: '#38bdf8' }} />
-                        </div>
-                        <p style={{ margin: 0, fontSize: '11px', fontWeight: 'bold' }}>{m.mensajes.toLocaleString()}</p>
-                        <span style={{ fontSize: '9px', color: tema.subtexto }}>Mensajes</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
         </div>
       )}
 
       {/* PESTAÑA 2: EVOLUCIÓN INTERMESES */}
       {pestañaActiva === "evolucion" && (
-        <div style={{ animation: 'fadeIn 0.4s ease-in-out', display: 'grid', gap: '16px' }}>
-          
+        <div style={{ display: 'grid', gap: '16px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-            
-            <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <img src="/logo2.png" alt="Logo 2" style={{ height: '22px', objectFit: 'contain' }} />
-                <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <PieIcon style={{ width: '18px', height: '18px', color: '#f59e0b' }} /> Ventas Mensuales
-                </h3>
+                <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0 }}>Ventas Mensuales</h3>
               </div>
-              <div style={{ height: '210px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ height: '210px' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={ventasGlobalesData} innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
@@ -524,12 +385,10 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <img src="/logo2.png" alt="Logo 2" style={{ height: '22px', objectFit: 'contain' }} />
-                <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Calendar style={{ width: '18px', height: '18px', color: '#38bdf8' }} /> Comportamiento Trimestral
-                </h3>
+                <img src="/logo2.png" alt="Logo 2" style={{ height: '28px', objectFit: 'contain', imageRendering: 'crisp-edges' }} />
+                <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0 }}>Comportamiento Trimestral</h3>
               </div>
               <div style={{ height: '200px' }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -542,32 +401,7 @@ export default function App() {
                 </ResponsiveContainer>
               </div>
             </div>
-
           </div>
-
-          <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <img src="/logo2.png" alt="Logo 2" style={{ height: '22px', objectFit: 'contain' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <LineIcon style={{ width: '18px', height: '18px', color: '#10b981' }} /> Tendencia de Cobranza por Categoría de Cartera
-              </h3>
-            </div>
-            <div style={{ height: '220px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={evolucionData}>
-                  <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} />
-                  <YAxis stroke={tema.subtexto} fontSize={11} />
-                  <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                  <Legend wrapperStyle={{ fontSize: '11px' }} />
-                  <Line type="monotone" dataKey="Marketing" stroke="#6366f1" strokeWidth={3} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="BDD Abierta" stroke="#10b981" strokeWidth={3} />
-                  <Line type="monotone" dataKey="BDD General" stroke="#f59e0b" strokeWidth={3} />
-                  <Line type="monotone" dataKey="BDD +3M" stroke="#ec4899" strokeWidth={3} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
         </div>
       )}
 
@@ -577,7 +411,6 @@ export default function App() {
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-
     </div>
   );
 }
