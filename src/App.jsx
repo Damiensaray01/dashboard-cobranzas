@@ -3,16 +3,16 @@ import {
   TrendingUp, Users, DollarSign, Award, RefreshCw, 
   MessageSquare, DollarSignIcon, Share2, 
   LayoutDashboard, TrendingUpIcon, Bot, Sparkles, CheckCircle2, AlertTriangle, 
-  Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle
+  Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell
+  PieChart, Pie, Cell, LineChart, Line, CartesianGrid
 } from 'recharts';
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
-const COLORS = ['#d97706', '#3b82f6', '#10b981', '#eab308'];
+const COLORS = ['#d97706', '#3b82f6', '#10b981', '#8b5cf6'];
 
 const formatearNumero = (valor) => {
   const num = Number(valor) || 0;
@@ -49,36 +49,25 @@ export default function App() {
     fetchSheetData();
   }, []);
 
-  const data = mesesData[mesActual] || {
-    ventas: 0, recaudacion: 0, presupuesto: 0, cumplimiento: 0,
-    marketing: { importe: 0, alcances: 0, mensajes: 0 },
-    cartera: [],
-    cobranzasDetalle: {
-      recaudacionMensual: 0,
-      solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
-      cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
-      pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0,
-      bddRegistros123: 0, bddRegistrosMas3: 0
-    }
-  };
+  const data = mesesData[mesActual] || {};
+  const cobranzasMes = data.cobranzasDetalle || {};
+
+  // Mapeo seguro para Ventas Generadas (evita el 0)
+  const ventasGeneradasActual = Number(data.ventasGeneradas || data.ventas || 0);
+  const montoPlazaActual = Number(data.montoBancoPlaza || cobranzasMes.pagosRecurrentesPlaza || 0);
+  const montoBanfanbActual = Number(data.montoBanfanbVentas || cobranzasMes.montoBanfanb || 0);
+  const montoBanescoActual = Number(data.montoBanescoVentas || cobranzasMes.montoBanesco || 0);
 
   const listaMeses = Object.keys(mesesData);
 
   const obtenerNombreMes = (key) => {
     const mapaMeses = {
-      "7": "Julio",
-      "8": "Agosto",
-      "9": "Septiembre",
-      "10": "Octubre",
-      "Julio": "Julio",
-      "Agosto": "Agosto",
-      "Septiembre": "Septiembre",
-      "Octubre": "Octubre"
+      "7": "Julio", "8": "Agosto", "9": "Septiembre", "10": "Octubre",
+      "Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre"
     };
     return mapaMeses[String(key).trim()] || `Mes ${key}`;
   };
 
-  const cobranzasMes = data.cobranzasDetalle || {};
   const solventesMes = Number(cobranzasMes.solventes || 0);
   const mora1Mes = Number(cobranzasMes.morosos1Mes || 0);
   const mora2Meses = Number(cobranzasMes.morosos2Meses || 0);
@@ -87,10 +76,7 @@ export default function App() {
   const moraTempranaMes = mora1Mes + mora2Meses + mora3Meses;
 
   const cobradosBanescoActual = Number(cobranzasMes.cobradosBanesco || 0);
-  const montoBanescoActual = Number(cobranzasMes.montoBanesco || 0);
   const cobradosBanfanbActual = Number(cobranzasMes.cobradosBanfanb || 0);
-  const montoBanfanbActual = Number(cobranzasMes.montoBanfanb || 0);
-  const pagosRecurrentesPlazaActual = Number(cobranzasMes.pagosRecurrentesPlaza || 0);
   const bddRegistros123Actual = Number(cobranzasMes.bddRegistros123 || 0);
   const bddRegistrosMas3Actual = Number(cobranzasMes.bddRegistrosMas3 || 0);
   const compromiso123Actual = Number(cobranzasMes.compromiso123Cuotas || 0);
@@ -98,13 +84,9 @@ export default function App() {
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
-    if (k === "10" || k === "Octubre") {
-      return { q15: 187, q30: 236 };
-    } else if (k === "9" || k === "Septiembre") {
-      return { q15: 79, q30: 322 };
-    } else if (k === "8" || k === "Agosto") {
-      return { q15: 45, q30: 327 };
-    }
+    if (k === "10" || k === "Octubre") return { q15: 187, q30: 236 };
+    if (k === "9" || k === "Septiembre") return { q15: 79, q30: 322 };
+    if (k === "8" || k === "Agosto") return { q15: 45, q30: 327 };
     return { q15: Math.round(compromiso123Actual * 0.2), q30: compromiso123Actual - Math.round(compromiso123Actual * 0.2) };
   };
 
@@ -114,11 +96,18 @@ export default function App() {
   const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances || 0), 0);
   const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes || 0), 0);
 
-  const ventasGlobalesData = Object.keys(mesesData).map(mes => ({ name: obtenerNombreMes(mes), value: mesesData[mes].ventas || 0 }));
-  const trimestralData = [
-    { trimestre: "T3 (Jul - Sep)", Ventas: (mesesData["Julio"]?.ventas || 0) + (mesesData["Agosto"]?.ventas || 0) + (mesesData["Septiembre"]?.ventas || 0) },
-    { trimestre: "T4 (Oct - Dic)", Ventas: (mesesData["Octubre"]?.ventas || 0) }
-  ];
+  // Mapeo dinámico para gráficos globales e independientes de Ventas
+  const dataGraficoGlobal = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cobD = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Ventas: Number(item.ventasGeneradas || item.ventas || 0),
+      Plaza: Number(item.montoBancoPlaza || cobD.pagosRecurrentesPlaza || 0),
+      Banfanb: Number(item.montoBanfanbVentas || cobD.montoBanfanb || 0),
+      Banesco: Number(item.montoBanescoVentas || cobD.montoBanesco || 0)
+    };
+  });
 
   const tema = {
     bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
@@ -212,22 +201,63 @@ export default function App() {
 
             {subCategoria === "ventas" && (
               <div style={{ display: 'grid', gap: '20px' }}>
+                {/* Tarjetas Principales de Ventas Corregidas */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                   <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
                     <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Ventas Generadas ({obtenerNombreMes(mesActual)})</p>
-                    <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{formatearNumero(data.ventas)}</h3>
+                    <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{formatearNumero(ventasGeneradasActual)}</h3>
                   </div>
                   <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
                     <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Montos Banco Plaza</p>
-                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(data.montoBancoPlaza || data.cobranzasDetalle?.pagosRecurrentesPlaza || 0)}</h3>
+                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(montoPlazaActual)}</h3>
                   </div>
                   <div style={{ background: 'linear-gradient(to bottom right, #10b981, #059669)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
                     <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Montos Banfanb Ventas</p>
-                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(data.montoBanfanbVentas || data.cobranzasDetalle?.montoBanfanb || 0)}</h3>
+                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(montoBanfanbActual)}</h3>
                   </div>
                   <div style={{ background: 'linear-gradient(to bottom right, #8b5cf6, #6d28d9)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
                     <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Monto Banesco Ventas</p>
-                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(data.montoBanescoVentas || data.cobranzasDetalle?.montoBanesco || 0)}</h3>
+                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(montoBanescoActual)}</h3>
+                  </div>
+                </div>
+
+                {/* Sección de Gráficos de Comportamiento Global e Independientes */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+                  {/* Gráfico Global de Ventas Generadas */}
+                  <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <BarChart3 style={{ width: '16px', height: '16px', color: '#f97316' }} /> Comportamiento Global de Ventas (Unidades)
+                    </h4>
+                    <div style={{ height: '180px' }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={dataGraficoGlobal}>
+                          <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
+                          <YAxis stroke={tema.subtexto} fontSize={10} />
+                          <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
+                          <Bar dataKey="Ventas" fill="#f97316" radius={[4, 4, 0, 0]} name="Ventas Generadas" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Gráfico Independiente de Recaudación por Bancos */}
+                  <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <LineChartIcon style={{ width: '16px', height: '16px', color: '#3b82f6' }} /> Comportamiento Independiente por Canales (BsF)
+                    </h4>
+                    <div style={{ height: '180px' }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={dataGraficoGlobal}>
+                          <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
+                          <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
+                          <YAxis stroke={tema.subtexto} fontSize={10} />
+                          <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
+                          <Line type="monotone" dataKey="Plaza" stroke="#3b82f6" strokeWidth={2} name="Banco Plaza" />
+                          <Line type="monotone" dataKey="Banfanb" stroke="#10b981" strokeWidth={2} name="BANFANB" />
+                          <Line type="monotone" dataKey="Banesco" stroke="#8b5cf6" strokeWidth={2} name="Banesco" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 </div>
 
@@ -251,10 +281,11 @@ export default function App() {
                         {listaMeses.map((mes) => {
                           const item = mesesData[mes] || {};
                           const cobD = item.cobranzasDetalle || {};
+                          const vGen = Number(item.ventasGeneradas || item.ventas || 0);
                           return (
-                            <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(79, 70, 229, 0.15)' : 'rgba(79, 70, 229, 0.08)') : 'transparent' }}>
-                              <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#6366f1' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
-                              <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(item.ventas)}</td>
+                            <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.08)') : 'transparent' }}>
+                              <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#f97316' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
+                              <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(vGen)}</td>
                               <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBancoPlaza || cobD.pagosRecurrentesPlaza)}</td>
                               <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBanfanbVentas || cobD.montoBanfanb)}</td>
                               <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBanescoVentas || cobD.montoBanesco)}</td>
@@ -540,11 +571,11 @@ export default function App() {
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', width: '100%', borderTop: `1px solid ${tema.border}`, borderBottom: `1px solid ${tema.border}`, padding: '10px 0', marginBottom: '8px' }}>
                       <div>
                         <span style={{ fontSize: '10px', color: tema.subtexto }}>Clientes Cobrados</span>
-                        <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>{formatearNumero(Math.round(pagosRecurrentesPlazaActual / 5818) || 86)}</p>
+                        <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>{formatearNumero(Math.round(montoPlazaActual / 5818) || 86)}</p>
                       </div>
                       <div>
                         <span style={{ fontSize: '10px', color: tema.subtexto }}>Monto Total</span>
-                        <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>BsF {formatearNumero(pagosRecurrentesPlazaActual)}</p>
+                        <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>BsF {formatearNumero(montoPlazaActual)}</p>
                       </div>
                     </div>
                   </div>
@@ -563,24 +594,11 @@ export default function App() {
                 <div style={{ height: '210px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={ventasGlobalesData} innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                        {ventasGlobalesData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                      <Pie data={dataGraficoGlobal} innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="Ventas" nameKey="mes" label={({ mes, Ventas }) => `${mes}: ${Ventas}`}>
+                        {dataGraficoGlobal.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                       </Pie>
                       <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
                     </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <div style={{ backgroundColor: tema.card, padding: '16px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                <h3 style={{ fontSize: '15px', fontWeight: '600', color: tema.texto, margin: '0 0 10px 0' }}>Comportamiento Trimestral</h3>
-                <div style={{ height: '200px' }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={trimestralData}>
-                      <XAxis dataKey="trimestre" stroke={tema.subtexto} fontSize={11} />
-                      <YAxis stroke={tema.subtexto} fontSize={11} />
-                      <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                      <Bar dataKey="Ventas" fill="#6366f1" radius={[4, 4, 0, 0]} name="Ventas Totales" />
-                    </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
