@@ -344,7 +344,9 @@ export default function App() {
 
           {subCategoria === "cobranzas" && (
             <div style={{ display: 'grid', gap: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+              
+              {/* Encabezado y Tarjeta de Recaudación Mensual Separada y Clara */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}`, gap: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
                   <div>
@@ -354,9 +356,10 @@ export default function App() {
                     <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
                 </div>
-                <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
-                  <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block' }}>Comportamiento de Recaudación Mensual</span>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(recaudacionMensualActual)}</span>
+
+                <div style={{ backgroundColor: tema.bg, padding: '12px 20px', borderRadius: '10px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: '240px' }}>
+                  <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px' }}>Comportamiento de Recaudación Mensual</span>
+                  <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981', marginTop: '2px' }}>{formatearNumero(recaudacionMensualActual)}</span>
                 </div>
               </div>
 
