@@ -97,6 +97,21 @@ export default function App() {
   const compromiso123Actual = Number(cobranzasMes.compromiso123Cuotas || 0);
   const compromisoMas3Actual = Number(cobranzasMes.compromisoMas3Cuotas || 0);
 
+  // Valores personalizados de compromisos por quincena según el mes
+  const obtenerCompromisosQuincena = (mesKey) => {
+    const k = String(mesKey).trim();
+    if (k === "10" || k === "Octubre") {
+      return { q15: 187, q30: 236 };
+    } else if (k === "9" || k === "Septiembre") {
+      return { q15: Math.round(79322 * 0.3), q30: Math.round(79322 * 0.7) }; // O ajustado con el monto exacto global 79,322
+    } else if (k === "8" || k === "Agosto") {
+      return { q15: Math.round(45327 * 0.3), q30: Math.round(45327 * 0.7) }; // Monto exacto global 45,327
+    }
+    return { q15: Math.round(compromiso123Actual * 0.2), q30: compromiso123Actual - Math.round(compromiso123Actual * 0.2) };
+  };
+
+  const quincenaInfo = obtenerCompromisosQuincena(mesActual);
+
   const totalImporteMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.importe || 0), 0);
   const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances || 0), 0);
   const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes || 0), 0);
@@ -275,7 +290,7 @@ export default function App() {
           {subCategoria === "cobranzas" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               
-              {/* Tarjetas interactivas de Cobranzas por Mes (Estilo similar a Marketing) */}
+              {/* Tarjetas interactivas de Cobranzas por Mes */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
@@ -338,7 +353,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Tarjetas originales de métricas de cobranza */}
+              {/* Tarjetas de métricas de cobranza */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
@@ -386,8 +401,8 @@ export default function App() {
                       <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#6366f1' }}>{formatearNumero(compromiso123Actual)}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: tema.subtexto }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 15 Quincena:</span><strong>{formatearNumero(Math.round(compromiso123Actual * 0.2))}</strong></div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 30 Fin de Mes:</span><strong>{formatearNumero(compromiso123Actual - Math.round(compromiso123Actual * 0.2))}</strong></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 15 Quincena:</span><strong>{formatearNumero(quincenaInfo.q15)}</strong></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>📅 30 Fin de Mes:</span><strong>{formatearNumero(quincenaInfo.q30)}</strong></div>
                     </div>
                   </div>
                 </div>
