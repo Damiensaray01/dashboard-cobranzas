@@ -14,7 +14,6 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m
 
 const COLORS = ['#d97706', '#3b82f6', '#10b981', '#eab308'];
 
-// Función estricta para formatear números con separador de miles
 const formatearNumero = (valor) => {
   const num = Number(valor) || 0;
   return new Intl.NumberFormat('es-ES').format(num);
@@ -217,7 +216,6 @@ export default function App() {
           {subCategoria === "marketing" && (
             <div style={{ display: 'grid', gap: '20px', animation: 'fadeIn 0.3s ease-in-out' }}>
               
-              {/* BLOQUE SUPERIOR ESTILO TARJETAS POR MES */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
@@ -248,7 +246,7 @@ export default function App() {
                         }}
                       >
                         <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#14b8a6', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
-                          MES {mes} {esActivo && '⭐'}
+                          {obtenerNombreMes(mes)} {esActivo && '⭐'}
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
@@ -277,7 +275,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* TABLA RESUMEN SEGUIMIENTO MARKETING */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   SEGUIMIENTO MARKETING
@@ -298,7 +295,7 @@ export default function App() {
                         const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(20, 184, 166, 0.15)' : 'rgba(20, 184, 166, 0.08)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>MES {mes.toUpperCase()} {mes === mesActual && '⭐'}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
                             <td style={{ padding: '12px 10px', fontWeight: '600' }}>${m.importe.toLocaleString()} $</td>
                             <td style={{ padding: '12px 10px' }}>{formatearNumero(m.alcances)}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{formatearNumero(m.mensajes)}</td>
@@ -316,7 +313,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* BLOQUE DE OBSERVACIONES Y ANÁLISIS DE LA IA */}
               <div style={{ backgroundColor: tema.iaBg, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.iaBorder}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px', marginBottom: '14px' }}>
                   <Bot style={{ width: '18px', height: '18px', color: '#818cf8' }} />
@@ -333,9 +329,9 @@ export default function App() {
                   </div>
 
                   <div style={{ backgroundColor: tema.card, padding: '12px 16px', borderRadius: '10px', borderLeft: '4px solid #14b8a6' }}>
-                    <h5 style={{ fontSize: '12px', fontWeight: 'bold', color: '#14b8a6', margin: '0 0 4px 0', textTransform: 'uppercase' }}>📅 Análisis Específico - Mes {mesActual}</h5>
+                    <h5 style={{ fontSize: '12px', fontWeight: 'bold', color: '#14b8a6', margin: '0 0 4px 0', textTransform: 'uppercase' }}>📅 Análisis Específico - {obtenerNombreMes(mesActual)}</h5>
                     <p style={{ fontSize: '12px', color: tema.texto, lineHeight: '1.5', margin: 0 }}>
-                      Durante el <strong>Mes {mesActual}</strong>, se registró un importe de inversión de <strong>${data.marketing.importe.toLocaleString()} $</strong>, generando un alcance de <strong>{formatearNumero(data.marketing.alcances)}</strong> usuarios y un total de <strong>{formatearNumero(data.marketing.mensajes)}</strong> mensajes efectivos. Este periodo representa una eficiencia operativa clave en el rendimiento del canal digital de Seguros Horizonte.
+                      Durante <strong>{obtenerNombreMes(mesActual)}</strong>, se registró un importe de inversión de <strong>${data.marketing.importe.toLocaleString()} $</strong>, generando un alcance de <strong>{formatearNumero(data.marketing.alcances)}</strong> usuarios y un total de <strong>{formatearNumero(data.marketing.mensajes)}</strong> mensajes efectivos. Este periodo representa una eficiencia operativa clave en el rendimiento del canal digital de Seguros Horizonte.
                     </p>
                   </div>
                 </div>
