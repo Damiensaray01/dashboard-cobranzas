@@ -269,50 +269,59 @@ export default function App() {
                   })}
                 </div>
               </div>
-
-              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
-                  SEGUIMIENTO MARKETING
-                </h3>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
-                    <thead>
-                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
-                        <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
-                        <th style={{ padding: '10px' }}>IMPORTE TOTAL</th>
-                        <th style={{ padding: '10px' }}>ALCANCE</th>
-                        <th style={{ padding: '10px' }}>MENSAJES</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {listaMeses.map((mes) => {
-                        const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
-                        return (
-                          <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(20, 184, 166, 0.15)' : 'rgba(20, 184, 166, 0.08)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#14b8a6' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>${formatearNumero(m.importe)} $</td>
-                            <td style={{ padding: '12px 10px' }}>{formatearNumero(m.alcances)}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{formatearNumero(m.mensajes)}</td>
-                          </tr>
-                        );
-                      })}
-                      <tr style={{ borderTop: `2px solid ${tema.border}`, fontWeight: 'bold', backgroundColor: tema.bg }}>
-                        <td style={{ padding: '14px 10px', textAlign: 'left', color: '#14b8a6' }}>TOTAL ACUMULADO</td>
-                        <td style={{ padding: '14px 10px', color: '#3b82f6' }}>${formatearNumero(totalImporteMarketing)} $</td>
-                        <td style={{ padding: '14px 10px', color: '#ca8a04' }}>{formatearNumero(totalAlcanceMarketing)}</td>
-                        <td style={{ padding: '14px 10px', color: '#10b981' }}>{formatearNumero(totalMensajesMarketing)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
             </div>
           )}
 
           {subCategoria === "cobranzas" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               
-              {/* Encabezado Principal de Cobranzas */}
+              {/* Tarjetas interactivas de Cobranzas por Mes (Estilo similar a Marketing) */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
+                  <div>
+                    <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <CreditCard style={{ width: '18px', height: '18px', color: '#3b82f6' }} /> Comportamiento de Recaudación Mensual - Cobranzas
+                    </h2>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguros Horizonte, S.A.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '10px' }}>
+                  {listaMeses.map((mes) => {
+                    const c = mesesData[mes].cobranzasDetalle || {};
+                    const esActivo = mes === mesActual;
+                    return (
+                      <div 
+                        key={mes} 
+                        onClick={() => setMesActual(mes)}
+                        style={{ 
+                          backgroundColor: esActivo ? (temaOscuro ? '#334155' : '#f1f5f9') : tema.bg, 
+                          borderRadius: '12px', 
+                          padding: '16px', 
+                          border: esActivo ? '2px solid #3b82f6' : `1px solid ${tema.border}`,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          boxShadow: esActivo ? '0 4px 12px rgba(59, 130, 246, 0.2)' : 'none'
+                        }}
+                      >
+                        <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#3b82f6', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
+                          {obtenerNombreMes(mes)} {esActivo && '⭐'}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', textAlign: 'center' }}>
+                          <div style={{ backgroundColor: '#1e3a8a', padding: '8px 6px', borderRadius: '8px', color: '#fff' }}>
+                            <div style={{ fontSize: '10px', color: '#93c5fd', marginBottom: '2px' }}>RECAUDACIÓN MENSUAL</div>
+                            <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{formatearNumero(c.recaudacionMensual)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Encabezado del mes activo seleccionado */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
@@ -323,14 +332,13 @@ export default function App() {
                     <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
                 </div>
-                {/* Tarjeta independiente de Comportamiento de Recaudación Mensual */}
                 <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
-                  <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Comportamiento de Recaudación Mensual</span>
+                  <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Recaudación Mensual</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(recaudacionMensualActual)}</span>
                 </div>
               </div>
 
-              {/* Tus tarjetas originales de métricas de cobranza */}
+              {/* Tarjetas originales de métricas de cobranza */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
