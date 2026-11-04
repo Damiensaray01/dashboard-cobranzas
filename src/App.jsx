@@ -82,7 +82,7 @@ export default function App() {
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
-    if (k === "10" || k === "Octubre") return { q15: 187, q30: 236 };
+    if (k === "10" || k === "Octubre") return { q15: 187, q30: 327 };
     if (k === "9" || k === "Septiembre") return { q15: 79, q30: 322 };
     if (k === "8" || k === "Agosto") return { q15: 45, q30: 327 };
     return { q15: Math.round(compromiso123Actual * 0.2), q30: compromiso123Actual - Math.round(compromiso123Actual * 0.2) };
