@@ -103,9 +103,9 @@ export default function App() {
     if (k === "10" || k === "Octubre") {
       return { q15: 187, q30: 236 };
     } else if (k === "9" || k === "Septiembre") {
-      return { q15: Math.round(79322 * 0.3), q30: Math.round(79322 * 0.7) }; // O ajustado con el monto exacto global 79,322
+      return { q15: 79, q30: 322 };
     } else if (k === "8" || k === "Agosto") {
-      return { q15: Math.round(45327 * 0.3), q30: Math.round(45327 * 0.7) }; // Monto exacto global 45,327
+      return { q15: 45, q30: 327 };
     }
     return { q15: Math.round(compromiso123Actual * 0.2), q30: compromiso123Actual - Math.round(compromiso123Actual * 0.2) };
   };
