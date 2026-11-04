@@ -25,7 +25,7 @@ export default function App() {
   const [mesesData, setMesesData] = useState({});
   const [mesActual, setMesActual] = useState("9");
   const [pestañaActiva, setPestañaActiva] = useState("mensual");
-  const [subCategoria, setSubCategoria] = useState("marketing");
+  const [subCategoria, setSubCategoria] = useState("ventas");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchSheetData = async () => {
@@ -79,7 +79,6 @@ export default function App() {
   };
 
   const cobranzasMes = data.cobranzasDetalle || {};
-  const recaudacionMensualActual = Number(cobranzasMes.recaudacionMensual || 0);
   const solventesMes = Number(cobranzasMes.solventes || 0);
   const mora1Mes = Number(cobranzasMes.morosos1Mes || 0);
   const mora2Meses = Number(cobranzasMes.morosos2Meses || 0);
@@ -97,7 +96,6 @@ export default function App() {
   const compromiso123Actual = Number(cobranzasMes.compromiso123Cuotas || 0);
   const compromisoMas3Actual = Number(cobranzasMes.compromisoMas3Cuotas || 0);
 
-  // Valores personalizados de compromisos por quincena según el mes
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
     if (k === "10" || k === "Octubre") {
@@ -116,7 +114,7 @@ export default function App() {
   const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances || 0), 0);
   const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes || 0), 0);
 
-  const ventasGlobalesData = Object.keys(mesesData).map(mes => ({ name: obtenerNombreMes(mes), value: mesesData[mes].ventas }));
+  const ventasGlobalesData = Object.keys(mesesData).map(mes => ({ name: obtenerNombreMes(mes), value: mesesData[mes].ventas || 0 }));
   const trimestralData = [
     { trimestre: "T3 (Jul - Sep)", Ventas: (mesesData["Julio"]?.ventas || 0) + (mesesData["Agosto"]?.ventas || 0) + (mesesData["Septiembre"]?.ventas || 0) },
     { trimestre: "T4 (Oct - Dic)", Ventas: (mesesData["Octubre"]?.ventas || 0) }
@@ -213,20 +211,58 @@ export default function App() {
             </div>
 
             {subCategoria === "ventas" && (
-              <div style={{ display: 'grid', gap: '16px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
-                  <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '12px', padding: '16px', color: '#fff' }}>
+              <div style={{ display: 'grid', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
                     <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Ventas Generadas ({obtenerNombreMes(mesActual)})</p>
                     <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{formatearNumero(data.ventas)}</h3>
-                    <p style={{ fontSize: '11px', margin: '8px 0 0 0' }}>Presupuesto: {formatearNumero(data.presupuesto)}</p>
                   </div>
-                  <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '12px', padding: '16px', color: '#fff' }}>
-                    <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Recaudación Total</p>
-                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>${formatearNumero(data.recaudacion)}</h3>
+                  <div style={{ background: 'linear-gradient(to bottom right, #3b82f6, #4f46e5)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
+                    <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Montos Banco Plaza</p>
+                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(data.montoBancoPlaza || data.cobranzasDetalle?.pagosRecurrentesPlaza || 0)}</h3>
                   </div>
-                  <div style={{ background: 'linear-gradient(to bottom right, #9333ea, #c026d3)', borderRadius: '12px', padding: '16px', color: '#fff' }}>
-                    <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>% Cumplimiento Global</p>
-                    <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{formatearNumero(data.cumplimiento)}%</h3>
+                  <div style={{ background: 'linear-gradient(to bottom right, #10b981, #059669)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
+                    <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Montos Banfanb Ventas</p>
+                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(data.montoBanfanbVentas || data.cobranzasDetalle?.montoBanfanb || 0)}</h3>
+                  </div>
+                  <div style={{ background: 'linear-gradient(to bottom right, #8b5cf6, #6d28d9)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
+                    <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Monto Banesco Ventas</p>
+                    <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(data.montoBanescoVentas || data.cobranzasDetalle?.montoBanesco || 0)}</h3>
+                  </div>
+                </div>
+
+                {/* Tabla Detallada de Ventas */}
+                <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
+                    CONSOLIDADO DE VENTAS Y RECAUDACIÓN
+                  </h3>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                      <thead>
+                        <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                          <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
+                          <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
+                          <th style={{ padding: '10px' }}>BANCO PLAZA</th>
+                          <th style={{ padding: '10px' }}>BANFANB VENTAS</th>
+                          <th style={{ padding: '10px' }}>BANESCO VENTAS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listaMeses.map((mes) => {
+                          const item = mesesData[mes] || {};
+                          const cobD = item.cobranzasDetalle || {};
+                          return (
+                            <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(79, 70, 229, 0.15)' : 'rgba(79, 70, 229, 0.08)') : 'transparent' }}>
+                              <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#6366f1' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
+                              <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(item.ventas)}</td>
+                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBancoPlaza || cobD.pagosRecurrentesPlaza)}</td>
+                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBanfanbVentas || cobD.montoBanfanb)}</td>
+                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBanescoVentas || cobD.montoBanesco)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -331,13 +367,13 @@ export default function App() {
             {subCategoria === "cobranzas" && (
               <div style={{ display: 'grid', gap: '20px' }}>
                 
-                {/* Tarjetas interactivas de Cobranzas por Mes */}
+                {/* Tarjetas interactivas de Recaudación Mensual BANFANB */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                     <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
                     <div>
                       <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <CreditCard style={{ width: '18px', height: '18px', color: '#3b82f6' }} /> Comportamiento de Recaudación Mensual - Cobranzas
+                        <CreditCard style={{ width: '18px', height: '18px', color: '#3b82f6' }} /> Comportamiento de Recaudación Mensual - Cobranzas BANFANB
                       </h2>
                       <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguros Horizonte, S.A.</p>
                     </div>
@@ -367,8 +403,8 @@ export default function App() {
 
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', textAlign: 'center' }}>
                             <div style={{ backgroundColor: '#1e3a8a', padding: '8px 6px', borderRadius: '8px', color: '#fff' }}>
-                              <div style={{ fontSize: '10px', color: '#93c5fd', marginBottom: '2px' }}>RECAUDACIÓN MENSUAL</div>
-                              <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{formatearNumero(c.recaudacionMensual)}</span>
+                              <div style={{ fontSize: '10px', color: '#93c5fd', marginBottom: '2px' }}>MONTO BANFANB</div>
+                              <span style={{ fontSize: '12px', fontWeight: 'bold' }}>BsF {formatearNumero(c.montoBanfanb)}</span>
                             </div>
                           </div>
                         </div>
@@ -390,7 +426,7 @@ export default function App() {
                   </div>
                   <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
                     <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Recaudación Mensual</span>
-                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(recaudacionMensualActual)}</span>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(cobranzasMes.recaudacionMensual)}</span>
                   </div>
                 </div>
 
