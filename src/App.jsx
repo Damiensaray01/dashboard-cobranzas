@@ -118,9 +118,10 @@ export default function App() {
       width: '100vw',
       minHeight: '100vh',
       backgroundImage: `url('/Logo6.png')`,
-      backgroundSize: 'cover',
+      backgroundSize: 'contain', // Muestra la imagen completa sin recortar
       backgroundPosition: 'center center',
       backgroundRepeat: 'no-repeat',
+      backgroundColor: temaOscuro ? '#0b0f19' : '#f1f5f9', // Color de soporte para los espacios si la proporción varía
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
