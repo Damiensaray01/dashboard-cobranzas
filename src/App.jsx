@@ -140,7 +140,8 @@ export default function App() {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    zoom: '100%'
   };
 
   if (modoInicio) {
@@ -565,16 +566,16 @@ export default function App() {
         </div>
       </div>
 
-      {/* Pie de página institucional solicitado */}
-      <footer style={{ backgroundColor: '#000000', color: '#fbbf24', padding: '16px 20px', textAlign: 'center', borderTop: '1px solid #1f2937', marginTop: '40px', fontSize: '11px', lineHeight: '1.6' }}>
+      {/* Pie de página semi-transparente institucional */}
+      <footer style={{ backgroundColor: temaOscuro ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(8px)', color: '#fbbf24', padding: '16px 20px', textAlign: 'center', borderTop: `1px solid ${tema.border}`, marginTop: '40px', fontSize: '11px', lineHeight: '1.6' }}>
         <div style={{ fontWeight: 'bold', letterSpacing: '0.5px' }}>
           RIF: J-504900826 | CONSORCIO BIARTE, C.A.
         </div>
-        <div style={{ color: '#d1d5db', fontSize: '11px' }}>
+        <div style={{ color: tema.subtexto, fontSize: '11px' }}>
           <strong>Dirección:</strong> Av Casanova, CC El Recreo, nivel 9, of 9A, Urb El Recreo, Caracas, Distrito Capital, zona postal 1050
         </div>
         <div>
-          <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: '#ffffff' }}>(+58) 426-5101583</span>
+          <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
           DEPARTAMENTO DE BUSINESS INTELLIGENCE 2026
