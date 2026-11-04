@@ -115,48 +115,50 @@ export default function App() {
 
   if (modoInicio) {
     const entradaEstilo = {
+      width: '100vw',
       minHeight: '100vh',
-      backgroundImage: `url('/Logo6.png')`,
+      backgroundImage: `url('/logo6.png')`,
       backgroundSize: 'cover',
-      backgroundPosition: 'center',
+      backgroundPosition: 'center center',
       backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'fixed',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '24px',
+      padding: '20px',
+      boxSizing: 'border-box',
+      overflowX: 'hidden',
       fontFamily: 'sans-serif'
     };
 
     return (
       <div style={entradaEstilo}>
-        <div style={{ position: 'absolute', top: '24px', right: '24px' }}>
+        <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10 }}>
           <button onClick={() => setTemaOscuro(!temaOscuro)} style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(30, 41, 59, 0.85)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', backdropFilter: 'blur(6px)' }}>
             {temaOscuro ? <Sun style={{ width: '16px', height: '16px', color: '#f59e0b' }} /> : <Moon style={{ width: '16px', height: '16px', color: '#6366f1' }} />}
             {temaOscuro ? 'Modo Claro' : 'Modo Oscuro'}
           </button>
         </div>
         
-        <div style={{ maxWidth: '680px', width: '100%', textAlign: 'center', backgroundColor: temaOscuro ? 'rgba(15, 23, 42, 0.88)' : 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', padding: '50px 40px', borderRadius: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 25px 50px rgba(0,0,0,0.4)' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', marginBottom: '28px' }}>
-            <img src="/logo2.png" alt="Logo Biartet" style={{ height: '65px', objectFit: 'contain' }} />
-            <div style={{ width: '1px', height: '50px', backgroundColor: tema.border }}></div>
-            <img src="/logo3.png" alt="Logo Seguros Horizonte" style={{ height: '65px', objectFit: 'contain' }} />
+        <div style={{ maxWidth: '650px', width: '100%', textAlign: 'center', backgroundColor: temaOscuro ? 'rgba(15, 23, 42, 0.88)' : 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', padding: '45px 35px', borderRadius: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 25px 50px rgba(0,0,0,0.4)', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
+            <img src="/logo2.png" alt="Logo Biartet" style={{ height: '60px', objectFit: 'contain' }} />
+            <div style={{ width: '1px', height: '45px', backgroundColor: tema.border }}></div>
+            <img src="/logo3.png" alt="Logo Seguros Horizonte" style={{ height: '60px', objectFit: 'contain' }} />
           </div>
 
           <div style={{ display: 'inline-block', backgroundColor: 'rgba(79, 70, 229, 0.15)', color: '#818cf8', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px', border: '1px solid rgba(129, 140, 248, 0.3)' }}>
             Presidencia & Junta Directiva
           </div>
 
-          <h1 style={{ fontSize: '30px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
             Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
-          <h2 style={{ fontSize: '15px', fontWeight: '500', color: tema.subtexto, margin: '0 0 32px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
           </h2>
 
-          <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '16px 28px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#ffffff', background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(79, 70, 229, 0.4)', transition: 'transform 0.2s' }}>
+          <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#ffffff', background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(79, 70, 229, 0.4)', transition: 'transform 0.2s' }}>
             Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
           </button>
         </div>
@@ -165,19 +167,22 @@ export default function App() {
   }
 
   const fondoDashboardEstilo = {
+    width: '100vw',
     minHeight: '100vh',
     backgroundImage: `url('/logo5.png')`,
     backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed',
+    overflowX: 'hidden',
+    boxSizing: 'border-box',
     transition: 'all 0.3s ease'
   };
 
   return (
-    <div style={{ ...fondoDashboardEstilo, color: tema.texto, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontFamily: 'sans-serif', fontSize: '13px' }}>
-      <div style={{ padding: '16px 20px', flex: 1 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px', backgroundColor: tema.card, padding: '10px 16px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+    <div style={{ ...fondoDashboardEstilo, color: tema.texto, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontFamily: 'sans-serif', fontSize: '13px' }}>
+      <div style={{ padding: '16px 20px', flex: 1, boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px', backgroundColor: tema.card, padding: '10px 16px', borderRadius: '12px', border: `1px solid ${tema.border}`, boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button onClick={() => setModoInicio(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.subtexto }} title="Volver a Inicio">
               <img src="/logo2.png" alt="Logo 2" style={{ height: '40px', objectFit: 'contain' }} />
@@ -205,7 +210,7 @@ export default function App() {
               <button onClick={() => setSubCategoria("marketing")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "marketing" ? '#14b8a6' : 'transparent', color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto }}>📢 Marketing</button>
               <button onClick={() => setSubCategoria("cobranzas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "cobranzas" ? '#3b82f6' : 'transparent', color: subCategoria === "cobranzas" ? '#ffffff' : tema.subtexto }}>💳 Cobranzas</button>
             </div>
-            <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+            <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               {listaMeses.map((mes) => (
                 <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#4f46e5' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{obtenerNombreMes(mes)}</button>
               ))}
@@ -213,7 +218,7 @@ export default function App() {
           </div>
 
           {subCategoria === "ventas" && (
-            <div style={{ display: 'grid', gap: '20px' }}>
+            <div style={{ display: 'grid', gap: '20px', width: '100%', boxSizing: 'border-box' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                 <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
                   <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Ventas Generadas ({obtenerNombreMes(mesActual)})</p>
@@ -238,7 +243,7 @@ export default function App() {
                   <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <BarChart3 style={{ width: '16px', height: '16px', color: '#f97316' }} /> Comportamiento Global de Ventas (Unidades)
                   </h4>
-                  <div style={{ height: '180px' }}>
+                  <div style={{ height: '180px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={dataGraficoGlobal}>
                         <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
@@ -254,7 +259,7 @@ export default function App() {
                   <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <LineChartIcon style={{ width: '16px', height: '16px', color: '#3b82f6' }} /> Comportamiento Independiente por Canales (BsF)
                   </h4>
-                  <div style={{ height: '180px' }}>
+                  <div style={{ height: '180px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={dataGraficoGlobal}>
                         <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
@@ -274,7 +279,7 @@ export default function App() {
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN
                 </h3>
-                <div style={{ overflowX: 'auto' }}>
+                <div style={{ overflowX: 'auto', width: '100%' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
                     <thead>
                       <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
@@ -369,7 +374,7 @@ export default function App() {
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   SEGUIMIENTO MARKETING
                 </h3>
-                <div style={{ overflowX: 'auto' }}>
+                <div style={{ overflowX: 'auto', width: '100%' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
                     <thead>
                       <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
@@ -453,7 +458,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}`, flexWrap: 'wrap', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
                   <div>
@@ -592,7 +597,7 @@ export default function App() {
         </div>
 
         {/* Sección de Análisis Inteligente */}
-        <div style={{ marginTop: '30px', backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '14px', padding: '18px 22px', display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+        <div style={{ marginTop: '30px', backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '14px', padding: '18px 22px', display: 'flex', alignItems: 'flex-start', gap: '14px', boxSizing: 'border-box' }}>
           <Sparkles style={{ width: '22px', height: '22px', color: tema.iaTexto, flexShrink: 0, marginTop: '2px' }} />
           <div>
             <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.iaTexto, margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -605,7 +610,7 @@ export default function App() {
         </div>
       </div>
 
-      <footer style={{ backgroundColor: temaOscuro ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(8px)', color: '#fbbf24', padding: '16px 20px', textAlign: 'center', borderTop: `1px solid ${tema.border}`, marginTop: '40px', fontSize: '11px', lineHeight: '1.6' }}>
+      <footer style={{ backgroundColor: temaOscuro ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(8px)', color: '#fbbf24', padding: '16px 20px', textAlign: 'center', borderTop: `1px solid ${tema.border}`, marginTop: '40px', fontSize: '11px', lineHeight: '1.6', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ fontWeight: 'bold', letterSpacing: '0.5px' }}>
           RIF: J-504900826 | CONSORCIO BIARTE, C.A.
         </div>
