@@ -54,6 +54,7 @@ export default function App() {
     marketing: { importe: 0, alcances: 0, mensajes: 0 },
     cartera: [],
     cobranzasDetalle: {
+      recaudacionMensual: 0,
       solventes: 0, morosos1Mes: 0, morosos2Meses: 0, morosos3Meses: 0, morososMas3Meses: 0,
       cobradosBanesco: 0, cobradosBanfanb: 0, montoBanesco: 0, montoBanfanb: 0,
       pagosRecurrentesPlaza: 0, compromiso123Cuotas: 0, compromisoMas3Cuotas: 0,
@@ -78,6 +79,7 @@ export default function App() {
   };
 
   const cobranzasMes = data.cobranzasDetalle || {};
+  const recaudacionMensualActual = Number(cobranzasMes.recaudacionMensual || 0);
   const solventesMes = Number(cobranzasMes.solventes || 0);
   const mora1Mes = Number(cobranzasMes.morosos1Mes || 0);
   const mora2Meses = Number(cobranzasMes.morosos2Meses || 0);
@@ -351,6 +353,10 @@ export default function App() {
                     </h2>
                     <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
+                </div>
+                <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
+                  <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block' }}>Comportamiento de Recaudación Mensual</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(recaudacionMensualActual)}</span>
                 </div>
               </div>
 
