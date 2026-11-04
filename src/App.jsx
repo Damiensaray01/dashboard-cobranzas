@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  LineChart, Line, CartesianGrid
+  LineChart, Line, CartesianGrid, LabelList
 } from 'recharts';
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
@@ -82,7 +82,7 @@ export default function App() {
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
-    if (k === "10" || k === "Octubre") return { q15: 187, q30: 327 };
+    if (k === "10" || k === "Octubre") return { q15: 187, q30: 236 };
     if (k === "9" || k === "Septiembre") return { q15: 79, q30: 322 };
     if (k === "8" || k === "Agosto") return { q15: 45, q30: 327 };
     return { q15: Math.round(compromiso123Actual * 0.2), q30: compromiso123Actual - Math.round(compromiso123Actual * 0.2) };
@@ -248,14 +248,16 @@ export default function App() {
                   <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <BarChart3 style={{ width: '16px', height: '16px', color: '#eab308' }} /> Comportamiento Global de Ventas (Unidades)
                   </h4>
-                  <div style={{ height: '180px', width: '100%' }}>
+                  <div style={{ height: '210px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={dataGraficoGlobal}>
+                      <BarChart data={dataGraficoGlobal} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
                         <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                         <YAxis stroke={tema.subtexto} fontSize={10} />
                         <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                        {/* Barras con el color amarillo del logo de Biartet */}
-                        <Bar dataKey="Ventas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Generadas" />
+                        <Bar dataKey="Ventas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Generadas">
+                          {/* Números directamente sobre las barras */}
+                          <LabelList dataKey="Ventas" position="top" fill={tema.texto} fontSize={11} fontWeight="bold" />
+                        </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -265,9 +267,9 @@ export default function App() {
                   <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <LineChartIcon style={{ width: '16px', height: '16px', color: '#3b82f6' }} /> Comportamiento Independiente por Canales (BsF)
                   </h4>
-                  <div style={{ height: '180px', width: '100%' }}>
+                  <div style={{ height: '210px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={dataGraficoGlobal}>
+                      <LineChart data={dataGraficoGlobal} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
                         <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                         <YAxis stroke={tema.subtexto} fontSize={10} />
