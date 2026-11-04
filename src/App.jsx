@@ -66,15 +66,16 @@ export default function App() {
 
   const obtenerNombreMes = (key) => {
     const mapaMeses = {
-      "7": "Agosto",
+      "7": "Julio",
       "8": "Agosto",
       "9": "Septiembre",
       "10": "Octubre",
+      "Julio": "Julio",
       "Agosto": "Agosto",
       "Septiembre": "Septiembre",
       "Octubre": "Octubre"
     };
-    return mapaMeses[key] || `Mes ${key}`;
+    return mapaMeses[String(key).trim()] || `Mes ${key}`;
   };
 
   const cobranzasMes = data.cobranzasDetalle || {};
