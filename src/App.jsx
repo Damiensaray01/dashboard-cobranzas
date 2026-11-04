@@ -121,7 +121,7 @@ export default function App() {
     const entradaEstilo = {
       width: '100vw',
       minHeight: '100vh',
-      backgroundImage: `url('/logo6.png')`,
+      backgroundImage: `url('/Logo6.png')`,
       backgroundSize: 'contain',
       backgroundPosition: 'center center',
       backgroundRepeat: 'no-repeat',
@@ -254,8 +254,8 @@ export default function App() {
                         <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                         <YAxis stroke={tema.subtexto} fontSize={10} />
                         <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                        {/* Azul institucional Biartet / Seguros Horizonte con acento amarillo corporativo */}
-                        <Bar dataKey="Ventas" fill="#1e3a8a" radius={[4, 4, 0, 0]} name="Ventas Generadas" />
+                        {/* Barras con el color amarillo del logo de Biartet */}
+                        <Bar dataKey="Ventas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Generadas" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -272,7 +272,6 @@ export default function App() {
                         <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                         <YAxis stroke={tema.subtexto} fontSize={10} />
                         <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                        {/* Paleta corporativa: Azul Plaza, Amarillo/Dorado institucional Banfanb, Verde Banesco */}
                         <Line type="monotone" dataKey="Plaza" stroke="#3b82f6" strokeWidth={2.5} name="Banco Plaza" />
                         <Line type="monotone" dataKey="Banfanb" stroke="#eab308" strokeWidth={2.5} name="BANFANB" />
                         <Line type="monotone" dataKey="Banesco" stroke="#10b981" strokeWidth={2.5} name="Banesco" />
