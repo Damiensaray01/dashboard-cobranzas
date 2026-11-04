@@ -52,7 +52,7 @@ export default function App() {
   const data = mesesData[mesActual] || {};
   const cobranzasMes = data.cobranzasDetalle || {};
 
-  // Mapeo seguro para Ventas Generadas (evita el 0)
+  // Lectura robusta de ventas y montos por canales para el mes activo
   const ventasGeneradasActual = Number(data.ventasGeneradas || data.ventas || 0);
   const montoPlazaActual = Number(data.montoBancoPlaza || cobranzasMes.pagosRecurrentesPlaza || 0);
   const montoBanfanbActual = Number(data.montoBanfanbVentas || cobranzasMes.montoBanfanb || 0);
@@ -96,7 +96,6 @@ export default function App() {
   const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances || 0), 0);
   const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes || 0), 0);
 
-  // Mapeo dinámico para gráficos globales e independientes de Ventas
   const dataGraficoGlobal = listaMeses.map(m => {
     const item = mesesData[m] || {};
     const cobD = item.cobranzasDetalle || {};
@@ -201,7 +200,6 @@ export default function App() {
 
             {subCategoria === "ventas" && (
               <div style={{ display: 'grid', gap: '20px' }}>
-                {/* Tarjetas Principales de Ventas Corregidas */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                   <div style={{ background: 'linear-gradient(to bottom right, #f97316, #db2777)', borderRadius: '12px', padding: '18px', color: '#fff' }}>
                     <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0 }}>Ventas Generadas ({obtenerNombreMes(mesActual)})</p>
@@ -221,9 +219,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Sección de Gráficos de Comportamiento Global e Independientes */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
-                  {/* Gráfico Global de Ventas Generadas */}
                   <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
                     <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <BarChart3 style={{ width: '16px', height: '16px', color: '#f97316' }} /> Comportamiento Global de Ventas (Unidades)
@@ -240,7 +236,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Gráfico Independiente de Recaudación por Bancos */}
                   <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
                     <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <LineChartIcon style={{ width: '16px', height: '16px', color: '#3b82f6' }} /> Comportamiento Independiente por Canales (BsF)
@@ -261,7 +256,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Tabla Detallada de Ventas */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                     CONSOLIDADO DE VENTAS Y RECAUDACIÓN
@@ -282,13 +276,16 @@ export default function App() {
                           const item = mesesData[mes] || {};
                           const cobD = item.cobranzasDetalle || {};
                           const vGen = Number(item.ventasGeneradas || item.ventas || 0);
+                          const mPlaza = Number(item.montoBancoPlaza || cobD.pagosRecurrentesPlaza || 0);
+                          const mBanfanb = Number(item.montoBanfanbVentas || cobD.montoBanfanb || 0);
+                          const mBanesco = Number(item.montoBanescoVentas || cobD.montoBanesco || 0);
                           return (
                             <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.08)') : 'transparent' }}>
                               <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#f97316' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
                               <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(vGen)}</td>
-                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBancoPlaza || cobD.pagosRecurrentesPlaza)}</td>
-                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBanfanbVentas || cobD.montoBanfanb)}</td>
-                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(item.montoBanescoVentas || cobD.montoBanesco)}</td>
+                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mPlaza)}</td>
+                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanfanb)}</td>
+                              <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanesco)}</td>
                             </tr>
                           );
                         })}
@@ -354,7 +351,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Tabla detallada de Marketing */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                     SEGUIMIENTO MARKETING
@@ -398,7 +394,7 @@ export default function App() {
             {subCategoria === "cobranzas" && (
               <div style={{ display: 'grid', gap: '20px' }}>
                 
-                {/* Tarjetas interactivas de Recaudación Mensual BANFANB */}
+                {/* Tarjetas interactivas corregidas con lectura directa de Monto Banfanb */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                     <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
@@ -412,7 +408,9 @@ export default function App() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '10px' }}>
                     {listaMeses.map((mes) => {
-                      const c = mesesData[mes].cobranzasDetalle || {};
+                      const itemMes = mesesData[mes] || {};
+                      const c = itemMes.cobranzasDetalle || {};
+                      const mBanfanbVal = Number(itemMes.montoBanfanbVentas || c.montoBanfanb || 0);
                       const esActivo = mes === mesActual;
                       return (
                         <div 
@@ -435,7 +433,7 @@ export default function App() {
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', textAlign: 'center' }}>
                             <div style={{ backgroundColor: '#1e3a8a', padding: '8px 6px', borderRadius: '8px', color: '#fff' }}>
                               <div style={{ fontSize: '10px', color: '#93c5fd', marginBottom: '2px' }}>MONTO BANFANB</div>
-                              <span style={{ fontSize: '12px', fontWeight: 'bold' }}>BsF {formatearNumero(c.montoBanfanb)}</span>
+                              <span style={{ fontSize: '12px', fontWeight: 'bold' }}>BsF {formatearNumero(mBanfanbVal)}</span>
                             </div>
                           </div>
                         </div>
@@ -444,7 +442,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Encabezado del mes activo seleccionado */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
@@ -461,7 +458,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Tarjetas de métricas de cobranza */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
                   <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
