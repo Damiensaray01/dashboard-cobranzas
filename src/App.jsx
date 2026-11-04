@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, Users, DollarSign, Award, RefreshCw, 
-  MessageSquare, DollarSignIcon, Share2, 
-  LayoutDashboard, TrendingUpIcon, Bot, Sparkles, CheckCircle2, AlertTriangle, 
-  Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon
+  Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -33,9 +31,10 @@ export default function App() {
     try {
       const response = await fetch(APPS_SCRIPT_URL);
       const data = await response.json();
-      setMesesData(data);
-      const mesesDisponibles = Object.keys(data);
-      if (mesesDisponibles.length > 0 && !data[mesActual]) {
+      console.log("Datos recibidos de Google Sheets:", data); // Para verificar en F12
+      setMesesData(data || {});
+      const mesesDisponibles = Object.keys(data || {});
+      if (mesesDisponibles.length > 0 && (!data[mesActual])) {
         setMesActual(mesesDisponibles[mesesDisponibles.length - 1]);
       }
     } catch (error) {
@@ -50,13 +49,14 @@ export default function App() {
   }, []);
 
   const data = mesesData[mesActual] || {};
-  const cobranzasMes = data.cobranzasDetalle || {};
+  const cobD = data.cobranzasDetalle || {};
+  const marketingData = data.marketing || {};
 
-  // Lectura robusta de ventas y montos por canales para el mes activo
-  const ventasGeneradasActual = Number(data.ventasGeneradas || data.ventas || 0);
-  const montoPlazaActual = Number(data.montoBancoPlaza || cobranzasMes.pagosRecurrentesPlaza || 0);
-  const montoBanfanbActual = Number(data.montoBanfanbVentas || cobranzasMes.montoBanfanb || 0);
-  const montoBanescoActual = Number(data.montoBanescoVentas || cobranzasMes.montoBanesco || 0);
+  // Lectura universal flexible para evitar ceros
+  const ventasGeneradasActual = Number(data.ventasGeneradas ?? data.ventas ?? data.ventasTotales ?? 0);
+  const montoPlazaActual = Number(data.montoBancoPlaza ?? data.bancoPlaza ?? cobD.pagosRecurrentesPlaza ?? 0);
+  const montoBanfanbActual = Number(data.montoBanfanbVentas ?? data.banfanbVentas ?? cobD.montoBanfanb ?? 0);
+  const montoBanescoActual = Number(data.montoBanescoVentas ?? data.banescoVentas ?? cobD.montoBanesco ?? 0);
 
   const listaMeses = Object.keys(mesesData);
 
@@ -68,19 +68,19 @@ export default function App() {
     return mapaMeses[String(key).trim()] || `Mes ${key}`;
   };
 
-  const solventesMes = Number(cobranzasMes.solventes || 0);
-  const mora1Mes = Number(cobranzasMes.morosos1Mes || 0);
-  const mora2Meses = Number(cobranzasMes.morosos2Meses || 0);
-  const mora3Meses = Number(cobranzasMes.morosos3Meses || 0);
-  const moraMas3Meses = Number(cobranzasMes.morososMas3Meses || 0);
+  const solventesMes = Number(cobD.solventes ?? 0);
+  const mora1Mes = Number(cobD.morosos1Mes ?? 0);
+  const mora2Meses = Number(cobD.morosos2Meses ?? 0);
+  const mora3Meses = Number(cobD.morosos3Meses ?? 0);
+  const moraMas3Meses = Number(cobD.morososMas3Meses ?? 0);
   const moraTempranaMes = mora1Mes + mora2Meses + mora3Meses;
 
-  const cobradosBanescoActual = Number(cobranzasMes.cobradosBanesco || 0);
-  const cobradosBanfanbActual = Number(cobranzasMes.cobradosBanfanb || 0);
-  const bddRegistros123Actual = Number(cobranzasMes.bddRegistros123 || 0);
-  const bddRegistrosMas3Actual = Number(cobranzasMes.bddRegistrosMas3 || 0);
-  const compromiso123Actual = Number(cobranzasMes.compromiso123Cuotas || 0);
-  const compromisoMas3Actual = Number(cobranzasMes.compromisoMas3Cuotas || 0);
+  const cobradosBanescoActual = Number(cobD.cobradosBanesco ?? 0);
+  const cobradosBanfanbActual = Number(cobD.cobradosBanfanb ?? 0);
+  const bddRegistros123Actual = Number(cobD.bddRegistros123 ?? 0);
+  const bddRegistrosMas3Actual = Number(cobD.bddRegistrosMas3 ?? 0);
+  const compromiso123Actual = Number(cobD.compromiso123Cuotas ?? 0);
+  const compromisoMas3Actual = Number(cobD.compromisoMas3Cuotas ?? 0);
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
@@ -92,19 +92,19 @@ export default function App() {
 
   const quincenaInfo = obtenerCompromisosQuincena(mesActual);
 
-  const totalImporteMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.importe || 0), 0);
-  const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances || 0), 0);
-  const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes || 0), 0);
+  const totalImporteMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.importe ?? 0), 0);
+  const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances ?? 0), 0);
+  const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes ?? 0), 0);
 
   const dataGraficoGlobal = listaMeses.map(m => {
     const item = mesesData[m] || {};
-    const cobD = item.cobranzasDetalle || {};
+    const cd = item.cobranzasDetalle || {};
     return {
       mes: obtenerNombreMes(m),
-      Ventas: Number(item.ventasGeneradas || item.ventas || 0),
-      Plaza: Number(item.montoBancoPlaza || cobD.pagosRecurrentesPlaza || 0),
-      Banfanb: Number(item.montoBanfanbVentas || cobD.montoBanfanb || 0),
-      Banesco: Number(item.montoBanescoVentas || cobD.montoBanesco || 0)
+      Ventas: Number(item.ventasGeneradas ?? item.ventas ?? 0),
+      Plaza: Number(item.montoBancoPlaza ?? cd.pagosRecurrentesPlaza ?? 0),
+      Banfanb: Number(item.montoBanfanbVentas ?? cd.montoBanfanb ?? 0),
+      Banesco: Number(item.montoBanescoVentas ?? cd.montoBanesco ?? 0)
     };
   });
 
@@ -274,11 +274,11 @@ export default function App() {
                       <tbody>
                         {listaMeses.map((mes) => {
                           const item = mesesData[mes] || {};
-                          const cobD = item.cobranzasDetalle || {};
-                          const vGen = Number(item.ventasGeneradas || item.ventas || 0);
-                          const mPlaza = Number(item.montoBancoPlaza || cobD.pagosRecurrentesPlaza || 0);
-                          const mBanfanb = Number(item.montoBanfanbVentas || cobD.montoBanfanb || 0);
-                          const mBanesco = Number(item.montoBanescoVentas || cobD.montoBanesco || 0);
+                          const cd = item.cobranzasDetalle || {};
+                          const vGen = Number(item.ventasGeneradas ?? item.ventas ?? 0);
+                          const mPlaza = Number(item.montoBancoPlaza ?? cd.pagosRecurrentesPlaza ?? 0);
+                          const mBanfanb = Number(item.montoBanfanbVentas ?? cd.montoBanfanb ?? 0);
+                          const mBanesco = Number(item.montoBanescoVentas ?? cd.montoBanesco ?? 0);
                           return (
                             <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.08)') : 'transparent' }}>
                               <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#f97316' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
@@ -393,8 +393,6 @@ export default function App() {
 
             {subCategoria === "cobranzas" && (
               <div style={{ display: 'grid', gap: '20px' }}>
-                
-                {/* Tarjetas interactivas corregidas con lectura directa de Monto Banfanb */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                     <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
@@ -409,8 +407,8 @@ export default function App() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '10px' }}>
                     {listaMeses.map((mes) => {
                       const itemMes = mesesData[mes] || {};
-                      const c = itemMes.cobranzasDetalle || {};
-                      const mBanfanbVal = Number(itemMes.montoBanfanbVentas || c.montoBanfanb || 0);
+                      const cd = itemMes.cobranzasDetalle || {};
+                      const mBanfanbVal = Number(itemMes.montoBanfanbVentas ?? itemMes.banfanbVentas ?? cd.montoBanfanb ?? 0);
                       const esActivo = mes === mesActual;
                       return (
                         <div 
@@ -454,7 +452,7 @@ export default function App() {
                   </div>
                   <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
                     <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Recaudación Mensual</span>
-                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(cobranzasMes.recaudacionMensual)}</span>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(cobD.recaudacionMensual)}</span>
                   </div>
                 </div>
 
