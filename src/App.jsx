@@ -10,9 +10,13 @@ import {
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
+// Formateador estricto con puntos de miles y comas decimales
 const formatearNumero = (valor) => {
   const num = Number(valor) || 0;
-  return new Intl.NumberFormat('es-ES').format(num);
+  return new Intl.NumberFormat('es-ES', { 
+    minimumFractionDigits: num % 1 !== 0 ? 2 : 0,
+    maximumFractionDigits: 2 
+  }).format(num);
 };
 
 export default function App() {
@@ -117,11 +121,11 @@ export default function App() {
     const entradaEstilo = {
       width: '100vw',
       minHeight: '100vh',
-      backgroundImage: `url('/Logo6.png')`,
-      backgroundSize: 'contain', // Muestra la imagen completa sin recortar
+      backgroundImage: `url('/logo6.png')`,
+      backgroundSize: 'contain',
       backgroundPosition: 'center center',
       backgroundRepeat: 'no-repeat',
-      backgroundColor: temaOscuro ? '#0b0f19' : '#f1f5f9', // Color de soporte para los espacios si la proporción varía
+      backgroundColor: temaOscuro ? '#0b0f19' : '#f1f5f9',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -207,7 +211,7 @@ export default function App() {
         <div>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
-              <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#b5ce27' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
+              <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#f97316' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
               <button onClick={() => setSubCategoria("marketing")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "marketing" ? '#14b8a6' : 'transparent', color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto }}>📢 Marketing</button>
               <button onClick={() => setSubCategoria("cobranzas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "cobranzas" ? '#3b82f6' : 'transparent', color: subCategoria === "cobranzas" ? '#ffffff' : tema.subtexto }}>💳 Cobranzas</button>
             </div>
@@ -242,7 +246,7 @@ export default function App() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
                 <div style={{ backgroundColor: tema.card, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}` }}>
                   <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: tema.texto, margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <BarChart3 style={{ width: '16px', height: '16px', color: '#e2e05b' }} /> Comportamiento Global de Ventas (Unidades)
+                    <BarChart3 style={{ width: '16px', height: '16px', color: '#f97316' }} /> Comportamiento Global de Ventas (Unidades)
                   </h4>
                   <div style={{ height: '180px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -250,7 +254,7 @@ export default function App() {
                         <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                         <YAxis stroke={tema.subtexto} fontSize={10} />
                         <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                        <Bar dataKey="Ventas" fill="#e2cc4b" radius={[4, 4, 0, 0]} name="Ventas Generadas" />
+                        <Bar dataKey="Ventas" fill="#f97316" radius={[4, 4, 0, 0]} name="Ventas Generadas" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
