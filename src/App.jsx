@@ -281,7 +281,7 @@ export default function App() {
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '30px', objectFit: 'contain' }} />
                   <div>
                     <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CreditCard style={{ width: '18px', height: '18px', color: '#3b82f6' }} /> Comportamiento de Recaudación Mensual - Cobranzas
+                      <CreditCard style={{ width: '18px', height: '18px', color: '#3b82f6' }} /> Comportamiento de Recaudación Mensual - Cobranzas BANFANB
                     </h2>
                     <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguros Horizonte, S.A.</p>
                   </div>
