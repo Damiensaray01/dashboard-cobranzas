@@ -117,7 +117,7 @@ export default function App() {
     const entradaEstilo = {
       width: '100vw',
       minHeight: '100vh',
-      backgroundImage: `url('/logo6.png')`,
+      backgroundImage: `url('/Logo6.png')`,
       backgroundSize: 'cover',
       backgroundPosition: 'center center',
       backgroundRepeat: 'no-repeat',
