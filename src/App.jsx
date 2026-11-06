@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -79,6 +79,12 @@ export default function App() {
   const bddRegistrosMas3Actual = Number(cobD.bddRegistrosMas3 ?? 0);
   const compromiso123Actual = Number(cobD.compromiso123Cuotas ?? 0);
   const compromisoMas3Actual = Number(cobD.compromisoMas3Cuotas ?? 0);
+
+  // Nuevas métricas de renovaciones desde cobranzasDetalle (columnas AR, AS, AT)
+  const clientesRenovaciones = Number(cobD.clientesRenovaciones ?? 0);
+  const renovacionesPendientes = Number(cobD.renovacionesPendientes ?? 0);
+  const renovacionesCobradas = Number(cobD.renovacionesCobradas ?? 0);
+  const porcentajeImpactoRenovaciones = clientesRenovaciones > 0 ? ((renovacionesCobradas / clientesRenovaciones) * 100).toFixed(1) : "0.0";
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
@@ -255,7 +261,6 @@ export default function App() {
                         <YAxis stroke={tema.subtexto} fontSize={10} />
                         <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
                         <Bar dataKey="Ventas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Generadas">
-                          {/* Números directamente sobre las barras */}
                           <LabelList dataKey="Ventas" position="top" fill={tema.texto} fontSize={11} fontWeight="bold" />
                         </Bar>
                       </BarChart>
@@ -479,6 +484,48 @@ export default function App() {
                 <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
                   <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Recaudación Mensual</span>
                   <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(cobD.recaudacionMensual)}</span>
+                </div>
+              </div>
+
+              {/* NUEVA SECCIÓN: Seguimiento de Renovaciones en la pestaña de Cobranzas */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                  <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
+                  <div>
+                    <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
+                      Seguimiento de Renovaciones ({obtenerNombreMes(mesActual)})
+                    </h3>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Control de cartera y efectividad de renovación</p>
+                  </div>
+                </div>
+
+                {/* Tarjetas con métricas y % de Impacto */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '12px', padding: '16px', border: `1px solid ${tema.border}`, borderLeft: '4px solid #3b82f6' }}>
+                    <span style={{ fontSize: '11px', color: tema.subtexto, textTransform: 'uppercase', fontWeight: 'bold' }}>Clientes Renovaciones</span>
+                    <h4 style={{ fontSize: '22px', fontWeight: 'bold', color: tema.texto, margin: '6px 0 0 0' }}>{formatearNumero(clientesRenovaciones)}</h4>
+                  </div>
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '12px', padding: '16px', border: `1px solid ${tema.border}`, borderLeft: '4px solid #f59e0b' }}>
+                    <span style={{ fontSize: '11px', color: tema.subtexto, textTransform: 'uppercase', fontWeight: 'bold' }}>Renovaciones Pendientes</span>
+                    <h4 style={{ fontSize: '22px', fontWeight: 'bold', color: '#f59e0b', margin: '6px 0 0 0' }}>{formatearNumero(renovacionesPendientes)}</h4>
+                  </div>
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '12px', padding: '16px', border: `1px solid ${tema.border}`, borderLeft: '4px solid #10b981' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11px', color: tema.subtexto, textTransform: 'uppercase', fontWeight: 'bold' }}>Renovaciones Cobradas</span>
+                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '10px' }}>
+                        Impacto: {porcentajeImpactoRenovaciones}%
+                      </span>
+                    </div>
+                    <h4 style={{ fontSize: '22px', fontWeight: 'bold', color: '#10b981', margin: '6px 0 0 0' }}>{formatearNumero(renovacionesCobradas)}</h4>
+                  </div>
+                </div>
+
+                {/* Observación Inteligente para Renovaciones */}
+                <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <Sparkles style={{ width: '16px', height: '16px', color: tema.iaTexto, flexShrink: 0, marginTop: '2px' }} />
+                  <p style={{ fontSize: '12px', color: tema.texto, margin: 0, lineHeight: '1.4' }}>
+                    <strong>Observación Inteligente de Renovaciones:</strong> El mes de <strong>{obtenerNombreMes(mesActual)}</strong> registra un impacto de renovación del <strong>{porcentajeImpactoRenovaciones}%</strong> con {formatearNumero(renovacionesCobradas)} pólizas efectivas cobradas. Se sugiere acelerar gestiones sobre los {formatearNumero(renovacionesPendientes)} casos pendientes para maximizar la retención de cartera.
+                  </p>
                 </div>
               </div>
 
