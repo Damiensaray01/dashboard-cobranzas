@@ -80,11 +80,18 @@ export default function App() {
   const compromiso123Actual = Number(cobD.compromiso123Cuotas ?? 0);
   const compromisoMas3Actual = Number(cobD.compromisoMas3Cuotas ?? 0);
 
-  // Nuevas métricas de renovaciones desde cobranzasDetalle (columnas AR, AS, AT)
+  // Métricas de renovaciones
   const clientesRenovaciones = Number(cobD.clientesRenovaciones ?? 0);
   const renovacionesPendientes = Number(cobD.renovacionesPendientes ?? 0);
   const renovacionesCobradas = Number(cobD.renovacionesCobradas ?? 0);
   const porcentajeImpactoRenovaciones = clientesRenovaciones > 0 ? ((renovacionesCobradas / clientesRenovaciones) * 100).toFixed(1) : "0.0";
+
+  // Data para el nuevo gráfico de renovaciones
+  const dataGraficoRenovaciones = [
+    { categoria: 'Total Clientes', Cantidad: clientesRenovaciones },
+    { categoria: 'Pendientes', Cantidad: renovacionesPendientes },
+    { categoria: 'Cobradas', Cantidad: renovacionesCobradas }
+  ];
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
@@ -471,23 +478,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}`, flexWrap: 'wrap', gap: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
-                  <div>
-                    <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento de Cobranza Mes {obtenerNombreMes(mesActual)}
-                    </h2>
-                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
-                  </div>
-                </div>
-                <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
-                  <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Recaudación Mensual</span>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(cobD.recaudacionMensual)}</span>
-                </div>
-              </div>
-
-              {/* NUEVA SECCIÓN: Seguimiento de Renovaciones en la pestaña de Cobranzas */}
+              {/* 1. SEGUIMIENTO DE RENOVACIONES (Colocado PRIMERO con su gráfico de barras) */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                   <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
@@ -520,12 +511,48 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* GRÁFICO DE BARRAS ADICIONAL PARA RENOVACIONES */}
+                <div style={{ backgroundColor: tema.bg, padding: '14px', borderRadius: '12px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
+                  <h4 style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto, margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    📊 Distribución Gráfica de Renovaciones
+                  </h4>
+                  <div style={{ height: '170px', width: '100%' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={dataGraficoRenovaciones} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
+                        <XAxis dataKey="categoria" stroke={tema.subtexto} fontSize={11} />
+                        <YAxis stroke={tema.subtexto} fontSize={11} />
+                        <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
+                        <Bar dataKey="Cantidad" fill="#eab308" radius={[4, 4, 0, 0]} name="Cantidad">
+                          <LabelList dataKey="Cantidad" position="top" fill={tema.texto} fontSize={11} fontWeight="bold" />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
                 {/* Observación Inteligente para Renovaciones */}
                 <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                   <Sparkles style={{ width: '16px', height: '16px', color: tema.iaTexto, flexShrink: 0, marginTop: '2px' }} />
                   <p style={{ fontSize: '12px', color: tema.texto, margin: 0, lineHeight: '1.4' }}>
                     <strong>Observación Inteligente de Renovaciones:</strong> El mes de <strong>{obtenerNombreMes(mesActual)}</strong> registra un impacto de renovación del <strong>{porcentajeImpactoRenovaciones}%</strong> con {formatearNumero(renovacionesCobradas)} pólizas efectivas cobradas. Se sugiere acelerar gestiones sobre los {formatearNumero(renovacionesPendientes)} casos pendientes para maximizar la retención de cartera.
                   </p>
+                </div>
+              </div>
+
+              {/* 2. SEGUIMIENTO DE COBRANZA (Colocado ABAJO de Renovaciones como solicitado) */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}`, flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
+                  <div>
+                    <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento de Cobranza Mes {obtenerNombreMes(mesActual)}
+                    </h2>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
+                  </div>
+                </div>
+                <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
+                  <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Recaudación Mensual</span>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(cobD.recaudacionMensual)}</span>
                 </div>
               </div>
 
