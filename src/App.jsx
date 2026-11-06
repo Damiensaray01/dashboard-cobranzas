@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  LineChart, Line, CartesianGrid, LabelList
+  LineChart, Line, CartesianGrid, LabelList, Legend
 } from 'recharts';
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
@@ -80,18 +80,23 @@ export default function App() {
   const compromiso123Actual = Number(cobD.compromiso123Cuotas ?? 0);
   const compromisoMas3Actual = Number(cobD.compromisoMas3Cuotas ?? 0);
 
-  // Métricas de renovaciones
+  // Métricas de renovaciones del mes actual
   const clientesRenovaciones = Number(cobD.clientesRenovaciones ?? 0);
   const renovacionesPendientes = Number(cobD.renovacionesPendientes ?? 0);
   const renovacionesCobradas = Number(cobD.renovacionesCobradas ?? 0);
   const porcentajeImpactoRenovaciones = clientesRenovaciones > 0 ? ((renovacionesCobradas / clientesRenovaciones) * 100).toFixed(1) : "0.0";
 
-  // Data para el nuevo gráfico de renovaciones
-  const dataGraficoRenovaciones = [
-    { categoria: 'Total Clientes', Cantidad: clientesRenovaciones },
-    { categoria: 'Pendientes', Cantidad: renovacionesPendientes },
-    { categoria: 'Cobradas', Cantidad: renovacionesCobradas }
-  ];
+  // Data general por mes para el gráfico comparativo de renovaciones
+  const dataGraficoRenovacionesGeneral = listaMeses.map(m => {
+    const itemMes = mesesData[m] || {};
+    const cdItem = itemMes.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      "Total Clientes": Number(cdItem.clientesRenovaciones ?? 0),
+      "Pendientes": Number(cdItem.renovacionesPendientes ?? 0),
+      "Cobradas": Number(cdItem.renovacionesCobradas ?? 0)
+    };
+  });
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
@@ -478,7 +483,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 1. SEGUIMIENTO DE RENOVACIONES (Colocado PRIMERO con su gráfico de barras) */}
+              {/* 1. SEGUIMIENTO DE RENOVACIONES (Con gráfico general de comportamiento por mes) */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                   <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
@@ -486,7 +491,7 @@ export default function App() {
                     <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
                       Seguimiento de Renovaciones ({obtenerNombreMes(mesActual)})
                     </h3>
-                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Control de cartera y efectividad de renovación</p>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Control general de cartera y comportamiento por meses</p>
                   </div>
                 </div>
 
@@ -511,19 +516,26 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* GRÁFICO DE BARRAS ADICIONAL PARA RENOVACIONES */}
+                {/* GRÁFICO DE BARRAS GENERAL POR MESES PARA RENOVACIONES */}
                 <div style={{ backgroundColor: tema.bg, padding: '14px', borderRadius: '12px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
                   <h4 style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto, margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    📊 Distribución Gráfica de Renovaciones
+                    📊 Comportamiento General de Renovaciones por Mes
                   </h4>
-                  <div style={{ height: '170px', width: '100%' }}>
+                  <div style={{ height: '220px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={dataGraficoRenovaciones} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
-                        <XAxis dataKey="categoria" stroke={tema.subtexto} fontSize={11} />
+                      <BarChart data={dataGraficoRenovacionesGeneral} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
+                        <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} />
                         <YAxis stroke={tema.subtexto} fontSize={11} />
                         <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                        <Bar dataKey="Cantidad" fill="#eab308" radius={[4, 4, 0, 0]} name="Cantidad">
-                          <LabelList dataKey="Cantidad" position="top" fill={tema.texto} fontSize={11} fontWeight="bold" />
+                        <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '5px' }} />
+                        <Bar dataKey="Total Clientes" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Total Clientes">
+                          <LabelList dataKey="Total Clientes" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                        </Bar>
+                        <Bar dataKey="Pendientes" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Pendientes">
+                          <LabelList dataKey="Pendientes" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                        </Bar>
+                        <Bar dataKey="Cobradas" fill="#10b981" radius={[4, 4, 0, 0]} name="Cobradas">
+                          <LabelList dataKey="Cobradas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -539,7 +551,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 2. SEGUIMIENTO DE COBRANZA (Colocado ABAJO de Renovaciones como solicitado) */}
+              {/* 2. SEGUIMIENTO DE COBRANZA (Abajo de Renovaciones) */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}`, flexWrap: 'wrap', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
