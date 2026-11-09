@@ -23,7 +23,7 @@ export default function App() {
   const [modoInicio, setModoInicio] = useState(true);
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
-  const [mesActual, setMesActual] = useState("9");
+  const [mesActual, setMesActual] = useState("Septiembre");
   const [subCategoria, setSubCategoria] = useState("ventas");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -60,8 +60,8 @@ export default function App() {
 
   const obtenerNombreMes = (key) => {
     const mapaMeses = {
-      "6": "Junio","7": "Julio", "8": "Agosto", "9": "Septiembre", "10": "Octubre",
-      "Junio": "Junio","Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre"
+      "6": "Junio", "7": "Julio", "8": "Agosto", "9": "Septiembre", "10": "Octubre",
+      "Junio": "Junio", "Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre"
     };
     return mapaMeses[String(key).trim()] || `Mes ${key}`;
   };
@@ -80,7 +80,7 @@ export default function App() {
   const compromiso123Actual = Number(cobD.compromiso123Cuotas ?? 0);
   const compromisoMas3Actual = Number(cobD.compromisoMas3Cuotas ?? 0);
 
-  // Métricas de renovaciones del mes actual
+  // Métricas de renovaciones
   const clientesRenovaciones = Number(cobD.clientesRenovaciones ?? 0);
   const renovacionesPendientes = Number(cobD.renovacionesPendientes ?? 0);
   const renovacionesCobradas = Number(cobD.renovacionesCobradas ?? 0);
@@ -447,11 +447,13 @@ export default function App() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '10px' }}>
+                {/* Tarjetas Mensuales con Recaudación y Clientes Cobrados debajo */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '10px' }}>
                   {listaMeses.map((mes) => {
                     const itemMes = mesesData[mes] || {};
                     const cd = itemMes.cobranzasDetalle || {};
                     const recaudacionMesVal = Number(cd.recaudacionMensual ?? 0);
+                    const clientesCobradosVal = Number(cd.clientesCobradosMes ?? 0);
                     const esActivo = mes === mesActual;
                     return (
                       <div 
@@ -476,6 +478,12 @@ export default function App() {
                             <div style={{ fontSize: '10px', color: '#93c5fd', marginBottom: '2px' }}>RECAUDACIÓN MENSUAL</div>
                             <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{formatearNumero(recaudacionMesVal)}</span>
                           </div>
+                          
+                          {/* Cantidad de Clientes Cobrados debajo */}
+                          <div style={{ backgroundColor: tema.card, padding: '6px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                            <div style={{ fontSize: '9px', color: tema.subtexto, marginBottom: '2px', textTransform: 'uppercase' }}>CLIENTES COBRADOS</div>
+                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(clientesCobradosVal)}</span>
+                          </div>
                         </div>
                       </div>
                     );
@@ -483,7 +491,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 1. SEGUIMIENTO DE RENOVACIONES (Con gráfico general de comportamiento por mes) */}
+              {/* 1. SEGUIMIENTO DE RENOVACIONES */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                   <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
@@ -495,7 +503,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Tarjetas con métricas y % de Impacto */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
                   <div style={{ backgroundColor: tema.bg, borderRadius: '12px', padding: '16px', border: `1px solid ${tema.border}`, borderLeft: '4px solid #3b82f6' }}>
                     <span style={{ fontSize: '11px', color: tema.subtexto, textTransform: 'uppercase', fontWeight: 'bold' }}>Clientes Renovaciones</span>
@@ -516,7 +523,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* GRÁFICO DE BARRAS GENERAL POR MESES PARA RENOVACIONES */}
                 <div style={{ backgroundColor: tema.bg, padding: '14px', borderRadius: '12px', border: `1px solid ${tema.border}`, marginBottom: '16px' }}>
                   <h4 style={{ fontSize: '12px', fontWeight: 'bold', color: tema.texto, margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     📊 Comportamiento General de Renovaciones por Mes
@@ -542,7 +548,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Observación Inteligente para Renovaciones */}
                 <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '10px', padding: '12px 16px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                   <Sparkles style={{ width: '16px', height: '16px', color: tema.iaTexto, flexShrink: 0, marginTop: '2px' }} />
                   <p style={{ fontSize: '12px', color: tema.texto, margin: 0, lineHeight: '1.4' }}>
@@ -551,7 +556,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 2. SEGUIMIENTO DE COBRANZA (Abajo de Renovaciones) */}
+              {/* 2. SEGUIMIENTO DE COBRANZA */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}`, flexWrap: 'wrap', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
