@@ -682,7 +682,9 @@ export default function App() {
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', width: '100%', borderTop: `1px solid ${tema.border}`, borderBottom: `1px solid ${tema.border}`, padding: '10px 0', marginBottom: '8px' }}>
                     <div>
                       <span style={{ fontSize: '10px', color: tema.subtexto }}>Clientes Cobrados</span>
-                      <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>{formatearNumero(Math.round(montoPlazaActual / 5818) || 86)}</p>
+                      <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>
+                        {montoPlazaActual > 0 ? formatearNumero(Math.round(montoPlazaActual / 5818)) : 0}
+                      </p>
                     </div>
                     <div>
                       <span style={{ fontSize: '10px', color: tema.subtexto }}>Monto Total</span>
