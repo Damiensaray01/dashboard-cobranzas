@@ -300,7 +300,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN CON NUEVAS COLUMNAS AL LADO DE VENTAS GENERADAS */}
+              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN CON COBRADAS VENTAS Y % IMPACTO VENTAS */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN
@@ -311,8 +311,8 @@ export default function App() {
                       <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>RENOVACIONES COBRADAS</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
                         <th style={{ padding: '10px' }}>BANCO PLAZA</th>
                         <th style={{ padding: '10px' }}>BANFANB VENTAS</th>
                         <th style={{ padding: '10px' }}>BANESCO VENTAS</th>
@@ -323,17 +323,23 @@ export default function App() {
                         const item = mesesData[mes] || {};
                         const cd = item.cobranzasDetalle || {};
                         const vGen = Number(item.ventasGeneradas ?? item.ventas ?? 0);
-                        const renCob = Number(cd.renovacionesCobradas ?? 0);
                         const cobVentas = Number(cd.cobradasVentas ?? 0);
+                        
+                        let pctImpacto = cd.porcentajeImpacto ?? 0;
+                        if (typeof pctImpacto === 'number') {
+                          pctImpacto = (pctImpacto > 1 ? pctImpacto : pctImpacto * 100).toFixed(2).replace('.', ',') + '%';
+                        }
+
                         const mPlaza = Number(item.montoBancoPlaza ?? cd.pagosRecurrentesPlaza ?? 0);
                         const mBanfanb = Number(item.montoBanfanbVentas ?? cd.montoBanfanb ?? 0);
                         const mBanesco = Number(item.montoBanescoVentas ?? cd.montoBanesco ?? 0);
+
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
                             <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
                             <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(vGen)}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(renCob)}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>{formatearNumero(cobVentas)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{pctImpacto}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mPlaza)}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanfanb)}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanesco)}</td>
@@ -454,7 +460,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Tarjetas Mensuales con Recaudación y Clientes Cobrados debajo */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '10px' }}>
                   {listaMeses.map((mes) => {
                     const itemMes = mesesData[mes] || {};
@@ -486,7 +491,6 @@ export default function App() {
                             <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{formatearNumero(recaudacionMesVal)}</span>
                           </div>
                           
-                          {/* Cantidad de Clientes Cobrados debajo */}
                           <div style={{ backgroundColor: tema.card, padding: '6px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
                             <div style={{ fontSize: '9px', color: tema.subtexto, marginBottom: '2px', textTransform: 'uppercase' }}>CLIENTES COBRADOS</div>
                             <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(clientesCobradosVal)}</span>
