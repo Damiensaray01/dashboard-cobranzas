@@ -8,7 +8,7 @@ import {
   LineChart, Line, CartesianGrid, LabelList, Legend
 } from 'recharts';
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5SO7kNuzY0Gztr6E1gZ85NY4uEYecz90TZua3kEfpRMvV5yeP0MvmH07PDrYAiddm/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
 // Formateador estricto con puntos de miles y comas decimales
 const formatearNumero = (valor) => {
@@ -175,7 +175,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -300,6 +300,7 @@ export default function App() {
                 </div>
               </div>
 
+              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN CON NUEVAS COLUMNAS AL LADO DE VENTAS GENERADAS */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN
@@ -310,6 +311,8 @@ export default function App() {
                       <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>RENOVACIONES COBRADAS</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
                         <th style={{ padding: '10px' }}>BANCO PLAZA</th>
                         <th style={{ padding: '10px' }}>BANFANB VENTAS</th>
                         <th style={{ padding: '10px' }}>BANESCO VENTAS</th>
@@ -320,6 +323,8 @@ export default function App() {
                         const item = mesesData[mes] || {};
                         const cd = item.cobranzasDetalle || {};
                         const vGen = Number(item.ventasGeneradas ?? item.ventas ?? 0);
+                        const renCob = Number(cd.renovacionesCobradas ?? 0);
+                        const cobVentas = Number(cd.cobradasVentas ?? 0);
                         const mPlaza = Number(item.montoBancoPlaza ?? cd.pagosRecurrentesPlaza ?? 0);
                         const mBanfanb = Number(item.montoBanfanbVentas ?? cd.montoBanfanb ?? 0);
                         const mBanesco = Number(item.montoBanescoVentas ?? cd.montoBanesco ?? 0);
@@ -327,6 +332,8 @@ export default function App() {
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
                             <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
                             <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(vGen)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{formatearNumero(renCob)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>{formatearNumero(cobVentas)}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mPlaza)}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanfanb)}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanesco)}</td>
