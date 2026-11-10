@@ -8,7 +8,7 @@ import {
   LineChart, Line, CartesianGrid, LabelList, Legend
 } from 'recharts';
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5SO7kNuzY0Gztr6E1gZ85NY4uEYecz90TZua3kEfpRMvV5yeP0MvmH07PDrYAiddm/exec";
 
 // Formateador estricto con puntos de miles y comas decimales
 const formatearNumero = (valor) => {
