@@ -86,7 +86,6 @@ export default function App() {
   const renovacionesCobradas = Number(cobD.renovacionesCobradas ?? 0);
   const porcentajeImpactoRenovaciones = clientesRenovaciones > 0 ? ((renovacionesCobradas / clientesRenovaciones) * 100).toFixed(1) : "0.0";
 
-  // Data general por mes para el gráfico comparativo de renovaciones
   const dataGraficoRenovacionesGeneral = listaMeses.map(m => {
     const itemMes = mesesData[m] || {};
     const cdItem = itemMes.cobranzasDetalle || {};
@@ -175,7 +174,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -300,7 +299,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN CON COBRADAS VENTAS Y % IMPACTO VENTAS */}
+              {/* 1. CONSOLIDADO DE VENTAS Y RECAUDACIÓN */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN
@@ -343,6 +342,52 @@ export default function App() {
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mPlaza)}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanfanb)}</td>
                             <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanesco)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* 2. SEGMENTACIÓN DE VENTAS POR BANCO */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
+                  SEGMENTACIÓN DE VENTAS POR BANCO
+                </h3>
+                <div style={{ overflowX: 'auto', width: '100%' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                        <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
+                        <th style={{ padding: '10px' }}>CLIENTES PLAZA</th>
+                        <th style={{ padding: '10px' }}>CLIENTES BANESCO</th>
+                        <th style={{ padding: '10px' }}>CLIENTES BANFANB</th>
+                        <th style={{ padding: '10px', color: '#3b82f6' }}>MONTO PLAZA (BsF)</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>MONTO BANESCO (BsF)</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>MONTO BANFANB (BsF)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {listaMeses.map((mes) => {
+                        const item = mesesData[mes] || {};
+                        const cd = item.cobranzasDetalle || {};
+                        const cPlaza = Number(cd.clientesCobradosBancoPlazaVentas ?? 0);
+                        const cBanesco = Number(cd.clientesCobradosBanescoVentas ?? 0);
+                        const cBanfanb = Number(cd.clientesCobradosBanfanbVentas ?? 0);
+                        const mPlaza = Number(cd.montoCobradoBancoPlazaVentas ?? 0);
+                        const mBanesco = Number(cd.montoCobradoBanescoVentas ?? 0);
+                        const mBanfanb = Number(cd.montoCobradoBanfanbVentas ?? 0);
+
+                        return (
+                          <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(cPlaza)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(cBanesco)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(cBanfanb)}</td>
+                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mPlaza)}</td>
+                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanesco)}</td>
+                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanfanb)}</td>
                           </tr>
                         );
                       })}
