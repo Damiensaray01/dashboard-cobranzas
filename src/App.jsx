@@ -361,11 +361,11 @@ export default function App() {
                       <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>CLIENTES PLAZA</th>
-                        <th style={{ padding: '10px' }}>CLIENTES BANESCO</th>
                         <th style={{ padding: '10px' }}>CLIENTES BANFANB</th>
+                        <th style={{ padding: '10px' }}>CLIENTES BANESCO</th>
                         <th style={{ padding: '10px', color: '#3b82f6' }}>MONTO PLAZA (BsF)</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>MONTO BANESCO (BsF)</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>MONTO BANFANB (BsF)</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>MONTO BANESCO (BsF)</th>
                       </tr>
                     </thead>
                     <tbody>
