@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, UserCheck, UserX, CheckCircle2
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -10,7 +10,7 @@ import {
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
-// Datos de fallback del Ranking de Asesores por si no viene por API
+// Datos de fallback por si falla el fetch
 const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, pct: '100,00%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, pct: '94,74%', status: 'Activo' },
@@ -56,7 +56,6 @@ const RESUMEN_ASESORES_DEFAULT = [
   { mes: 'Diciembre', ventas: 0, cobradas: 0, pct: '0,00%' }
 ];
 
-// Formateador estricto con puntos de miles y comas decimales
 const formatearNumero = (valor) => {
   const num = Number(valor) || 0;
   return new Intl.NumberFormat('es-ES', { 
@@ -69,6 +68,7 @@ export default function App() {
   const [modoInicio, setModoInicio] = useState(true);
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
+  const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
   const [mesActual, setMesActual] = useState("Septiembre");
   const [subCategoria, setSubCategoria] = useState("ventas");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -77,10 +77,22 @@ export default function App() {
     setIsRefreshing(true);
     try {
       const response = await fetch(APPS_SCRIPT_URL);
-      const data = await response.json();
-      setMesesData(data || {});
-      const mesesDisponibles = Object.keys(data || {}).filter(k => k !== 'asesoresData');
-      if (mesesDisponibles.length > 0 && (!data[mesActual])) {
+      const res = await response.json();
+      
+      // Manejo seguro del formato antiguo o nuevo del Apps Script
+      const datosMeses = res.meses ? res.meses : Object.keys(res).reduce((acc, k) => {
+        if (k !== 'asesoresData') acc[k] = res[k];
+        return acc;
+      }, {});
+
+      setMesesData(datosMeses || {});
+
+      if (res.asesoresData && res.asesoresData.ranking && res.asesoresData.ranking.length > 0) {
+        setAsesoresData(res.asesoresData);
+      }
+
+      const mesesDisponibles = Object.keys(datosMeses || {});
+      if (mesesDisponibles.length > 0 && !datosMeses[mesActual]) {
         setMesActual(mesesDisponibles[mesesDisponibles.length - 1]);
       }
     } catch (error) {
@@ -102,7 +114,7 @@ export default function App() {
   const montoBanfanbActual = Number(cobD.montoBanfanb ?? 0);
   const montoBanescoActual = Number(cobD.montoBanesco ?? 0);
 
-  const listaMeses = Object.keys(mesesData).filter(k => k !== 'asesoresData');
+  const listaMeses = Object.keys(mesesData);
 
   const obtenerNombreMes = (key) => {
     const mapaMeses = {
@@ -126,7 +138,6 @@ export default function App() {
   const compromiso123Actual = Number(cobD.compromiso123Cuotas ?? 0);
   const compromisoMas3Actual = Number(cobD.compromisoMas3Cuotas ?? 0);
 
-  // Métricas de renovaciones
   const clientesRenovaciones = Number(cobD.clientesRenovaciones ?? 0);
   const renovacionesPendientes = Number(cobD.renovacionesPendientes ?? 0);
   const renovacionesCobradas = Number(cobD.renovacionesCobradas ?? 0);
@@ -169,14 +180,9 @@ export default function App() {
     };
   });
 
-  // Datos para pestaña de Asesores
-  const listadoRankingAsesores = mesesData?.asesoresData?.ranking || ASESORES_DATA_DEFAULT;
-  const listadoResumenAsesores = mesesData?.asesoresData?.resumen || RESUMEN_ASESORES_DEFAULT;
-
-  const rankingFiltrado = listadoRankingAsesores.filter(a => {
-    const mesCoincide = String(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase();
-    return mesCoincide;
-  });
+  const rankingFiltrado = (asesoresData.ranking || []).filter(a => 
+    String(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
+  );
 
   const tema = {
     bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
@@ -282,12 +288,15 @@ export default function App() {
 
         <div>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
+            {/* GRUPO DE PESTAÑAS (IZQUIERDA) */}
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
               <button onClick={() => setSubCategoria("marketing")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "marketing" ? '#1e3a8a' : 'transparent', color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto }}>📢 Marketing</button>
               <button onClick={() => setSubCategoria("cobranzas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "cobranzas" ? '#1e3a8a' : 'transparent', color: subCategoria === "cobranzas" ? '#ffffff' : tema.subtexto }}>💳 Cobranzas</button>
               <button onClick={() => setSubCategoria("asesores")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "asesores" ? '#1e3a8a' : 'transparent', color: subCategoria === "asesores" ? '#ffffff' : tema.subtexto }}>👥 Asesores</button>
             </div>
+
+            {/* FILTRO DE MESES (DERECHA - SOLO MESES REALES) */}
             <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               {listaMeses.map((mes) => (
                 <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#1e3a8a' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{obtenerNombreMes(mes)}</button>
@@ -355,7 +364,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 1. CONSOLIDADO DE VENTAS Y RECAUDACIÓN */}
+              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN
@@ -406,7 +415,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 2. SEGMENTACIÓN DE VENTAS POR BANCO */}
+              {/* SEGMENTACIÓN DE VENTAS POR BANCO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO
@@ -469,7 +478,7 @@ export default function App() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '20px' }}>
                   {listaMeses.map((mes) => {
-                    const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
+                    const m = mesesData[mes]?.marketing || { importe: 0, alcances: 0, mensajes: 0 };
                     const esActivo = mes === mesActual;
                     return (
                       <div 
@@ -525,7 +534,7 @@ export default function App() {
                     </thead>
                     <tbody>
                       {listaMeses.map((mes) => {
-                        const m = mesesData[mes].marketing || { importe: 0, alcances: 0, mensajes: 0 };
+                        const m = mesesData[mes]?.marketing || { importe: 0, alcances: 0, mensajes: 0 };
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
                             <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
@@ -603,7 +612,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 1. SEGUIMIENTO DE RENOVACIONES */}
+              {/* SEGUIMIENTO DE RENOVACIONES */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                   <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
@@ -668,7 +677,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 2. SEGUIMIENTO DE COBRANZA */}
+              {/* SEGUIMIENTO DE COBRANZA */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tema.card, padding: '16px 20px', borderRadius: '12px', border: `1px solid ${tema.border}`, flexWrap: 'wrap', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <img src="/logo2.png" alt="Logo 2" style={{ height: '32px', objectFit: 'contain' }} />
@@ -676,7 +685,7 @@ export default function App() {
                     <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento de Cobranza Mes {obtenerNombreMes(mesActual)}
                     </h2>
-                    <p style={{ fontSize: '11px', color tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
                 </div>
                 <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
@@ -808,7 +817,7 @@ export default function App() {
             </div>
           )}
 
-          {/* 👥 NUEVA PESTAÑA: ASESORES */}
+          {/* 👥 PESTAÑA CORPORATIVA: ASESORES */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -817,22 +826,22 @@ export default function App() {
                   <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{rankingFiltrado.length}</h3>
                 </div>
                 <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #eab308' }}>
-                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Total Ventas Asesores</p>
+                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Ventas del Mes ({obtenerNombreMes(mesActual)})</p>
                   <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '6px 0 0 0' }}>
                     {formatearNumero(rankingFiltrado.reduce((acc, a) => acc + Number(a.ventas || 0), 0))}
                   </h3>
                 </div>
                 <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #10b981' }}>
-                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Total Ventas Cobradas</p>
+                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Ventas Cobradas ({obtenerNombreMes(mesActual)})</p>
                   <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '6px 0 0 0' }}>
                     {formatearNumero(rankingFiltrado.reduce((acc, a) => acc + Number(a.cobradas || 0), 0))}
                   </h3>
                 </div>
               </div>
 
-              {/* TABLA PRINCIPAL Y SECUNDARIA LADO A LADO */}
+              {/* TABLAS LADO A LADO: RANKING + RESUMEN */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
-                {/* RANKING Y SEGUIMIENTO DE ASESORES */}
+                {/* RANKING INDIVIDUAL DE ASESORES */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                     <Award style={{ width: '20px', height: '20px', color: '#eab308' }} />
@@ -905,7 +914,7 @@ export default function App() {
                         </tr>
                       </thead>
                       <tbody>
-                        {listadoResumenAsesores.map((item, idx) => {
+                        {(asesoresData.resumen || []).map((item, idx) => {
                           const esTotal = String(item.mes).toLowerCase() === 'total';
                           const esActivoMes = String(item.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase();
                           return (
