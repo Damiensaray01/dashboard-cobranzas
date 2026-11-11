@@ -52,9 +52,9 @@ export default function App() {
   const cobD = data.cobranzasDetalle || {};
 
   const ventasGeneradasActual = Number(data.ventasGeneradas ?? data.ventas ?? 0);
-  const montoPlazaActual = Number(data.montoBancoPlaza ?? cobD.pagosRecurrentesPlaza ?? 0);
-  const montoBanfanbActual = Number(data.montoBanfanbVentas ?? cobD.montoBanfanb ?? 0);
-  const montoBanescoActual = Number(data.montoBanescoVentas ?? cobD.montoBanesco ?? 0);
+  const montoPlazaActual = Number(cobD.pagosRecurrentesPlaza ?? 0);
+  const montoBanfanbActual = Number(cobD.montoBanfanb ?? 0);
+  const montoBanescoActual = Number(cobD.montoBanesco ?? 0);
 
   const listaMeses = Object.keys(mesesData);
 
@@ -117,9 +117,9 @@ export default function App() {
     return {
       mes: obtenerNombreMes(m),
       Ventas: Number(item.ventasGeneradas ?? item.ventas ?? 0),
-      Plaza: Number(item.montoBancoPlaza ?? cd.pagosRecurrentesPlaza ?? 0),
-      Banfanb: Number(item.montoBanfanbVentas ?? cd.montoBanfanb ?? 0),
-      Banesco: Number(item.montoBanescoVentas ?? cd.montoBanesco ?? 0)
+      Plaza: Number(cd.pagosRecurrentesPlaza ?? 0),
+      Banfanb: Number(cd.montoBanfanb ?? 0),
+      Banesco: Number(cd.montoBanesco ?? 0)
     };
   });
 
@@ -174,7 +174,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -248,15 +248,15 @@ export default function App() {
                 </div>
                 <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #3b82f6' }}>
                   <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Montos Banco Plaza</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(montoPlazaActual)}</h3>
+                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(Number(data.montoBancoPlaza ?? 0))}</h3>
                 </div>
                 <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #10b981' }}>
                   <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Montos Banfanb Ventas</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(montoBanfanbActual)}</h3>
+                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(Number(data.montoBanfanbVentas ?? 0))}</h3>
                 </div>
                 <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #eab308' }}>
                   <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Monto Banesco Ventas</p>
-                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(montoBanescoActual)}</h3>
+                  <h3 style={{ fontSize: '22px', fontWeight: 'bold', margin: '6px 0 0 0' }}>BsF {formatearNumero(Number(data.montoBanescoVentas ?? 0))}</h3>
                 </div>
               </div>
 
@@ -329,9 +329,9 @@ export default function App() {
                           pctImpacto = (pctImpacto > 1 ? pctImpacto : pctImpacto * 100).toFixed(2).replace('.', ',') + '%';
                         }
 
-                        const mPlaza = Number(item.montoBancoPlaza ?? cd.pagosRecurrentesPlaza ?? 0);
-                        const mBanfanb = Number(item.montoBanfanbVentas ?? cd.montoBanfanb ?? 0);
-                        const mBanesco = Number(item.montoBanescoVentas ?? cd.montoBanesco ?? 0);
+                        const mPlaza = Number(item.montoBancoPlaza ?? 0);
+                        const mBanfanb = Number(item.montoBanfanbVentas ?? 0);
+                        const mBanesco = Number(item.montoBanescoVentas ?? 0);
 
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
@@ -361,11 +361,11 @@ export default function App() {
                       <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>CLIENTES PLAZA</th>
-                        <th style={{ padding: '10px' }}>CLIENTES BANFANB</th>
                         <th style={{ padding: '10px' }}>CLIENTES BANESCO</th>
+                        <th style={{ padding: '10px' }}>CLIENTES BANFANB</th>
                         <th style={{ padding: '10px', color: '#3b82f6' }}>MONTO PLAZA (BsF)</th>
-                        <th style={{ padding: '10px', color: '#eab308' }}>MONTO BANFANB (BsF)</th>
                         <th style={{ padding: '10px', color: '#10b981' }}>MONTO BANESCO (BsF)</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>MONTO BANFANB (BsF)</th>
                       </tr>
                     </thead>
                     <tbody>
