@@ -472,7 +472,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — CONSOLIDADO DE CLIENTES ARRIBA Y GRÁFICO DE MONTOS ABAJO */}
+              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — LOGOS TRANSPARENTES Y COLORES DE GRÁFICO PERSONALIZADOS */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {obtenerNombreMes(mesActual).toUpperCase()}
@@ -484,14 +484,14 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                     <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/LogoPlaza.png" alt="Banco Plaza" style={{ height: '32px', objectFit: 'contain', backgroundColor: '#fff', padding: '4px', borderRadius: '6px' }} />
+                        <img src="/LogoPlaza.png" alt="Banco Plaza" style={{ height: '32px', objectFit: 'contain', background: 'transparent', padding: '0px' }} />
                         <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>Banco Plaza</span>
                       </div>
                       <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       
-                      {/* Consolidado de Clientes Arriba (Todos los Meses) */}
+                      {/* Consolidado de Clientes Arriba */}
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase' }}>
                           CLIENTES PLAZA (CONSOLIDADO MENSUAL)
@@ -525,7 +525,7 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Montos por Mes */}
+                      {/* Gráfico de Evolución de Montos por Mes - Verde */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
@@ -534,7 +534,7 @@ export default function App() {
                               <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                               <YAxis stroke={tema.subtexto} fontSize={10} />
                               <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
-                              <Bar dataKey="Monto" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Monto BsF">
+                              <Bar dataKey="Monto" fill="#10b981" radius={[4, 4, 0, 0]} name="Monto BsF">
                                 <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" formatter={(val) => formatearNumero(val)} />
                               </Bar>
                             </BarChart>
@@ -548,14 +548,14 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                     <div style={{ background: 'linear-gradient(135deg, #0f172a, #0284c7)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/LogoBanesco.png" alt="Banesco" style={{ height: '32px', objectFit: 'contain', backgroundColor: '#fff', padding: '4px', borderRadius: '6px' }} />
+                        <img src="/LogoBanesco.png" alt="Banesco" style={{ height: '32px', objectFit: 'contain', background: 'transparent', padding: '0px' }} />
                         <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>Banesco</span>
                       </div>
                       <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       
-                      {/* Consolidado de Clientes Arriba (Todos los Meses) */}
+                      {/* Consolidado de Clientes Arriba */}
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(2, 132, 199, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#0284c7', textTransform: 'uppercase' }}>
                           CLIENTES BANESCO (CONSOLIDADO MENSUAL)
@@ -589,7 +589,7 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Montos por Mes */}
+                      {/* Gráfico de Evolución de Montos por Mes - Rojo */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
@@ -598,7 +598,7 @@ export default function App() {
                               <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                               <YAxis stroke={tema.subtexto} fontSize={10} />
                               <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
-                              <Bar dataKey="Monto" fill="#0284c7" radius={[4, 4, 0, 0]} name="Monto BsF">
+                              <Bar dataKey="Monto" fill="#ef4444" radius={[4, 4, 0, 0]} name="Monto BsF">
                                 <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" formatter={(val) => formatearNumero(val)} />
                               </Bar>
                             </BarChart>
@@ -612,14 +612,14 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                     <div style={{ background: 'linear-gradient(135deg, #ca8a04, #eab308)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/LogoBANFANB.png" alt="BANFANB" style={{ height: '32px', objectFit: 'contain', backgroundColor: '#fff', padding: '4px', borderRadius: '6px' }} />
+                        <img src="/LogoBANFANB.png" alt="BANFANB" style={{ height: '32px', objectFit: 'contain', background: 'transparent', padding: '0px' }} />
                         <span style={{ color: '#0f172a', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>BANFANB</span>
                       </div>
                       <span style={{ backgroundColor: 'rgba(15,23,42,0.2)', color: '#0f172a', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       
-                      {/* Consolidado de Clientes Arriba (Todos los Meses) */}
+                      {/* Consolidado de Clientes Arriba */}
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(234, 179, 8, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#eab308', textTransform: 'uppercase' }}>
                           CLIENTES BANFANB (CONSOLIDADO MENSUAL)
@@ -653,7 +653,7 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Montos por Mes */}
+                      {/* Gráfico de Evolución de Montos por Mes - Amarillo/Dorado */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
