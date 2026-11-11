@@ -182,31 +182,31 @@ export default function App() {
     };
   });
 
-  // Datos de evolución de clientes por banco
-  const dataClientesBancoPlaza = listaMeses.map(m => {
+  // Datos de evolución de montos por banco para las gráficas
+  const dataEvolucionMontosPlaza = listaMeses.map(m => {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
     return {
       mes: obtenerNombreMes(m),
-      Clientes: Number(cd.clientesCobradosBancoPlazaVentas ?? 0)
+      Monto: Number(cd.montoCobradoBancoPlazaVentas ?? 0)
     };
   });
 
-  const dataClientesBanesco = listaMeses.map(m => {
+  const dataEvolucionMontosBanesco = listaMeses.map(m => {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
     return {
       mes: obtenerNombreMes(m),
-      Clientes: Number(cd.clientesCobradosBanescoVentas ?? 0)
+      Monto: Number(cd.montoCobradoBanescoVentas ?? 0)
     };
   });
 
-  const dataClientesBanfanb = listaMeses.map(m => {
+  const dataEvolucionMontosBanfanb = listaMeses.map(m => {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
     return {
       mes: obtenerNombreMes(m),
-      Clientes: Number(cd.clientesCobradosBanfanbVentas ?? 0)
+      Monto: Number(cd.montoCobradoBanfanbVentas ?? 0)
     };
   });
 
@@ -295,7 +295,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet Seguros Horizonte
+            Biartet & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -472,7 +472,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — MODELO SOLICITADO */}
+              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — CLIENTES ARRIBA Y MONTOS EN GRÁFICO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {obtenerNombreMes(mesActual).toUpperCase()}
@@ -492,7 +492,7 @@ export default function App() {
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
                         <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>CLIENTES PLAZA ({obtenerNombreMes(mesActual).toUpperCase()})</span>
-                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#3b82f6' }}>
+                        <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#3b82f6' }}>
                           {formatearNumero(data.cobranzasDetalle?.clientesCobradosBancoPlazaVentas ?? 0)}
                         </span>
                       </div>
@@ -504,17 +504,17 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Clientes por Mes */}
+                      {/* Gráfico de Evolución de Montos por Mes */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📊 EVOLUCIÓN CLIENTES POR MES</span>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={dataClientesBancoPlaza} margin={{ top: 18, right: 5, left: -25, bottom: 0 }}>
+                            <BarChart data={dataEvolucionMontosPlaza} margin={{ top: 18, right: 5, left: -20, bottom: 0 }}>
                               <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                               <YAxis stroke={tema.subtexto} fontSize={10} />
                               <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
-                              <Bar dataKey="Clientes" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Clientes">
-                                <LabelList dataKey="Clientes" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                              <Bar dataKey="Monto" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Monto BsF">
+                                <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" formatter={(val) => formatearNumero(val)} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
@@ -535,7 +535,7 @@ export default function App() {
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
                         <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>CLIENTES BANESCO ({obtenerNombreMes(mesActual).toUpperCase()})</span>
-                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#0284c7' }}>
+                        <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0284c7' }}>
                           {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanescoVentas ?? 0)}
                         </span>
                       </div>
@@ -547,17 +547,17 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Clientes por Mes */}
+                      {/* Gráfico de Evolución de Montos por Mes */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📊 EVOLUCIÓN CLIENTES POR MES</span>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={dataClientesBanesco} margin={{ top: 18, right: 5, left: -25, bottom: 0 }}>
+                            <BarChart data={dataEvolucionMontosBanesco} margin={{ top: 18, right: 5, left: -20, bottom: 0 }}>
                               <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                               <YAxis stroke={tema.subtexto} fontSize={10} />
                               <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
-                              <Bar dataKey="Clientes" fill="#0284c7" radius={[4, 4, 0, 0]} name="Clientes">
-                                <LabelList dataKey="Clientes" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                              <Bar dataKey="Monto" fill="#0284c7" radius={[4, 4, 0, 0]} name="Monto BsF">
+                                <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" formatter={(val) => formatearNumero(val)} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
@@ -578,7 +578,7 @@ export default function App() {
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
                         <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>CLIENTES BANFANB ({obtenerNombreMes(mesActual).toUpperCase()})</span>
-                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#eab308' }}>
+                        <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#eab308' }}>
                           {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanfanbVentas ?? 0)}
                         </span>
                       </div>
@@ -590,17 +590,17 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Clientes por Mes */}
+                      {/* Gráfico de Evolución de Montos por Mes */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📊 EVOLUCIÓN CLIENTES POR MES</span>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={dataClientesBanfanb} margin={{ top: 18, right: 5, left: -25, bottom: 0 }}>
+                            <BarChart data={dataEvolucionMontosBanfanb} margin={{ top: 18, right: 5, left: -20, bottom: 0 }}>
                               <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
                               <YAxis stroke={tema.subtexto} fontSize={10} />
                               <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
-                              <Bar dataKey="Clientes" fill="#eab308" radius={[4, 4, 0, 0]} name="Clientes">
-                                <LabelList dataKey="Clientes" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                              <Bar dataKey="Monto" fill="#eab308" radius={[4, 4, 0, 0]} name="Monto BsF">
+                                <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" formatter={(val) => formatearNumero(val)} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
