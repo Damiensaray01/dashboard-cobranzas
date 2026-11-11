@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, UserCheck, UserX, CheckCircle2
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -9,6 +9,52 @@ import {
 } from 'recharts';
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
+
+// Datos de fallback del Ranking de Asesores por si no viene por API
+const ASESORES_DATA_DEFAULT = [
+  { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, pct: '100,00%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, pct: '94,74%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Carolina rojas', ventas: 26, cobradas: 20, pct: '76,92%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Duvan moreno', ventas: 38, cobradas: 25, pct: '65,79%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Gabriela Barrios', ventas: 28, cobradas: 24, pct: '85,71%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Jose Mendoza', ventas: 24, cobradas: 23, pct: '95,83%', status: 'Egreso' },
+  { mes: 'Julio', asesor: 'Kariosqui Gomez', ventas: 35, cobradas: 30, pct: '85,71%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Leidy Jaime', ventas: 19, cobradas: 19, pct: '100,00%', status: 'Egreso' },
+  { mes: 'Julio', asesor: 'Roikel Suniaga', ventas: 21, cobradas: 16, pct: '76,19%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Alejandra Mujica', ventas: 5, cobradas: 5, pct: '100,00%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Carlos Argort', ventas: 66, cobradas: 29, pct: '43,94%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Duvan moreno', ventas: 53, cobradas: 22, pct: '41,51%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Gabriela Barrios', ventas: 41, cobradas: 27, pct: '65,85%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Kariosqui Gomez', ventas: 37, cobradas: 19, pct: '51,35%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Carolina rojas', ventas: 31, cobradas: 19, pct: '61,29%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Roikel Suniaga', ventas: 29, cobradas: 19, pct: '65,52%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Carlos Argort', ventas: 49, cobradas: 26, pct: '53,06%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Duvan moreno', ventas: 49, cobradas: 31, pct: '63,27%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Gabriela Barrios', ventas: 23, cobradas: 10, pct: '43,48%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Kariosqui Gomez', ventas: 44, cobradas: 32, pct: '72,73%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Carolina rojas', ventas: 35, cobradas: 13, pct: '37,14%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Roikel Suniaga', ventas: 31, cobradas: 11, pct: '35,48%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Evelyn La Rosa', ventas: 18, cobradas: 2, pct: '11,11%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Yanfran Sanchez', ventas: 8, cobradas: 3, pct: '37,50%', status: 'Egreso' },
+  { mes: 'Octubre', asesor: 'Kariosqui Gomez', ventas: 84, cobradas: 43, pct: '51,19%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Kismar Hernandez', ventas: 53, cobradas: 18, pct: '33,96%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Roikel Suniaga', ventas: 45, cobradas: 21, pct: '46,67%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Danielis Villegas', ventas: 39, cobradas: 18, pct: '46,15%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Carolina Rojas', ventas: 36, cobradas: 17, pct: '47,22%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Luisiana Nacero', ventas: 26, cobradas: 0, pct: '0,00%', status: 'Egreso' },
+  { mes: 'Octubre', asesor: 'Cindy Suarez', ventas: 18, cobradas: 10, pct: '55,56%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Angi Torres', ventas: 3, cobradas: 0, pct: '0,00%', status: 'Egreso' },
+  { mes: 'Octubre', asesor: 'Daniel Diaz', ventas: 1, cobradas: 0, pct: '0,00%', status: 'Egreso' }
+];
+
+const RESUMEN_ASESORES_DEFAULT = [
+  { mes: 'Julio', ventas: 242, cobradas: 206, pct: '85,12%' },
+  { mes: 'Agosto', ventas: 257, cobradas: 135, pct: '52,53%' },
+  { mes: 'Septiembre', ventas: 257, cobradas: 128, pct: '49,81%' },
+  { mes: 'Octubre', ventas: 305, cobradas: 127, pct: '41,64%' },
+  { mes: 'Noviembre', ventas: 0, cobradas: 0, pct: '0,00%' },
+  { mes: 'Diciembre', ventas: 0, cobradas: 0, pct: '0,00%' }
+];
 
 // Formateador estricto con puntos de miles y comas decimales
 const formatearNumero = (valor) => {
@@ -33,7 +79,7 @@ export default function App() {
       const response = await fetch(APPS_SCRIPT_URL);
       const data = await response.json();
       setMesesData(data || {});
-      const mesesDisponibles = Object.keys(data || {});
+      const mesesDisponibles = Object.keys(data || {}).filter(k => k !== 'asesoresData');
       if (mesesDisponibles.length > 0 && (!data[mesActual])) {
         setMesActual(mesesDisponibles[mesesDisponibles.length - 1]);
       }
@@ -56,7 +102,7 @@ export default function App() {
   const montoBanfanbActual = Number(cobD.montoBanfanb ?? 0);
   const montoBanescoActual = Number(cobD.montoBanesco ?? 0);
 
-  const listaMeses = Object.keys(mesesData);
+  const listaMeses = Object.keys(mesesData).filter(k => k !== 'asesoresData');
 
   const obtenerNombreMes = (key) => {
     const mapaMeses = {
@@ -123,6 +169,15 @@ export default function App() {
     };
   });
 
+  // Datos para pestaña de Asesores
+  const listadoRankingAsesores = mesesData?.asesoresData?.ranking || ASESORES_DATA_DEFAULT;
+  const listadoResumenAsesores = mesesData?.asesoresData?.resumen || RESUMEN_ASESORES_DEFAULT;
+
+  const rankingFiltrado = listadoRankingAsesores.filter(a => {
+    const mesCoincide = String(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase();
+    return mesCoincide;
+  });
+
   const tema = {
     bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
     card: temaOscuro ? '#1e293b' : '#ffffff',
@@ -174,7 +229,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -231,6 +286,7 @@ export default function App() {
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
               <button onClick={() => setSubCategoria("marketing")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "marketing" ? '#1e3a8a' : 'transparent', color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto }}>📢 Marketing</button>
               <button onClick={() => setSubCategoria("cobranzas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "cobranzas" ? '#1e3a8a' : 'transparent', color: subCategoria === "cobranzas" ? '#ffffff' : tema.subtexto }}>💳 Cobranzas</button>
+              <button onClick={() => setSubCategoria("asesores")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "asesores" ? '#1e3a8a' : 'transparent', color: subCategoria === "asesores" ? '#ffffff' : tema.subtexto }}>👥 Asesores</button>
             </div>
             <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               {listaMeses.map((mes) => (
@@ -620,7 +676,7 @@ export default function App() {
                     <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <CreditCard style={{ width: '18px', height: '18px', color: '#10b981' }} /> Seguimiento de Cobranza Mes {obtenerNombreMes(mesActual)}
                     </h2>
-                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
+                    <p style={{ fontSize: '11px', color tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento de Gestión - Seguros Horizonte, S.A.</p>
                   </div>
                 </div>
                 <div style={{ backgroundColor: tema.bg, padding: '10px 16px', borderRadius: '8px', border: `1px solid ${tema.border}`, textAlign: 'right' }}>
@@ -746,6 +802,129 @@ export default function App() {
                       <span style={{ fontSize: '10px', color: tema.subtexto }}>Monto Total</span>
                       <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', margin: 0 }}>BsF {formatearNumero(montoPlazaActual)}</p>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 👥 NUEVA PESTAÑA: ASESORES */}
+          {subCategoria === "asesores" && (
+            <div style={{ display: 'grid', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #3b82f6' }}>
+                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Asesores Evaluados ({obtenerNombreMes(mesActual)})</p>
+                  <h3 style={{ fontSize: '26px', fontWeight: 'bold', margin: '6px 0 0 0' }}>{rankingFiltrado.length}</h3>
+                </div>
+                <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #eab308' }}>
+                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Total Ventas Asesores</p>
+                  <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '6px 0 0 0' }}>
+                    {formatearNumero(rankingFiltrado.reduce((acc, a) => acc + Number(a.ventas || 0), 0))}
+                  </h3>
+                </div>
+                <div style={{ background: 'linear-gradient(to bottom right, #1e3a8a, #0f172a)', borderRadius: '12px', padding: '18px', color: '#fff', borderLeft: '4px solid #10b981' }}>
+                  <p style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: '600', margin: 0, color: '#93c5fd' }}>Total Ventas Cobradas</p>
+                  <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '6px 0 0 0' }}>
+                    {formatearNumero(rankingFiltrado.reduce((acc, a) => acc + Number(a.cobradas || 0), 0))}
+                  </h3>
+                </div>
+              </div>
+
+              {/* TABLA PRINCIPAL Y SECUNDARIA LADO A LADO */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+                {/* RANKING Y SEGUIMIENTO DE ASESORES */}
+                <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                    <Award style={{ width: '20px', height: '20px', color: '#eab308' }} />
+                    <div>
+                      <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        RANKING Y SEGUIMIENTO DE ASESORES ({obtenerNombreMes(mesActual)})
+                      </h3>
+                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Desempeño individual y efectividad de cobro</p>
+                    </div>
+                  </div>
+
+                  <div style={{ overflowX: 'auto', width: '100%' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                      <thead>
+                        <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                          <th style={{ padding: '10px', textAlign: 'left' }}>ASESOR DELEGADO</th>
+                          <th style={{ padding: '10px' }}>VENTAS</th>
+                          <th style={{ padding: '10px' }}>COBRADAS</th>
+                          <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
+                          <th style={{ padding: '10px' }}>STATUS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rankingFiltrado.map((item, idx) => (
+                          <tr key={idx} style={{ borderBottom: `1px solid ${tema.border}`, backgroundColor: idx % 2 === 0 ? 'transparent' : (temaOscuro ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)') }}>
+                            <td style={{ padding: '10px', textAlign: 'left', fontWeight: '600' }}>{item.asesor}</td>
+                            <td style={{ padding: '10px', fontWeight: '500' }}>{formatearNumero(item.ventas)}</td>
+                            <td style={{ padding: '10px', fontWeight: '600', color: '#eab308' }}>{formatearNumero(item.cobradas)}</td>
+                            <td style={{ padding: '10px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
+                            <td style={{ padding: '10px' }}>
+                              <span style={{ 
+                                padding: '4px 10px', 
+                                borderRadius: '12px', 
+                                fontSize: '10px', 
+                                fontWeight: 'bold',
+                                backgroundColor: item.status === 'Activo' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                color: item.status === 'Activo' ? '#10b981' : '#ef4444',
+                                border: item.status === 'Activo' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)'
+                              }}>
+                                {item.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* RESUMEN CONSOLIDADO MENSUAL */}
+                <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                    <BarChart3 style={{ width: '20px', height: '20px', color: '#3b82f6' }} />
+                    <div>
+                      <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        RESUMEN CONSOLIDADO MENSUAL
+                      </h3>
+                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Comportamiento histórico general de asesores</p>
+                    </div>
+                  </div>
+
+                  <div style={{ overflowX: 'auto', width: '100%' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                      <thead>
+                        <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                          <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
+                          <th style={{ padding: '10px' }}>CANTIDAD VENTAS</th>
+                          <th style={{ padding: '10px' }}>VENTAS COBRADAS</th>
+                          <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listadoResumenAsesores.map((item, idx) => {
+                          const esTotal = String(item.mes).toLowerCase() === 'total';
+                          const esActivoMes = String(item.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase();
+                          return (
+                            <tr key={idx} style={{ 
+                              borderBottom: `1px solid ${tema.border}`, 
+                              fontWeight: esTotal ? 'bold' : 'normal',
+                              backgroundColor: esTotal ? (temaOscuro ? 'rgba(30, 58, 138, 0.4)' : 'rgba(219, 234, 254, 0.6)') : (esActivoMes ? (temaOscuro ? 'rgba(30, 58, 138, 0.2)' : 'rgba(30, 58, 138, 0.05)') : 'transparent')
+                            }}>
+                              <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: esActivoMes ? '#eab308' : (esTotal ? '#3b82f6' : tema.texto) }}>
+                                {String(item.mes).toUpperCase()} {esActivoMes && '⭐'}
+                              </td>
+                              <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(item.ventas)}</td>
+                              <td style={{ padding: '12px 10px', fontWeight: '600', color: '#eab308' }}>{formatearNumero(item.cobradas)}</td>
+                              <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
