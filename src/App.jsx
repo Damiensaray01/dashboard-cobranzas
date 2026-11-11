@@ -182,6 +182,37 @@ export default function App() {
     };
   });
 
+  // Datos de evolución por banco para las tarjetas individuales
+  const dataEvolucionBancoPlaza = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cd = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Monto: Number(cd.montoCobradoBancoPlazaVentas ?? 0),
+      Clientes: Number(cd.clientesCobradosBancoPlazaVentas ?? 0)
+    };
+  });
+
+  const dataEvolucionBanesco = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cd = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Monto: Number(cd.montoCobradoBanescoVentas ?? 0),
+      Clientes: Number(cd.clientesCobradosBanescoVentas ?? 0)
+    };
+  });
+
+  const dataEvolucionBanfanb = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cd = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Monto: Number(cd.montoCobradoBanfanbVentas ?? 0),
+      Clientes: Number(cd.clientesCobradosBanfanbVentas ?? 0)
+    };
+  });
+
   const listaAsesoresUnicos = Array.from(
     new Set((asesoresData.ranking || []).map(a => String(a.asesor).trim()))
   ).sort();
@@ -267,7 +298,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -444,13 +475,13 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 🏦 NUEVA SEGMENTACIÓN DE VENTAS POR BANCO EN 3 TARJETAS CORPORATIVAS (ESTILO MODELO DE REFERENCIA) */}
+              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — CADA TARJETA CON SU EVOLUCIÓN MENSUAL */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
-                  SEGMENTACIÓN DE VENTAS POR BANCO — {obtenerNombreMes(mesActual).toUpperCase()}
+                  SEGMENTACIÓN DE VENTAS POR BANCO — EVOLUCIÓN MENSUAL ({obtenerNombreMes(mesActual).toUpperCase()})
                 </h3>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
                   
                   {/* BANCO PLAZA */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
@@ -463,16 +494,33 @@ export default function App() {
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes Plaza</span>
+                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes Plaza ({obtenerNombreMes(mesActual)})</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#3b82f6' }}>
                           {formatearNumero(data.cobranzasDetalle?.clientesCobradosBancoPlazaVentas ?? 0)}
                         </span>
                       </div>
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto Plaza (BsF)</span>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto Plaza (BsF) ({obtenerNombreMes(mesActual)})</span>
                         <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
                           BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBancoPlazaVentas ?? 0)}
                         </span>
+                      </div>
+
+                      {/* Gráfico de Evolución Mensual - Banco Plaza */}
+                      <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 Evolución Monto (BsF) por Mes</span>
+                        <div style={{ height: '150px', width: '100%' }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={dataEvolucionBancoPlaza} margin={{ top: 15, right: 5, left: -20, bottom: 0 }}>
+                              <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
+                              <YAxis stroke={tema.subtexto} fontSize={10} />
+                              <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
+                              <Bar dataKey="Monto" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Monto BsF">
+                                <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" />
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -488,16 +536,33 @@ export default function App() {
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes Banesco</span>
+                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes Banesco ({obtenerNombreMes(mesActual)})</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#0284c7' }}>
                           {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanescoVentas ?? 0)}
                         </span>
                       </div>
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto Banesco (BsF)</span>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto Banesco (BsF) ({obtenerNombreMes(mesActual)})</span>
                         <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
                           BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanescoVentas ?? 0)}
                         </span>
+                      </div>
+
+                      {/* Gráfico de Evolución Mensual - Banesco */}
+                      <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 Evolución Monto (BsF) por Mes</span>
+                        <div style={{ height: '150px', width: '100%' }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={dataEvolucionBanesco} margin={{ top: 15, right: 5, left: -20, bottom: 0 }}>
+                              <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
+                              <YAxis stroke={tema.subtexto} fontSize={10} />
+                              <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
+                              <Bar dataKey="Monto" fill="#0284c7" radius={[4, 4, 0, 0]} name="Monto BsF">
+                                <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" />
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -513,16 +578,33 @@ export default function App() {
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes BANFANB</span>
+                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes BANFANB ({obtenerNombreMes(mesActual)})</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#eab308' }}>
                           {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanfanbVentas ?? 0)}
                         </span>
                       </div>
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto BANFANB (BsF)</span>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto BANFANB (BsF) ({obtenerNombreMes(mesActual)})</span>
                         <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
                           BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanfanbVentas ?? 0)}
                         </span>
+                      </div>
+
+                      {/* Gráfico de Evolución Mensual - BANFANB */}
+                      <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 Evolución Monto (BsF) por Mes</span>
+                        <div style={{ height: '150px', width: '100%' }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={dataEvolucionBanfanb} margin={{ top: 15, right: 5, left: -20, bottom: 0 }}>
+                              <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={10} />
+                              <YAxis stroke={tema.subtexto} fontSize={10} />
+                              <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '11px' }} />
+                              <Bar dataKey="Monto" fill="#eab308" radius={[4, 4, 0, 0]} name="Monto BsF">
+                                <LabelList dataKey="Monto" position="top" fill={tema.texto} fontSize={9} fontWeight="bold" />
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
                   </div>
