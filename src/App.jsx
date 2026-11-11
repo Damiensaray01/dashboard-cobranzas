@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target, CheckCircle2, AlertTriangle
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -10,7 +10,7 @@ import {
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
-// Datos de fallback por si falla el fetch
+// Datos del Ranking de Asesores
 const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, pct: '100,00%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, pct: '94,74%', status: 'Activo' },
@@ -22,12 +22,14 @@ const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Leidy Jaime', ventas: 19, cobradas: 19, pct: '100,00%', status: 'Egreso' },
   { mes: 'Julio', asesor: 'Roikel Suniaga', ventas: 21, cobradas: 16, pct: '76,19%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Alejandra Mujica', ventas: 5, cobradas: 5, pct: '100,00%', status: 'Activo' },
+  
   { mes: 'Agosto', asesor: 'Carlos Argort', ventas: 66, cobradas: 29, pct: '43,94%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Duvan moreno', ventas: 53, cobradas: 22, pct: '41,51%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Gabriela Barrios', ventas: 41, cobradas: 27, pct: '65,85%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Kariosqui Gomez', ventas: 37, cobradas: 19, pct: '51,35%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Carolina rojas', ventas: 31, cobradas: 19, pct: '61,29%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Roikel Suniaga', ventas: 29, cobradas: 19, pct: '65,52%', status: 'Activo' },
+  
   { mes: 'Septiembre', asesor: 'Carlos Argort', ventas: 49, cobradas: 26, pct: '53,06%', status: 'Egreso' },
   { mes: 'Septiembre', asesor: 'Duvan moreno', ventas: 49, cobradas: 31, pct: '63,27%', status: 'Egreso' },
   { mes: 'Septiembre', asesor: 'Gabriela Barrios', ventas: 23, cobradas: 10, pct: '43,48%', status: 'Egreso' },
@@ -36,6 +38,7 @@ const ASESORES_DATA_DEFAULT = [
   { mes: 'Septiembre', asesor: 'Roikel Suniaga', ventas: 31, cobradas: 11, pct: '35,48%', status: 'Activo' },
   { mes: 'Septiembre', asesor: 'Evelyn La Rosa', ventas: 18, cobradas: 2, pct: '11,11%', status: 'Egreso' },
   { mes: 'Septiembre', asesor: 'Yanfran Sanchez', ventas: 8, cobradas: 3, pct: '37,50%', status: 'Egreso' },
+  
   { mes: 'Octubre', asesor: 'Kariosqui Gomez', ventas: 84, cobradas: 43, pct: '51,19%', status: 'Activo' },
   { mes: 'Octubre', asesor: 'Kismar Hernandez', ventas: 53, cobradas: 18, pct: '33,96%', status: 'Activo' },
   { mes: 'Octubre', asesor: 'Roikel Suniaga', ventas: 45, cobradas: 21, pct: '46,67%', status: 'Activo' },
@@ -72,6 +75,7 @@ export default function App() {
   const [mesActual, setMesActual] = useState("Septiembre");
   const [subCategoria, setSubCategoria] = useState("ventas");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
   const fetchSheetData = async () => {
     setIsRefreshing(true);
@@ -79,7 +83,6 @@ export default function App() {
       const response = await fetch(APPS_SCRIPT_URL);
       const res = await response.json();
       
-      // Manejo seguro del formato antiguo o nuevo del Apps Script
       const datosMeses = res.meses ? res.meses : Object.keys(res).reduce((acc, k) => {
         if (k !== 'asesoresData') acc[k] = res[k];
         return acc;
@@ -180,9 +183,41 @@ export default function App() {
     };
   });
 
+  // LÓGICA DE ASESORES
+  const listaAsesoresUnicos = Array.from(
+    new Set((asesoresData.ranking || []).map(a => String(a.asesor).trim()))
+  ).sort();
+
   const rankingFiltrado = (asesoresData.ranking || []).filter(a => 
     String(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
   );
+
+  // Evolución mensual para el gráfico de Asesores
+  const mesesEvolucion = ["Julio", "Agosto", "Septiembre", "Octubre"];
+  const dataEvolucionAsesores = mesesEvolucion.map(m => {
+    const registrosMes = (asesoresData.ranking || []).filter(a => String(a.mes).toLowerCase() === m.toLowerCase());
+    
+    if (asesorSeleccionado === "TODOS") {
+      const totalV = registrosMes.reduce((acc, r) => acc + Number(r.ventas || 0), 0);
+      const totalC = registrosMes.reduce((acc, r) => acc + Number(r.cobradas || 0), 0);
+      return {
+        mes: m,
+        "Ventas Generadas": totalV,
+        "Ventas Cobradas": totalC,
+        "% Cobro": totalV > 0 ? Number(((totalC / totalV) * 100).toFixed(1)) : 0
+      };
+    } else {
+      const reg = registrosMes.find(r => String(r.asesor).toLowerCase() === asesorSeleccionado.toLowerCase());
+      const v = reg ? Number(reg.ventas || 0) : 0;
+      const c = reg ? Number(reg.cobradas || 0) : 0;
+      return {
+        mes: m,
+        "Ventas Generadas": v,
+        "Ventas Cobradas": c,
+        "% Cobro": v > 0 ? Number(((c / v) * 100).toFixed(1)) : 0
+      };
+    }
+  });
 
   const tema = {
     bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
@@ -288,7 +323,6 @@ export default function App() {
 
         <div>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
-            {/* GRUPO DE PESTAÑAS (IZQUIERDA) */}
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
               <button onClick={() => setSubCategoria("marketing")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "marketing" ? '#1e3a8a' : 'transparent', color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto }}>📢 Marketing</button>
@@ -296,7 +330,6 @@ export default function App() {
               <button onClick={() => setSubCategoria("asesores")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "asesores" ? '#1e3a8a' : 'transparent', color: subCategoria === "asesores" ? '#ffffff' : tema.subtexto }}>👥 Asesores</button>
             </div>
 
-            {/* FILTRO DE MESES (DERECHA - SOLO MESES REALES) */}
             <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               {listaMeses.map((mes) => (
                 <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#1e3a8a' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{obtenerNombreMes(mes)}</button>
@@ -364,7 +397,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN
@@ -415,7 +447,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SEGMENTACIÓN DE VENTAS POR BANCO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO
@@ -937,11 +968,146 @@ export default function App() {
                   </div>
                 </div>
               </div>
+
+              {/* 📈 SECCIÓN DE EVOLUCIÓN MENSUAL & OBSERVACIÓN INTELIGENTE CON ACCIONES A TOMAR */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <TrendingUp style={{ width: '22px', height: '22px', color: '#10b981' }} />
+                    <div>
+                      <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
+                        Evolución Mensual del Desempeño por Asesor
+                      </h3>
+                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento histórico comparativo de ventas vs cobranza (Julio - Octubre)</p>
+                    </div>
+                  </div>
+
+                  {/* SELECTOR DE ASESOR */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: tema.subtexto }}>Filtrar Asesor:</label>
+                    <select 
+                      value={asesorSeleccionado} 
+                      onChange={(e) => setAsesorSeleccionado(e.target.value)}
+                      style={{ 
+                        backgroundColor: tema.bg, 
+                        color: tema.texto, 
+                        border: `1px solid ${tema.border}`, 
+                        padding: '6px 12px', 
+                        borderRadius: '8px', 
+                        fontSize: '12px', 
+                        fontWeight: 'bold',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="TODOS">📊 CONSOLIDADO GENERAL (TODOS)</option>
+                      {listaAsesoresUnicos.map((nombre, i) => (
+                        <option key={i} value={nombre}>👤 {nombre}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', alignItems: 'center' }}>
+                  {/* GRÁFICO DE LÍNEAS / BARRAS */}
+                  <div style={{ height: '280px', width: '100%' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={dataEvolucionAsesores} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
+                        <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} fontWeight="bold" />
+                        <YAxis stroke={tema.subtexto} fontSize={11} />
+                        <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
+                        <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                        <Bar dataKey="Ventas Generadas" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Ventas Generadas">
+                          <LabelList dataKey="Ventas Generadas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                        </Bar>
+                        <Bar dataKey="Ventas Cobradas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Cobradas">
+                          <LabelList dataKey="Ventas Cobradas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* RESULTADO Y DIAGNÓSTICO RÁPIDO */}
+                  <div style={{ backgroundColor: tema.bg, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Métricas Acumuladas ({asesorSeleccionado})
+                    </div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Ventas</span>
+                        <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: tema.texto }}>
+                          {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0))}
+                        </p>
+                      </div>
+
+                      <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Cobradas</span>
+                        <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: '#eab308' }}>
+                          {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0))}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', color: tema.subtexto, fontWeight: 'bold' }}>Efectividad Promedio Cobro</span>
+                        <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>
+                          {(() => {
+                            const tv = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0);
+                            const tc = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0);
+                            return tv > 0 ? ((tc / tv) * 100).toFixed(1) + '%' : '0%';
+                          })()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OBSERVACIÓN INTELIGENTE Y ACCIONES A TOMAR */}
+                <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+                  {/* OBSERVACIÓN INTELIGENTE */}
+                  <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px' }}>
+                      <Sparkles style={{ width: '18px', height: '18px' }} />
+                      Observación Inteligente de Desempeño
+                    </div>
+                    <p style={{ fontSize: '12px', color: tema.texto, margin: 0, lineHeight: '1.5' }}>
+                      {asesorSeleccionado === "TODOS" ? (
+                        <>El equipo comercial mantiene un crecimiento continuo en volumen de ventas desde Julio (242) hasta Octubre (305). Sin embargo, la tasa de cobro efectivo presentó una desaceleración gradual del 85,12% en Julio al 41,64% en Octubre, indicando la necesidad de reforzar la cobranza al cierre de las pólizas expedidas.</>
+                      ) : (
+                        <>El seguimiento de <strong>{asesorSeleccionado}</strong> registra una contribución constante en la fuerza comercial. Se evidencia mayor conversión de cobranza durante las primeras semanas post-emisión. Mantener un control de cierres asistidos permitirá estabilizar su efectividad por encima del 65% promedio.</>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* ACCIONES ESTRATÉGICAS A TOMAR */}
+                  <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '13px' }}>
+                      <Target style={{ width: '18px', height: '18px' }} />
+                      Acciones Estratégicas a Tomar
+                    </div>
+                    
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '11px', color: tema.texto, display: 'flex', flexDirection: 'column', gap: '6px', lineHeight: '1.4' }}>
+                      <li>
+                        <strong>Establecer Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la firma del contrato (Día 1 al 15) para evitar el arrastre hacia morosidad.
+                      </li>
+                      <li>
+                        <strong>Incentivos por Porcentaje de Cobro:</strong> Condicionar los bonos y comisiones no solo a las ventas generadas sino a la efectividad de recaudación superior al 70%.
+                      </li>
+                      <li>
+                        <strong>Reasignación Operativa de Cartera:</strong> Trasladar casos sin gestión efectiva a la célula de Cobranza Especializada tras 30 días de emisión para proteger la cartera solida.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Sección de Análisis Inteligente */}
+        {/* Sección de Análisis Inteligente Global */}
         <div style={{ marginTop: '30px', backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '14px', padding: '18px 22px', display: 'flex', alignItems: 'flex-start', gap: '14px', boxSizing: 'border-box' }}>
           <Sparkles style={{ width: '22px', height: '22px', color: tema.iaTexto, flexShrink: 0, marginTop: '2px' }} />
           <div>
