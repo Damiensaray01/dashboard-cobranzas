@@ -295,7 +295,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -472,7 +472,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — CLIENTES ARRIBA Y MONTOS EN GRÁFICO */}
+              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — CONSOLIDADO DE CLIENTES ARRIBA Y GRÁFICO DE MONTOS ABAJO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {obtenerNombreMes(mesActual).toUpperCase()}
@@ -490,15 +490,36 @@ export default function App() {
                       <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>CLIENTES PLAZA ({obtenerNombreMes(mesActual).toUpperCase()})</span>
-                        <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#3b82f6' }}>
-                          {formatearNumero(data.cobranzasDetalle?.clientesCobradosBancoPlazaVentas ?? 0)}
-                        </span>
+                      
+                      {/* Consolidado de Clientes Arriba (Todos los Meses) */}
+                      <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
+                        <div style={{ padding: '10px 14px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase' }}>
+                          CLIENTES PLAZA (CONSOLIDADO MENSUAL)
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          {listaMeses.map((mKey) => {
+                            const itemMes = mesesData[mKey] || {};
+                            const cdItem = itemMes.cobranzasDetalle || {};
+                            const cantClientes = Number(cdItem.clientesCobradosBancoPlazaVentas ?? 0);
+                            const nombreM = obtenerNombreMes(mKey);
+                            const esActual = mKey === mesActual;
+
+                            return (
+                              <div key={mKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.3)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
+                                <span style={{ fontSize: '12px', fontWeight: esActual ? 'bold' : 'normal', color: esActual ? '#3b82f6' : tema.texto }}>
+                                  {nombreM.toUpperCase()} {esActual && '⭐'}
+                                </span>
+                                <span style={{ fontSize: '14px', fontWeight: 'bold', color: esActual ? '#3b82f6' : tema.texto }}>
+                                  {formatearNumero(cantClientes)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                       
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO PLAZA (BSF)</span>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO PLAZA (BSF) - {obtenerNombreMes(mesActual).toUpperCase()}</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>
                           BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBancoPlazaVentas ?? 0)}
                         </span>
@@ -533,15 +554,36 @@ export default function App() {
                       <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>CLIENTES BANESCO ({obtenerNombreMes(mesActual).toUpperCase()})</span>
-                        <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0284c7' }}>
-                          {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanescoVentas ?? 0)}
-                        </span>
+                      
+                      {/* Consolidado de Clientes Arriba (Todos los Meses) */}
+                      <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
+                        <div style={{ padding: '10px 14px', backgroundColor: 'rgba(2, 132, 199, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#0284c7', textTransform: 'uppercase' }}>
+                          CLIENTES BANESCO (CONSOLIDADO MENSUAL)
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          {listaMeses.map((mKey) => {
+                            const itemMes = mesesData[mKey] || {};
+                            const cdItem = itemMes.cobranzasDetalle || {};
+                            const cantClientes = Number(cdItem.clientesCobradosBanescoVentas ?? 0);
+                            const nombreM = obtenerNombreMes(mKey);
+                            const esActual = mKey === mesActual;
+
+                            return (
+                              <div key={mKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(2, 132, 199, 0.3)' : 'rgba(2, 132, 199, 0.08)') : 'transparent' }}>
+                                <span style={{ fontSize: '12px', fontWeight: esActual ? 'bold' : 'normal', color: esActual ? '#0284c7' : tema.texto }}>
+                                  {nombreM.toUpperCase()} {esActual && '⭐'}
+                                </span>
+                                <span style={{ fontSize: '14px', fontWeight: 'bold', color: esActual ? '#0284c7' : tema.texto }}>
+                                  {formatearNumero(cantClientes)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                       
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO BANESCO (BSF)</span>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO BANESCO (BSF) - {obtenerNombreMes(mesActual).toUpperCase()}</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>
                           BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanescoVentas ?? 0)}
                         </span>
@@ -576,15 +618,36 @@ export default function App() {
                       <span style={{ backgroundColor: 'rgba(15,23,42,0.2)', color: '#0f172a', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>CLIENTES BANFANB ({obtenerNombreMes(mesActual).toUpperCase()})</span>
-                        <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#eab308' }}>
-                          {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanfanbVentas ?? 0)}
-                        </span>
+                      
+                      {/* Consolidado de Clientes Arriba (Todos los Meses) */}
+                      <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
+                        <div style={{ padding: '10px 14px', backgroundColor: 'rgba(234, 179, 8, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#eab308', textTransform: 'uppercase' }}>
+                          CLIENTES BANFANB (CONSOLIDADO MENSUAL)
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          {listaMeses.map((mKey) => {
+                            const itemMes = mesesData[mKey] || {};
+                            const cdItem = itemMes.cobranzasDetalle || {};
+                            const cantClientes = Number(cdItem.clientesCobradosBanfanbVentas ?? 0);
+                            const nombreM = obtenerNombreMes(mKey);
+                            const esActual = mKey === mesActual;
+
+                            return (
+                              <div key={mKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(234, 179, 8, 0.2)' : 'rgba(234, 179, 8, 0.1)') : 'transparent' }}>
+                                <span style={{ fontSize: '12px', fontWeight: esActual ? 'bold' : 'normal', color: esActual ? '#eab308' : tema.texto }}>
+                                  {nombreM.toUpperCase()} {esActual && '⭐'}
+                                </span>
+                                <span style={{ fontSize: '14px', fontWeight: 'bold', color: esActual ? '#eab308' : tema.texto }}>
+                                  {formatearNumero(cantClientes)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                       
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO BANFANB (BSF)</span>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO BANFANB (BSF) - {obtenerNombreMes(mesActual).toUpperCase()}</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>
                           BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanfanbVentas ?? 0)}
                         </span>
