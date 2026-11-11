@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target, CheckCircle2, AlertTriangle
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -10,7 +10,6 @@ import {
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
-// Datos del Ranking de Asesores
 const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, pct: '100,00%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, pct: '94,74%', status: 'Activo' },
@@ -183,7 +182,6 @@ export default function App() {
     };
   });
 
-  // LÓGICA DE ASESORES
   const listaAsesoresUnicos = Array.from(
     new Set((asesoresData.ranking || []).map(a => String(a.asesor).trim()))
   ).sort();
@@ -192,7 +190,6 @@ export default function App() {
     String(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
   );
 
-  // Evolución mensual para el gráfico de Asesores
   const mesesEvolucion = ["Julio", "Agosto", "Septiembre", "Octubre"];
   const dataEvolucionAsesores = mesesEvolucion.map(m => {
     const registrosMes = (asesoresData.ranking || []).filter(a => String(a.mes).toLowerCase() === m.toLowerCase());
@@ -447,50 +444,92 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
-                  SEGMENTACIÓN DE VENTAS POR BANCO
+              {/* 🏦 NUEVA SEGMENTACIÓN DE VENTAS POR BANCO EN 3 TARJETAS CORPORATIVAS (ESTILO MODELO DE REFERENCIA) */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
+                  SEGMENTACIÓN DE VENTAS POR BANCO — {obtenerNombreMes(mesActual).toUpperCase()}
                 </h3>
-                <div style={{ overflowX: 'auto', width: '100%' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
-                    <thead>
-                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
-                        <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
-                        <th style={{ padding: '10px' }}>CLIENTES PLAZA</th>
-                        <th style={{ padding: '10px' }}>CLIENTES BANESCO</th>
-                        <th style={{ padding: '10px' }}>CLIENTES BANFANB</th>
-                        <th style={{ padding: '10px', color: '#3b82f6' }}>MONTO PLAZA (BsF)</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>MONTO BANESCO (BsF)</th>
-                        <th style={{ padding: '10px', color: '#eab308' }}>MONTO BANFANB (BsF)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {listaMeses.map((mes) => {
-                        const item = mesesData[mes] || {};
-                        const cd = item.cobranzasDetalle || {};
-                        const cPlaza = Number(cd.clientesCobradosBancoPlazaVentas ?? 0);
-                        const cBanesco = Number(cd.clientesCobradosBanescoVentas ?? 0);
-                        const cBanfanb = Number(cd.clientesCobradosBanfanbVentas ?? 0);
-                        const mPlaza = Number(cd.montoCobradoBancoPlazaVentas ?? 0);
-                        const mBanesco = Number(cd.montoCobradoBanescoVentas ?? 0);
-                        const mBanfanb = Number(cd.montoCobradoBanfanbVentas ?? 0);
 
-                        return (
-                          <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(cPlaza)}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(cBanesco)}</td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(cBanfanb)}</td>
-                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mPlaza)}</td>
-                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanesco)}</td>
-                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanfanb)}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                  
+                  {/* BANCO PLAZA */}
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <img src="/LogoPlaza.png" alt="Banco Plaza" style={{ height: '32px', objectFit: 'contain', backgroundColor: '#fff', padding: '4px', borderRadius: '6px' }} />
+                        <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>Banco Plaza</span>
+                      </div>
+                      <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
+                    </div>
+                    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
+                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes Plaza</span>
+                        <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#3b82f6' }}>
+                          {formatearNumero(data.cobranzasDetalle?.clientesCobradosBancoPlazaVentas ?? 0)}
+                        </span>
+                      </div>
+                      <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto Plaza (BsF)</span>
+                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
+                          BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBancoPlazaVentas ?? 0)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* BANESCO */}
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #0f172a, #0284c7)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <img src="/LogoBanesco.png" alt="Banesco" style={{ height: '32px', objectFit: 'contain', backgroundColor: '#fff', padding: '4px', borderRadius: '6px' }} />
+                        <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>Banesco</span>
+                      </div>
+                      <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
+                    </div>
+                    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
+                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes Banesco</span>
+                        <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#0284c7' }}>
+                          {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanescoVentas ?? 0)}
+                        </span>
+                      </div>
+                      <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto Banesco (BsF)</span>
+                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
+                          BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanescoVentas ?? 0)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* BANFANB */}
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #ca8a04, #eab308)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <img src="/LogoBANFANB.png" alt="BANFANB" style={{ height: '32px', objectFit: 'contain', backgroundColor: '#fff', padding: '4px', borderRadius: '6px' }} />
+                        <span style={{ color: '#0f172a', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>BANFANB</span>
+                      </div>
+                      <span style={{ backgroundColor: 'rgba(15,23,42,0.2)', color: '#0f172a', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
+                    </div>
+                    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${tema.border}`, paddingBottom: '10px' }}>
+                        <span style={{ fontSize: '12px', color: tema.subtexto, fontWeight: 'bold', textTransform: 'uppercase' }}>Clientes BANFANB</span>
+                        <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#eab308' }}>
+                          {formatearNumero(data.cobranzasDetalle?.clientesCobradosBanfanbVentas ?? 0)}
+                        </span>
+                      </div>
+                      <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Monto BANFANB (BsF)</span>
+                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
+                          BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanfanbVentas ?? 0)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
+
             </div>
           )}
 
@@ -848,7 +887,6 @@ export default function App() {
             </div>
           )}
 
-          {/* 👥 PESTAÑA CORPORATIVA: ASESORES */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -870,9 +908,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* TABLAS LADO A LADO: RANKING + RESUMEN */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
-                {/* RANKING INDIVIDUAL DE ASESORES */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                     <Award style={{ width: '20px', height: '20px', color: '#eab308' }} />
@@ -922,7 +958,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* RESUMEN CONSOLIDADO MENSUAL */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                     <BarChart3 style={{ width: '20px', height: '20px', color: '#3b82f6' }} />
@@ -969,7 +1004,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 📈 SECCIÓN DE EVOLUCIÓN MENSUAL & OBSERVACIÓN INTELIGENTE CON ACCIONES A TOMAR */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -982,7 +1016,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* SELECTOR DE ASESOR */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <label style={{ fontSize: '12px', fontWeight: 'bold', color: tema.subtexto }}>Filtrar Asesor:</label>
                     <select 
@@ -1009,7 +1042,6 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', alignItems: 'center' }}>
-                  {/* GRÁFICO DE LÍNEAS / BARRAS */}
                   <div style={{ height: '280px', width: '100%' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={dataEvolucionAsesores} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
@@ -1028,7 +1060,6 @@ export default function App() {
                     </ResponsiveContainer>
                   </div>
 
-                  {/* RESULTADO Y DIAGNÓSTICO RÁPIDO */}
                   <div style={{ backgroundColor: tema.bg, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       Métricas Acumuladas ({asesorSeleccionado})
@@ -1065,9 +1096,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* OBSERVACIÓN INTELIGENTE Y ACCIONES A TOMAR */}
                 <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                  {/* OBSERVACIÓN INTELIGENTE */}
                   <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px' }}>
                       <Sparkles style={{ width: '18px', height: '18px' }} />
@@ -1082,7 +1111,6 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* ACCIONES ESTRATÉGICAS A TOMAR */}
                   <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '13px' }}>
                       <Target style={{ width: '18px', height: '18px' }} />
@@ -1107,7 +1135,6 @@ export default function App() {
           )}
         </div>
 
-        {/* Sección de Análisis Inteligente Global */}
         <div style={{ marginTop: '30px', backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '14px', padding: '18px 22px', display: 'flex', alignItems: 'flex-start', gap: '14px', boxSizing: 'border-box' }}>
           <Sparkles style={{ width: '22px', height: '22px', color: tema.iaTexto, flexShrink: 0, marginTop: '2px' }} />
           <div>
