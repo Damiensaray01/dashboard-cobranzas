@@ -11,43 +11,44 @@ import {
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
 const ASESORES_DATA_DEFAULT = [
-  { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, pct: '100,00%', status: 'Activo', bancoPlaza: 4, banesco: 2, banfanb: 2 },
-  { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, pct: '94,74%', status: 'Activo', bancoPlaza: 15, banesco: 10, banfanb: 11 },
-  { mes: 'Julio', asesor: 'Carolina Rojas', ventas: 26, cobradas: 20, pct: '76,92%', status: 'Activo', bancoPlaza: 8, banesco: 5, banfanb: 7 },
-  { mes: 'Julio', asesor: 'Duvan moreno', ventas: 38, cobradas: 25, pct: '65,79%', status: 'Activo', bancoPlaza: 10, banesco: 7, banfanb: 8 },
-  { mes: 'Julio', asesor: 'Gabriela Barrios', ventas: 28, cobradas: 24, pct: '85,71%', status: 'Activo', bancoPlaza: 10, banesco: 6, banfanb: 8 },
-  { mes: 'Julio', asesor: 'Jose Mendoza', ventas: 24, cobradas: 23, pct: '95,83%', status: 'Egreso', bancoPlaza: 9, banesco: 7, banfanb: 7 },
-  { mes: 'Julio', asesor: 'Kariosqui Gomez', ventas: 35, cobradas: 30, pct: '85,71%', status: 'Activo', bancoPlaza: 12, banesco: 8, banfanb: 10 },
-  { mes: 'Julio', asesor: 'Leidy Jaime', ventas: 19, cobradas: 19, pct: '100,00%', status: 'Egreso', bancoPlaza: 7, banesco: 6, banfanb: 6 },
-  { mes: 'Julio', asesor: 'Roikel Suniaga', ventas: 21, cobradas: 16, pct: '76,19%', status: 'Activo', bancoPlaza: 6, banesco: 4, banfanb: 6 },
-  { mes: 'Julio', asesor: 'Alejandra Mujica', ventas: 5, cobradas: 5, pct: '100,00%', status: 'Activo', bancoPlaza: 2, banesco: 1, banfanb: 2 },
+  { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, plaza: 0, banesco: 0, banfanb: 0, pct: '100,00%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, plaza: 0, banesco: 0, banfanb: 0, pct: '94,74%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Carolina rojas', ventas: 26, cobradas: 20, plaza: 0, banesco: 0, banfanb: 0, pct: '76,92%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Duvan moreno', ventas: 38, cobradas: 25, plaza: 0, banesco: 0, banfanb: 0, pct: '65,79%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Gabriela Barrios', ventas: 28, cobradas: 24, plaza: 0, banesco: 0, banfanb: 0, pct: '85,71%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Jose Mendoza', ventas: 24, cobradas: 23, plaza: 0, banesco: 0, banfanb: 0, pct: '95,83%', status: 'Egreso' },
+  { mes: 'Julio', asesor: 'Kariosqui Gomez', ventas: 35, cobradas: 30, plaza: 0, banesco: 0, banfanb: 0, pct: '85,71%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Leidy Jaime', ventas: 19, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '100,00%', status: 'Egreso' },
+  { mes: 'Julio', asesor: 'Roikel Suniaga', ventas: 21, cobradas: 16, plaza: 0, banesco: 0, banfanb: 0, pct: '76,19%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Alejandra Mujica', ventas: 5, cobradas: 5, plaza: 0, banesco: 0, banfanb: 0, pct: '100,00%', status: 'Activo' },
   
-  { mes: 'Agosto', asesor: 'Carlos Argort', ventas: 66, cobradas: 29, pct: '43,94%', status: 'Activo', bancoPlaza: 12, banesco: 8, banfanb: 9 },
-  { mes: 'Agosto', asesor: 'Duvan moreno', ventas: 53, cobradas: 22, pct: '41,51%', status: 'Activo', bancoPlaza: 9, banesco: 6, banfanb: 7 },
-  { mes: 'Agosto', asesor: 'Gabriela Barrios', ventas: 41, cobradas: 27, pct: '65,85%', status: 'Activo', bancoPlaza: 11, banesco: 8, banfanb: 8 },
-  { mes: 'Agosto', asesor: 'Kariosqui Gomez', ventas: 37, cobradas: 19, pct: '51,35%', status: 'Activo', bancoPlaza: 8, banesco: 5, banfanb: 6 },
-  { mes: 'Agosto', asesor: 'Carolina Rojas', ventas: 31, cobradas: 19, pct: '61,29%', status: 'Activo', bancoPlaza: 8, banesco: 5, banfanb: 6 },
-  { mes: 'Agosto', asesor: 'Roikel Suniaga', ventas: 29, cobradas: 19, pct: '65,52%', status: 'Activo', bancoPlaza: 8, banesco: 5, banfanb: 6 },
+  { mes: 'Agosto', asesor: 'Carlos Argort', ventas: 66, cobradas: 29, plaza: 0, banesco: 0, banfanb: 0, pct: '43,94%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Duvan moreno', ventas: 53, cobradas: 22, plaza: 0, banesco: 0, banfanb: 0, pct: '41,51%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Gabriela Barrios', ventas: 41, cobradas: 27, plaza: 0, banesco: 0, banfanb: 0, pct: '65,85%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Kariosqui Gomez', ventas: 37, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '51,35%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Carolina rojas', ventas: 31, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '61,29%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Roikel Suniaga', ventas: 29, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '65,52%', status: 'Activo' },
   
-  { mes: 'Septiembre', asesor: 'Carlos Argort', ventas: 49, cobradas: 26, pct: '53,06%', status: 'Egreso', bancoPlaza: 11, banesco: 7, banfanb: 8 },
-  { mes: 'Septiembre', asesor: 'Duvan moreno', ventas: 49, cobradas: 31, pct: '63,27%', status: 'Egreso', bancoPlaza: 13, banesco: 9, banfanb: 9 },
-  { mes: 'Septiembre', asesor: 'Gabriela Barrios', ventas: 23, cobradas: 10, pct: '43,48%', status: 'Egreso', bancoPlaza: 4, banesco: 3, banfanb: 3 },
-  { mes: 'Septiembre', asesor: 'Kariosqui Gomez', ventas: 44, cobradas: 32, pct: '72,73%', status: 'Activo', bancoPlaza: 14, banesco: 9, banfanb: 9 },
-  { mes: 'Septiembre', asesor: 'Carolina Rojas', ventas: 35, cobradas: 13, pct: '37,14%', status: 'Activo', bancoPlaza: 5, banesco: 4, banfanb: 4 },
-  { mes: 'Septiembre', asesor: 'Roikel Suniaga', ventas: 31, cobradas: 11, pct: '35,48%', status: 'Activo', bancoPlaza: 4, banesco: 3, banfanb: 4 },
-  { mes: 'Septiembre', asesor: 'Evelyn La Rosa', ventas: 18, cobradas: 2, pct: '11,11%', status: 'Egreso', bancoPlaza: 1, banesco: 0, banfanb: 1 },
-  { mes: 'Septiembre', asesor: 'Yanfran Sanchez', ventas: 8, cobradas: 3, pct: '37,50%', status: 'Egreso', bancoPlaza: 1, banesco: 1, banfanb: 1 },
+  { mes: 'Septiembre', asesor: 'Carlos Argort', ventas: 49, cobradas: 26, plaza: 0, banesco: 0, banfanb: 0, pct: '53,06%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Duvan moreno', ventas: 49, cobradas: 31, plaza: 0, banesco: 0, banfanb: 0, pct: '63,27%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Gabriela Barrios', ventas: 23, cobradas: 10, plaza: 0, banesco: 0, banfanb: 0, pct: '43,48%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Kariosqui Gomez', ventas: 44, cobradas: 32, plaza: 0, banesco: 0, banfanb: 0, pct: '72,73%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Carolina rojas', ventas: 35, cobradas: 13, plaza: 0, banesco: 0, banfanb: 0, pct: '37,14%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Roikel Suniaga', ventas: 31, cobradas: 11, plaza: 0, banesco: 0, banfanb: 0, pct: '35,48%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Evelyn La Rosa', ventas: 18, cobradas: 2, plaza: 0, banesco: 0, banfanb: 0, pct: '11,11%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Yanfran Sanchez', ventas: 8, cobradas: 3, plaza: 0, banesco: 0, banfanb: 0, pct: '37,50%', status: 'Egreso' },
   
-  { mes: 'Octubre', asesor: 'Kariosqui Gomez', ventas: 84, cobradas: 43, pct: '51,19%', status: 'Activo', bancoPlaza: 34, banesco: 3, banfanb: 6 },
-  { mes: 'Octubre', asesor: 'Kismar Hernandez', ventas: 53, cobradas: 18, pct: '33,96%', status: 'Activo', bancoPlaza: 11, banesco: 1, banfanb: 6 },
-  { mes: 'Octubre', asesor: 'Roikel Suniaga', ventas: 45, cobradas: 21, pct: '46,67%', status: 'Activo', bancoPlaza: 13, banesco: 2, banfanb: 6 },
-  { mes: 'Octubre', asesor: 'Danielis Villegas', ventas: 39, cobradas: 18, pct: '46,15%', status: 'Activo', bancoPlaza: 15, banesco: 1, banfanb: 2 },
-  { mes: 'Octubre', asesor: 'Carolina Rojas', ventas: 36, cobradas: 17, pct: '47,22%', status: 'Activo', bancoPlaza: 12, banesco: 4, banfanb: 1 },
-  { mes: 'Octubre', asesor: 'Luisiana Nacero', ventas: 26, cobradas: 0, pct: '0,00%', status: 'Egreso', bancoPlaza: 0, banesco: 0, banfanb: 0 },
-  { mes: 'Octubre', asesor: 'Cindy Suarez', ventas: 18, cobradas: 10, pct: '55,56%', status: 'Activo', bancoPlaza: 3, banesco: 2, banfanb: 5 },
-  { mes: 'Octubre', asesor: 'Angi Torres', ventas: 3, cobradas: 0, pct: '0,00%', status: 'Egreso', bancoPlaza: 0, banesco: 0, banfanb: 0 },
-  { mes: 'Octubre', asesor: 'Daniel Diaz', ventas: 1, cobradas: 0, pct: '0,00%', status: 'Egreso', bancoPlaza: 0, banesco: 0, banfanb: 0 }
+  { mes: 'Octubre', asesor: 'Kariosqui Gomez', ventas: 84, cobradas: 43, plaza: 34, banesco: 3, banfanb: 6, pct: '51,19%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Kismar Hernandez', ventas: 53, cobradas: 18, plaza: 11, banesco: 1, banfanb: 6, pct: '33,96%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Roikel Suniaga', ventas: 45, cobradas: 21, plaza: 13, banesco: 2, banfanb: 6, pct: '46,67%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Danielis Villegas', ventas: 39, cobradas: 18, plaza: 15, banesco: 1, banfanb: 2, pct: '46,15%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Carolina Rojas', ventas: 36, cobradas: 17, plaza: 12, banesco: 4, banfanb: 1, pct: '47,22%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Luisiana Nacero', ventas: 26, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Egreso' },
+  { mes: 'Octubre', asesor: 'Cindy Suarez', ventas: 18, cobradas: 10, plaza: 3, banesco: 2, banfanb: 5, pct: '55,56%', status: 'Activo' },
+  { mes: 'Octubre', asesor: 'Angi Torres', ventas: 3, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Egreso' },
+  { mes: 'Octubre', asesor: 'Daniel Diaz', ventas: 1, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Egreso' }
 ];
+
 const RESUMEN_ASESORES_DEFAULT = [
   { mes: 'Julio', ventas: 242, cobradas: 206, pct: '85,12%' },
   { mes: 'Agosto', ventas: 257, cobradas: 135, pct: '52,53%' },
@@ -70,7 +71,7 @@ export default function App() {
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
-  const [mesActual, setMesActual] = useState("Septiembre");
+  const [mesActual, setMesActual] = useState("Octubre");
   const [subCategoria, setSubCategoria] = useState("ventas");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
@@ -120,7 +121,8 @@ export default function App() {
   const obtenerNombreMes = (key) => {
     const mapaMeses = {
       "6": "Junio", "7": "Julio", "8": "Agosto", "9": "Septiembre", "10": "Octubre",
-      "Junio": "Junio", "Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre"
+      "Junio": "Junio", "Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre",
+      "Noviembre": "Noviembre", "Diciembre": "Diciembre"
     };
     return mapaMeses[String(key).trim()] || `Mes ${key}`;
   };
@@ -213,7 +215,7 @@ export default function App() {
   ).sort();
 
   const rankingFiltrado = (asesoresData.ranking || []).filter(a => 
-    String(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
+    String(a.mes).trim().toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
   );
 
   const mesesEvolucion = ["Julio", "Agosto", "Septiembre", "Octubre"];
@@ -293,7 +295,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -360,6 +362,7 @@ export default function App() {
             </div>
           </div>
 
+          {/* 1. SECCIÓN VENTAS */}
           {subCategoria === "ventas" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%', boxSizing: 'border-box' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -420,7 +423,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 1. CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS) */}
+              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS) */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS BSF)
@@ -471,7 +474,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 2. CONSOLIDADO DE VENTAS COBRADAS POR BANCO (CANTIDAD DE CLIENTES + % IMPACTO + MONTOS DE BANCOS) */}
+              {/* CONSOLIDADO DE VENTAS COBRADAS POR BANCO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS COBRADAS POR BANCO (CANTIDAD Y MONTOS)
@@ -483,9 +486,9 @@ export default function App() {
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
-                        <th style={{ padding: '10px', color: '#d6e2d9' }}>PLAZA (Cant.Cob)</th>
-                        <th style={{ padding: '10px', color: '#c72813' }}>BANFANB (Cant.Cob)</th>
-                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO (Cant.Cob)</th>
+                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA (CLI)</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB (CLI)</th>
+                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO (CLI)</th>
                         <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
                         <th style={{ padding: '10px' }}>MONTO PLAZA</th>
                         <th style={{ padding: '10px' }}>MONTO BANFANB</th>
@@ -532,7 +535,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — LOGOS TRANSPARENTES Y COLORES PERSONALIZADOS */}
+              {/* SEGMENTACIÓN DE VENTAS POR BANCO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {obtenerNombreMes(mesActual).toUpperCase()}
@@ -544,13 +547,12 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                     <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/LogoPlaza.png" alt="Banco Plaza" style={{ height: '32px', objectFit: 'contain', background: 'transparent', padding: '0px' }} />
+                        <img src="/LogoPlaza.png" alt="Banco Plaza" style={{ height: '32px', objectFit: 'contain' }} />
                         <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>Banco Plaza</span>
                       </div>
                       <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase' }}>
                           CLIENTES PLAZA (CONSOLIDADO MENSUAL)
@@ -606,13 +608,12 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                     <div style={{ background: 'linear-gradient(135deg, #0f172a, #0284c7)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/LogoBanesco.png" alt="Banesco" style={{ height: '32px', objectFit: 'contain', background: 'transparent', padding: '0px' }} />
+                        <img src="/LogoBanesco.png" alt="Banesco" style={{ height: '32px', objectFit: 'contain' }} />
                         <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>Banesco</span>
                       </div>
                       <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(2, 132, 199, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#0284c7', textTransform: 'uppercase' }}>
                           CLIENTES BANESCO (CONSOLIDADO MENSUAL)
@@ -668,13 +669,12 @@ export default function App() {
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                     <div style={{ background: 'linear-gradient(135deg, #ca8a04, #eab308)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/LogoBANFANB.png" alt="BANFANB" style={{ height: '32px', objectFit: 'contain', background: 'transparent', padding: '0px' }} />
+                        <img src="/LogoBANFANB.png" alt="BANFANB" style={{ height: '32px', objectFit: 'contain' }} />
                         <span style={{ color: '#0f172a', fontWeight: 'bold', fontSize: '15px', letterSpacing: '0.5px' }}>BANFANB</span>
                       </div>
                       <span style={{ backgroundColor: 'rgba(15,23,42,0.2)', color: '#0f172a', fontSize: '11px', fontWeight: 'bold', padding: '4px 10px', borderRadius: '20px' }}>Activo</span>
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(234, 179, 8, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#eab308', textTransform: 'uppercase' }}>
                           CLIENTES BANFANB (CONSOLIDADO MENSUAL)
@@ -728,10 +728,10 @@ export default function App() {
 
                 </div>
               </div>
-
             </div>
           )}
 
+          {/* 2. SECCIÓN MARKETING */}
           {subCategoria === "marketing" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
@@ -826,6 +826,7 @@ export default function App() {
             </div>
           )}
 
+          {/* 3. SECCIÓN COBRANZAS */}
           {subCategoria === "cobranzas" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
@@ -1086,6 +1087,7 @@ export default function App() {
             </div>
           )}
 
+          {/* 4. SECCIÓN ASESORES CON DESGLOSE POR BANCO */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1107,37 +1109,56 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
-                <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
-                    <Award style={{ width: '20px', height: '20px', color: '#eab308' }} />
-                    <div>
-                      <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        RANKING Y SEGUIMIENTO DE ASESORES ({obtenerNombreMes(mesActual)})
-                      </h3>
-                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Desempeño individual y efectividad de cobro</p>
-                    </div>
+              {/* TABLA PRINCIPAL DE ASESORES CON DETALLE POR BANCOS */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                  <Award style={{ width: '20px', height: '20px', color: '#eab308' }} />
+                  <div>
+                    <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      VENTAS COBRADAS POR ASESOR Y BANCO ({obtenerNombreMes(mesActual).toUpperCase()})
+                    </h3>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Sincronización en vivo desde Google Sheets con desglose por canal de cobro</p>
                   </div>
+                </div>
 
-                  <div style={{ overflowX: 'auto', width: '100%' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
-                      <thead>
-                        <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
-                          <th style={{ padding: '10px', textAlign: 'left' }}>ASESOR DELEGADO</th>
-                          <th style={{ padding: '10px' }}>VENTAS</th>
-                          <th style={{ padding: '10px' }}>COBRADAS</th>
-                          <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
-                          <th style={{ padding: '10px' }}>STATUS</th>
+                <div style={{ overflowX: 'auto', width: '100%' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                        <th style={{ padding: '10px', textAlign: 'left' }}>ASESOR DELEGADO</th>
+                        <th style={{ padding: '10px' }}>VENTAS</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>TOTAL COBRADAS</th>
+                        <th style={{ padding: '10px', color: '#3b82f6' }}>COBRADA PLAZA</th>
+                        <th style={{ padding: '10px', color: '#0284c7' }}>COBRADA BANESCO</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>COBRADA BANFANB</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
+                        <th style={{ padding: '10px' }}>STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rankingFiltrado.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} style={{ padding: '20px', color: tema.subtexto }}>No hay registros disponibles para {obtenerNombreMes(mesActual)}.</td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {rankingFiltrado.map((item, idx) => (
+                      ) : (
+                        rankingFiltrado.map((item, idx) => (
                           <tr key={idx} style={{ borderBottom: `1px solid ${tema.border}`, backgroundColor: idx % 2 === 0 ? 'transparent' : (temaOscuro ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)') }}>
-                            <td style={{ padding: '10px', textAlign: 'left', fontWeight: '600' }}>{item.asesor}</td>
-                            <td style={{ padding: '10px', fontWeight: '500' }}>{formatearNumero(item.ventas)}</td>
-                            <td style={{ padding: '10px', fontWeight: '600', color: '#eab308' }}>{formatearNumero(item.cobradas)}</td>
-                            <td style={{ padding: '10px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
-                            <td style={{ padding: '10px' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>{item.asesor}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(item.ventas)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308', backgroundColor: temaOscuro ? 'rgba(234, 179, 8, 0.08)' : 'rgba(234, 179, 8, 0.05)' }}>
+                              {formatearNumero(item.cobradas)}
+                            </td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600', color: '#3b82f6' }}>
+                              {item.plaza > 0 ? formatearNumero(item.plaza) : '-'}
+                            </td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600', color: '#0284c7' }}>
+                              {item.banesco > 0 ? formatearNumero(item.banesco) : '-'}
+                            </td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600', color: '#eab308' }}>
+                              {item.banfanb > 0 ? formatearNumero(item.banfanb) : '-'}
+                            </td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
+                            <td style={{ padding: '12px 10px' }}>
                               <span style={{ 
                                 padding: '4px 10px', 
                                 borderRadius: '12px', 
@@ -1151,12 +1172,15 @@ export default function App() {
                               </span>
                             </td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
+              </div>
 
+              {/* RESUMEN CONSOLIDADO MENSUAL (TABLA DERECHA) */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                     <BarChart3 style={{ width: '20px', height: '20px', color: '#3b82f6' }} />
@@ -1164,7 +1188,7 @@ export default function App() {
                       <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         RESUMEN CONSOLIDADO MENSUAL
                       </h3>
-                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Comportamiento histórico general de asesores</p>
+                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Ventas generadas vs Ventas cobradas consolidadas</p>
                     </div>
                   </div>
 
@@ -1180,15 +1204,13 @@ export default function App() {
                       </thead>
                       <tbody>
                         {(asesoresData.resumen || []).map((item, idx) => {
-                          const esTotal = String(item.mes).toLowerCase() === 'total';
                           const esActivoMes = String(item.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase();
                           return (
                             <tr key={idx} style={{ 
                               borderBottom: `1px solid ${tema.border}`, 
-                              fontWeight: esTotal ? 'bold' : 'normal',
-                              backgroundColor: esTotal ? (temaOscuro ? 'rgba(30, 58, 138, 0.4)' : 'rgba(219, 234, 254, 0.6)') : (esActivoMes ? (temaOscuro ? 'rgba(30, 58, 138, 0.2)' : 'rgba(30, 58, 138, 0.05)') : 'transparent')
+                              backgroundColor: esActivoMes ? (temaOscuro ? 'rgba(30, 58, 138, 0.2)' : 'rgba(30, 58, 138, 0.05)') : 'transparent'
                             }}>
-                              <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: esActivoMes ? '#eab308' : (esTotal ? '#3b82f6' : tema.texto) }}>
+                              <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: esActivoMes ? '#eab308' : tema.texto }}>
                                 {String(item.mes).toUpperCase()} {esActivoMes && '⭐'}
                               </td>
                               <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(item.ventas)}</td>
@@ -1201,132 +1223,133 @@ export default function App() {
                     </table>
                   </div>
                 </div>
-              </div>
 
-              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <TrendingUp style={{ width: '22px', height: '22px', color: '#10b981' }} />
-                    <div>
-                      <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
-                        Evolución Mensual del Desempeño por Asesor
-                      </h3>
-                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento histórico comparativo de ventas vs cobranza (Julio - Octubre)</p>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: tema.subtexto }}>Filtrar Asesor:</label>
-                    <select 
-                      value={asesorSeleccionado} 
-                      onChange={(e) => setAsesorSeleccionado(e.target.value)}
-                      style={{ 
-                        backgroundColor: tema.bg, 
-                        color: tema.texto, 
-                        border: `1px solid ${tema.border}`, 
-                        padding: '6px 12px', 
-                        borderRadius: '8px', 
-                        fontSize: '12px', 
-                        fontWeight: 'bold',
-                        outline: 'none',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value="TODOS">📊 CONSOLIDADO GENERAL (TODOS)</option>
-                      {listaAsesoresUnicos.map((nombre, i) => (
-                        <option key={i} value={nombre}>👤 {nombre}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', alignItems: 'center' }}>
-                  <div style={{ height: '280px', width: '100%' }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={dataEvolucionAsesores} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
-                        <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} fontWeight="bold" />
-                        <YAxis stroke={tema.subtexto} fontSize={11} />
-                        <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                        <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                        <Bar dataKey="Ventas Generadas" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Ventas Generadas">
-                          <LabelList dataKey="Ventas Generadas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
-                        </Bar>
-                        <Bar dataKey="Ventas Cobradas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Cobradas">
-                          <LabelList dataKey="Ventas Cobradas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  <div style={{ backgroundColor: tema.bg, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      Métricas Acumuladas ({asesorSeleccionado})
-                    </div>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                      <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Ventas</span>
-                        <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: tema.texto }}>
-                          {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0))}
-                        </p>
-                      </div>
-
-                      <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
-                        <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Cobradas</span>
-                        <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: '#eab308' }}>
-                          {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0))}
-                        </p>
+                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR */}
+                <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <TrendingUp style={{ width: '22px', height: '22px', color: '#10b981' }} />
+                      <div>
+                        <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
+                          Evolución Mensual del Desempeño por Asesor
+                        </h3>
+                        <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento histórico comparativo de ventas vs cobranza (Julio - Octubre)</p>
                       </div>
                     </div>
 
-                    <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', color: tema.subtexto, fontWeight: 'bold' }}>Efectividad Promedio Cobro</span>
-                        <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>
-                          {(() => {
-                            const tv = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0);
-                            const tc = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0);
-                            return tv > 0 ? ((tc / tv) * 100).toFixed(1) + '%' : '0%';
-                          })()}
-                        </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 'bold', color: tema.subtexto }}>Filtrar Asesor:</label>
+                      <select 
+                        value={asesorSeleccionado} 
+                        onChange={(e) => setAsesorSeleccionado(e.target.value)}
+                        style={{ 
+                          backgroundColor: tema.bg, 
+                          color: tema.texto, 
+                          border: `1px solid ${tema.border}`, 
+                          padding: '6px 12px', 
+                          borderRadius: '8px', 
+                          fontSize: '12px', 
+                          fontWeight: 'bold',
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="TODOS">📊 CONSOLIDADO GENERAL (TODOS)</option>
+                        {listaAsesoresUnicos.map((nombre, i) => (
+                          <option key={i} value={nombre}>👤 {nombre}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', alignItems: 'center' }}>
+                    <div style={{ height: '280px', width: '100%' }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={dataEvolucionAsesores} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
+                          <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} fontWeight="bold" />
+                          <YAxis stroke={tema.subtexto} fontSize={11} />
+                          <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
+                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                          <Bar dataKey="Ventas Generadas" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Ventas Generadas">
+                            <LabelList dataKey="Ventas Generadas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                          </Bar>
+                          <Bar dataKey="Ventas Cobradas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Cobradas">
+                            <LabelList dataKey="Ventas Cobradas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    <div style={{ backgroundColor: tema.bg, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Métricas Acumuladas ({asesorSeleccionado})
+                      </div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                          <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Ventas</span>
+                          <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: tema.texto }}>
+                            {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0))}
+                          </p>
+                        </div>
+
+                        <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                          <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Cobradas</span>
+                          <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: '#eab308' }}>
+                            {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0))}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '11px', color: tema.subtexto, fontWeight: 'bold' }}>Efectividad Promedio Cobro</span>
+                          <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>
+                            {(() => {
+                              const tv = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0);
+                              const tc = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0);
+                              return tv > 0 ? ((tc / tv) * 100).toFixed(1) + '%' : '0%';
+                            })()}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                  <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px' }}>
-                      <Sparkles style={{ width: '18px', height: '18px' }} />
-                      Observación Inteligente de Desempeño
+                  <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+                    <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px' }}>
+                        <Sparkles style={{ width: '18px', height: '18px' }} />
+                        Observación Inteligente de Desempeño
+                      </div>
+                      <p style={{ fontSize: '12px', color: tema.texto, margin: 0, lineHeight: '1.5' }}>
+                        {asesorSeleccionado === "TODOS" ? (
+                          <>El equipo comercial mantiene un crecimiento continuo en volumen de ventas desde Julio (242) hasta Octubre (305). Sin embargo, la tasa de cobro efectivo presentó una desaceleración gradual del 85,12% en Julio al 41,64% en Octubre, indicando la necesidad de reforzar la cobranza al cierre de las pólizas expedidas.</>
+                        ) : (
+                          <>El seguimiento de <strong>{asesorSeleccionado}</strong> registra una contribución constante en la fuerza comercial. Se evidencia mayor conversión de cobranza durante las primeras semanas post-emisión. Mantener un control de cierres asistidos permitirá estabilizar su efectividad por encima del 65% promedio.</>
+                        )}
+                      </p>
                     </div>
-                    <p style={{ fontSize: '12px', color: tema.texto, margin: 0, lineHeight: '1.5' }}>
-                      {asesorSeleccionado === "TODOS" ? (
-                        <>El equipo comercial mantiene un crecimiento continuo en volumen de ventas desde Julio (242) hasta Octubre (305). Sin embargo, la tasa de cobro efectivo presentó una desaceleración gradual del 85,12% en Julio al 41,64% en Octubre, indicando la necesidad de reforzar la cobranza al cierre de las pólizas expedidas.</>
-                      ) : (
-                        <>El seguimiento de <strong>{asesorSeleccionado}</strong> registra una contribución constante en la fuerza comercial. Se evidencia mayor conversión de cobranza durante las primeras semanas post-emisión. Mantener un control de cierres asistidos permitirá estabilizar su efectividad por encima del 65% promedio.</>
-                      )}
-                    </p>
-                  </div>
 
-                  <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '13px' }}>
-                      <Target style={{ width: '18px', height: '18px' }} />
-                      Acciones Estratégicas a Tomar
+                    <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '13px' }}>
+                        <Target style={{ width: '18px', height: '18px' }} />
+                        Acciones Estratégicas a Tomar
+                      </div>
+                      
+                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '11px', color: tema.texto, display: 'flex', flexDirection: 'column', gap: '6px', lineHeight: '1.4' }}>
+                        <li>
+                          <strong>Establecer Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la firma del contrato (Día 1 al 15) para evitar el arrastre hacia morosidad.
+                        </li>
+                        <li>
+                          <strong>Incentivos por Porcentaje de Cobro:</strong> Condicionar los bonos y comisiones no solo a las ventas generadas sino a la efectividad de recaudación superior al 70%.
+                        </li>
+                        <li>
+                          <strong>Reasignación Operativa de Cartera:</strong> Trasladar casos sin gestión efectiva a la célula de Cobranza Especializada tras 30 días de emisión para proteger la cartera solida.
+                        </li>
+                      </ul>
                     </div>
-                    
-                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '11px', color: tema.texto, display: 'flex', flexDirection: 'column', gap: '6px', lineHeight: '1.4' }}>
-                      <li>
-                        <strong>Establecer Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la firma del contrato (Día 1 al 15) para evitar el arrastre hacia morosidad.
-                      </li>
-                      <li>
-                        <strong>Incentivos por Porcentaje de Cobro:</strong> Condicionar los bonos y comisiones no solo a las ventas generadas sino a la efectividad de recaudación superior al 70%.
-                      </li>
-                      <li>
-                        <strong>Reasignación Operativa de Cartera:</strong> Trasladar casos sin gestión efectiva a la célula de Cobranza Especializada tras 30 días de emisión para proteger la cartera solida.
-                      </li>
-                    </ul>
                   </div>
                 </div>
               </div>
@@ -1334,6 +1357,7 @@ export default function App() {
           )}
         </div>
 
+        {/* ANÁLISIS INTELIGENTE INFERIOR */}
         <div style={{ marginTop: '30px', backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '14px', padding: '18px 22px', display: 'flex', alignItems: 'flex-start', gap: '14px', boxSizing: 'border-box' }}>
           <Sparkles style={{ width: '22px', height: '22px', color: tema.iaTexto, flexShrink: 0, marginTop: '2px' }} />
           <div>
@@ -1347,6 +1371,7 @@ export default function App() {
         </div>
       </div>
 
+      {/* FOOTER */}
       <footer style={{ backgroundColor: temaOscuro ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(8px)', color: '#fbbf24', padding: '16px 20px', textAlign: 'center', borderTop: `1px solid ${tema.border}`, marginTop: '40px', fontSize: '11px', lineHeight: '1.6', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ fontWeight: 'bold', letterSpacing: '0.5px' }}>
           RIF: J-504900826 | CONSORCIO BIARTE, C.A.
