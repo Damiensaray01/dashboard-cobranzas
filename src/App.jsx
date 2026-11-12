@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target, PieChart
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -72,7 +72,7 @@ export default function App() {
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
   const [mesActual, setMesActual] = useState("Octubre");
-  const [subCategoria, setSubCategoria] = useState("ventas");
+  const [subCategoria, setSubCategoria] = useState("asesores");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
@@ -243,6 +243,15 @@ export default function App() {
       };
     }
   });
+
+  // Totales acumulados para organizar y llenar la tarjeta del Resumen Consolidado Mensual
+  const totalVentasResumen = (asesoresData.resumen || []).reduce((acc, item) => acc + Number(item.ventas || 0), 0);
+  const totalCobradasResumen = (asesoresData.resumen || []).reduce((acc, item) => acc + Number(item.cobradas || 0), 0);
+  const efectividadGlobalResumen = totalVentasResumen > 0 ? ((totalCobradasResumen / totalVentasResumen) * 100).toFixed(2) + '%' : '0,00%';
+
+  const totalPlazaMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.plaza || 0), 0);
+  const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
+  const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
   const tema = {
     bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
@@ -1087,7 +1096,7 @@ export default function App() {
             </div>
           )}
 
-          {/* 4. SECCIÓN ASESORES CON DESGLOSE POR BANCO */}
+          {/* 4. SECCIÓN ASESORES CON DESGLOSE POR BANCO EXACTO Y SIN ESPACIOS VACÍOS */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1109,7 +1118,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* TABLA PRINCIPAL DE ASESORES CON DETALLE POR BANCOS */}
+              {/* TABLA PRINCIPAL DE ASESORES: COBROS POR BANCO EXACTOS DESDE EL SHEET */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
                   <Award style={{ width: '20px', height: '20px', color: '#eab308' }} />
@@ -1117,7 +1126,7 @@ export default function App() {
                     <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       VENTAS COBRADAS POR ASESOR Y BANCO ({obtenerNombreMes(mesActual).toUpperCase()})
                     </h3>
-                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Sincronización en vivo desde Google Sheets con desglose por canal de cobro</p>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Valores exactos leídos directamente de las columnas G (Plaza), H (Banesco) e I (BANFANB)</p>
                   </div>
                 </div>
 
@@ -1148,13 +1157,13 @@ export default function App() {
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308', backgroundColor: temaOscuro ? 'rgba(234, 179, 8, 0.08)' : 'rgba(234, 179, 8, 0.05)' }}>
                               {formatearNumero(item.cobradas)}
                             </td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600', color: '#3b82f6' }}>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#3b82f6' }}>
                               {item.plaza > 0 ? formatearNumero(item.plaza) : '-'}
                             </td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600', color: '#0284c7' }}>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#0284c7' }}>
                               {item.banesco > 0 ? formatearNumero(item.banesco) : '-'}
                             </td>
-                            <td style={{ padding: '12px 10px', fontWeight: '600', color: '#eab308' }}>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>
                               {item.banfanb > 0 ? formatearNumero(item.banfanb) : '-'}
                             </td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
@@ -1179,52 +1188,94 @@ export default function App() {
                 </div>
               </div>
 
-              {/* RESUMEN CONSOLIDADO MENSUAL (TABLA DERECHA) */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
-                <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
-                    <BarChart3 style={{ width: '20px', height: '20px', color: '#3b82f6' }} />
-                    <div>
-                      <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        RESUMEN CONSOLIDADO MENSUAL
-                      </h3>
-                      <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Ventas generadas vs Ventas cobradas consolidadas</p>
+              {/* BLOQUE DE RESUMEN CONSOLIDADO MENSUAL Y EVOLUCIÓN (SIN ESPACIO VACÍO) */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', alignItems: 'stretch' }}>
+                
+                {/* TARJETA IZQUIERDA: RESUMEN MENSUAL CON TOTALES Y REPARTO BANCARIO QUE LLENAN EL VACÍO */}
+                <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                      <BarChart3 style={{ width: '20px', height: '20px', color: '#3b82f6' }} />
+                      <div>
+                        <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          RESUMEN CONSOLIDADO MENSUAL
+                        </h3>
+                        <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Histórico mensual oficial (Columnas L a O del Google Sheet)</p>
+                      </div>
+                    </div>
+
+                    <div style={{ overflowX: 'auto', width: '100%' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                            <th style={{ padding: '8px', textAlign: 'left' }}>MES</th>
+                            <th style={{ padding: '8px' }}>CANTIDAD VENTAS</th>
+                            <th style={{ padding: '8px' }}>VENTAS COBRADAS</th>
+                            <th style={{ padding: '8px', color: '#10b981' }}>% COBRO</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(asesoresData.resumen || []).map((item, idx) => {
+                            const esActivoMes = String(item.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase();
+                            return (
+                              <tr key={idx} style={{ 
+                                borderBottom: `1px solid ${tema.border}`, 
+                                backgroundColor: esActivoMes ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.06)') : 'transparent'
+                              }}>
+                                <td style={{ padding: '9px 8px', textAlign: 'left', fontWeight: 'bold', color: esActivoMes ? '#eab308' : tema.texto }}>
+                                  {String(item.mes).toUpperCase()} {esActivoMes && '⭐'}
+                                </td>
+                                <td style={{ padding: '9px 8px', fontWeight: '600' }}>{formatearNumero(item.ventas)}</td>
+                                <td style={{ padding: '9px 8px', fontWeight: '600', color: '#eab308' }}>{formatearNumero(item.cobradas)}</td>
+                                <td style={{ padding: '9px 8px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
-                  <div style={{ overflowX: 'auto', width: '100%' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
-                      <thead>
-                        <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
-                          <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
-                          <th style={{ padding: '10px' }}>CANTIDAD VENTAS</th>
-                          <th style={{ padding: '10px' }}>VENTAS COBRADAS</th>
-                          <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(asesoresData.resumen || []).map((item, idx) => {
-                          const esActivoMes = String(item.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase();
-                          return (
-                            <tr key={idx} style={{ 
-                              borderBottom: `1px solid ${tema.border}`, 
-                              backgroundColor: esActivoMes ? (temaOscuro ? 'rgba(30, 58, 138, 0.2)' : 'rgba(30, 58, 138, 0.05)') : 'transparent'
-                            }}>
-                              <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: esActivoMes ? '#eab308' : tema.texto }}>
-                                {String(item.mes).toUpperCase()} {esActivoMes && '⭐'}
-                              </td>
-                              <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(item.ventas)}</td>
-                              <td style={{ padding: '12px 10px', fontWeight: '600', color: '#eab308' }}>{formatearNumero(item.cobradas)}</td>
-                              <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                  {/* BLOQUE INFERIOR QUE ORGANIZA Y ELIMINA EL VACÍO DEL CONSOLIDADO */}
+                  <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px', borderTop: `1px solid ${tema.border}`, paddingTop: '16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
+                      <div style={{ backgroundColor: tema.bg, padding: '10px 6px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Total Ventas</span>
+                        <span style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto }}>{formatearNumero(totalVentasResumen)}</span>
+                      </div>
+                      <div style={{ backgroundColor: tema.bg, padding: '10px 6px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Total Cobradas</span>
+                        <span style={{ fontSize: '15px', fontWeight: 'bold', color: '#eab308' }}>{formatearNumero(totalCobradasResumen)}</span>
+                      </div>
+                      <div style={{ backgroundColor: tema.bg, padding: '10px 6px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                        <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', fontWeight: 'bold' }}>Efectividad</span>
+                        <span style={{ fontSize: '15px', fontWeight: 'bold', color: '#10b981' }}>{efectividadGlobalResumen}</span>
+                      </div>
+                    </div>
+
+                    <div style={{ backgroundColor: tema.bg, borderRadius: '8px', padding: '12px', border: `1px solid ${tema.border}` }}>
+                      <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        💳 Resumen Cobrado por Canales Bancarios ({obtenerNombreMes(mesActual)})
+                      </span>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
+                        <div style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                          <span style={{ fontSize: '10px', color: '#3b82f6', fontWeight: 'bold', display: 'block' }}>PLAZA</span>
+                          <strong style={{ fontSize: '13px', color: '#3b82f6' }}>{formatearNumero(totalPlazaMes)}</strong>
+                        </div>
+                        <div style={{ backgroundColor: 'rgba(2, 132, 199, 0.1)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(2, 132, 199, 0.2)' }}>
+                          <span style={{ fontSize: '10px', color: '#0284c7', fontWeight: 'bold', display: 'block' }}>BANESCO</span>
+                          <strong style={{ fontSize: '13px', color: '#0284c7' }}>{formatearNumero(totalBanescoMes)}</strong>
+                        </div>
+                        <div style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(234, 179, 8, 0.2)' }}>
+                          <span style={{ fontSize: '10px', color: '#eab308', fontWeight: 'bold', display: 'block' }}>BANFANB</span>
+                          <strong style={{ fontSize: '13px', color: '#eab308' }}>{formatearNumero(totalBanfanbMes)}</strong>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR */}
+                {/* TARJETA DERECHA: EVOLUCIÓN HISTÓRICA DEL DESEMPEÑO POR ASESOR */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1262,15 +1313,15 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', alignItems: 'center' }}>
-                    <div style={{ height: '280px', width: '100%' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', alignItems: 'center' }}>
+                    <div style={{ height: '240px', width: '100%' }}>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={dataEvolucionAsesores} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                        <BarChart data={dataEvolucionAsesores} margin={{ top: 20, right: 10, left: -10, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
                           <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} fontWeight="bold" />
                           <YAxis stroke={tema.subtexto} fontSize={11} />
                           <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '6px' }} />
                           <Bar dataKey="Ventas Generadas" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Ventas Generadas">
                             <LabelList dataKey="Ventas Generadas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" />
                           </Bar>
@@ -1281,28 +1332,28 @@ export default function App() {
                       </ResponsiveContainer>
                     </div>
 
-                    <div style={{ backgroundColor: tema.bg, padding: '18px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <div style={{ backgroundColor: tema.bg, padding: '16px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Métricas Acumuladas ({asesorSeleccionado})
                       </div>
                       
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                         <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
                           <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Ventas</span>
-                          <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: tema.texto }}>
+                          <p style={{ fontSize: '17px', fontWeight: 'bold', margin: '2px 0 0 0', color: tema.texto }}>
                             {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0))}
                           </p>
                         </div>
 
                         <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
                           <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Cobradas</span>
-                          <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: '#eab308' }}>
+                          <p style={{ fontSize: '17px', fontWeight: 'bold', margin: '2px 0 0 0', color: '#eab308' }}>
                             {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0))}
                           </p>
                         </div>
                       </div>
 
-                      <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                      <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontSize: '11px', color: tema.subtexto, fontWeight: 'bold' }}>Efectividad Promedio Cobro</span>
                           <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>
@@ -1317,13 +1368,13 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                    <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '13px' }}>
-                        <Sparkles style={{ width: '18px', height: '18px' }} />
+                  <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                    <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '12px' }}>
+                        <Sparkles style={{ width: '16px', height: '16px' }} />
                         Observación Inteligente de Desempeño
                       </div>
-                      <p style={{ fontSize: '12px', color: tema.texto, margin: 0, lineHeight: '1.5' }}>
+                      <p style={{ fontSize: '11px', color: tema.texto, margin: 0, lineHeight: '1.4' }}>
                         {asesorSeleccionado === "TODOS" ? (
                           <>El equipo comercial mantiene un crecimiento continuo en volumen de ventas desde Julio (242) hasta Octubre (305). Sin embargo, la tasa de cobro efectivo presentó una desaceleración gradual del 85,12% en Julio al 41,64% en Octubre, indicando la necesidad de reforzar la cobranza al cierre de las pólizas expedidas.</>
                         ) : (
@@ -1332,26 +1383,27 @@ export default function App() {
                       </p>
                     </div>
 
-                    <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '13px' }}>
-                        <Target style={{ width: '18px', height: '18px' }} />
+                    <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '12px' }}>
+                        <Target style={{ width: '16px', height: '16px' }} />
                         Acciones Estratégicas a Tomar
                       </div>
                       
-                      <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '11px', color: tema.texto, display: 'flex', flexDirection: 'column', gap: '6px', lineHeight: '1.4' }}>
+                      <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: tema.texto, display: 'flex', flexDirection: 'column', gap: '5px', lineHeight: '1.3' }}>
                         <li>
-                          <strong>Establecer Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la firma del contrato (Día 1 al 15) para evitar el arrastre hacia morosidad.
+                          <strong>Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la emisión (Día 1 al 15).
                         </li>
                         <li>
-                          <strong>Incentivos por Porcentaje de Cobro:</strong> Condicionar los bonos y comisiones no solo a las ventas generadas sino a la efectividad de recaudación superior al 70%.
+                          <strong>Incentivos por Recaudación:</strong> Condicionar bonos a una efectividad de recaudación superior al 70%.
                         </li>
                         <li>
-                          <strong>Reasignación Operativa de Cartera:</strong> Trasladar casos sin gestión efectiva a la célula de Cobranza Especializada tras 30 días de emisión para proteger la cartera solida.
+                          <strong>Reasignación Operativa:</strong> Trasladar casos sin gestión tras 30 días a cobranza especializada.
                         </li>
                       </ul>
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
           )}
