@@ -182,7 +182,6 @@ export default function App() {
     };
   });
 
-  // Datos de evolución de montos por banco para las gráficas
   const dataEvolucionMontosPlaza = listaMeses.map(m => {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
@@ -422,9 +421,10 @@ export default function App() {
                 </div>
               </div>
 
+              {/* 1. CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS) */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
-                  CONSOLIDADO DE VENTAS Y RECAUDACIÓN
+                  CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS BSF)
                 </h3>
                 <div style={{ overflowX: 'auto', width: '100%' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
@@ -472,7 +472,68 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — LOGOS TRANSPARENTES Y COLORES DE GRÁFICO PERSONALIZADOS */}
+              {/* 2. CONSOLIDADO DE VENTAS COBRADAS POR BANCO (CANTIDAD DE CLIENTES + % IMPACTO + MONTOS DE BANCOS) */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
+                  CONSOLIDADO DE VENTAS COBRADAS POR BANCO (CANTIDAD Y MONTOS)
+                </h3>
+                <div style={{ overflowX: 'auto', width: '100%' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.subtexto }}>
+                        <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
+                        <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
+                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA (CLI)</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB (CLI)</th>
+                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO (CLI)</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
+                        <th style={{ padding: '10px' }}>MONTO PLAZA</th>
+                        <th style={{ padding: '10px' }}>MONTO BANFANB</th>
+                        <th style={{ padding: '10px' }}>MONTO BANESCO</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {listaMeses.map((mes) => {
+                        const item = mesesData[mes] || {};
+                        const cd = item.cobranzasDetalle || {};
+                        const vGen = Number(item.ventasGeneradas ?? item.ventas ?? 0);
+                        const cobVentas = Number(cd.cobradasVentas ?? 0);
+                        
+                        let pctImpacto = cd.porcentajeImpacto ?? 0;
+                        if (typeof pctImpacto === 'number') {
+                          pctImpacto = (pctImpacto > 1 ? pctImpacto : pctImpacto * 100).toFixed(2).replace('.', ',') + '%';
+                        }
+
+                        const cliPlaza = Number(cd.clientesCobradosBancoPlazaVentas ?? 0);
+                        const cliBanfanb = Number(cd.clientesCobradosBanfanbVentas ?? 0);
+                        const cliBanesco = Number(cd.clientesCobradosBanescoVentas ?? 0);
+
+                        const mPlaza = Number(item.montoBancoPlaza ?? 0);
+                        const mBanfanb = Number(item.montoBanfanbVentas ?? 0);
+                        const mBanesco = Number(item.montoBanescoVentas ?? 0);
+
+                        return (
+                          <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(vGen)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>{formatearNumero(cobVentas)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#3b82f6' }}>{formatearNumero(cliPlaza)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>{formatearNumero(cliBanfanb)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#0284c7' }}>{formatearNumero(cliBanesco)}</td>
+                            <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{pctImpacto}</td>
+                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mPlaza)}</td>
+                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanfanb)}</td>
+                            <td style={{ padding: '12px 10px' }}>BsF {formatearNumero(mBanesco)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* 🏦 SEGMENTACIÓN DE VENTAS POR BANCO — LOGOS TRANSPARENTES Y COLORES PERSONALIZADOS */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {obtenerNombreMes(mesActual).toUpperCase()}
@@ -491,7 +552,6 @@ export default function App() {
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       
-                      {/* Consolidado de Clientes Arriba */}
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase' }}>
                           CLIENTES PLAZA (CONSOLIDADO MENSUAL)
@@ -525,7 +585,6 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Montos por Mes - Verde */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
@@ -555,7 +614,6 @@ export default function App() {
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       
-                      {/* Consolidado de Clientes Arriba */}
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(2, 132, 199, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#0284c7', textTransform: 'uppercase' }}>
                           CLIENTES BANESCO (CONSOLIDADO MENSUAL)
@@ -589,7 +647,6 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Montos por Mes - Rojo */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
@@ -619,7 +676,6 @@ export default function App() {
                     </div>
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       
-                      {/* Consolidado de Clientes Arriba */}
                       <div style={{ backgroundColor: tema.card, borderRadius: '10px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                         <div style={{ padding: '10px 14px', backgroundColor: 'rgba(234, 179, 8, 0.1)', borderBottom: `1px solid ${tema.border}`, fontSize: '11px', fontWeight: 'bold', color: '#eab308', textTransform: 'uppercase' }}>
                           CLIENTES BANFANB (CONSOLIDADO MENSUAL)
@@ -653,7 +709,6 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Gráfico de Evolución de Montos por Mes - Amarillo/Dorado */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
