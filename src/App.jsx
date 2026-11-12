@@ -485,7 +485,7 @@ export default function App() {
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
                         <th style={{ padding: '10px', color: '#d6e2d9' }}>PLAZA (Cant.Cob)</th>
-                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB (Cant.Cob)</th>
+                        <th style={{ padding: '10px', color: '#c72813' }}>BANFANB (Cant.Cob)</th>
                         <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO (Cant.Cob)</th>
                         <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
                         <th style={{ padding: '10px' }}>MONTO PLAZA</th>
