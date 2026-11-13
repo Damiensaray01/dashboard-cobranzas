@@ -1481,7 +1481,7 @@ export default function App() {
           <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
-          DEPARTAMENTO DE BUSINESS INTELLIGENCE 2026
+          DEPARTAMENTO DE INNOVACIÓN Y DESARROLLO 2026
         </div>
       </footer>
     </div>
