@@ -14,7 +14,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m
 const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, plaza: 0, banesco: 0, banfanb: 0, pct: '100,00%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, plaza: 0, banesco: 0, banfanb: 0, pct: '94,74%', status: 'Activo' },
-  { mes: 'Julio', asesor: 'Carolina rojas', ventas: 26, cobradas: 20, plaza: 0, banesco: 0, banfanb: 0, pct: '76,92%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Carolina Rojas', ventas: 26, cobradas: 20, plaza: 0, banesco: 0, banfanb: 0, pct: '76,92%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Duvan moreno', ventas: 38, cobradas: 25, plaza: 0, banesco: 0, banfanb: 0, pct: '65,79%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Gabriela Barrios', ventas: 28, cobradas: 24, plaza: 0, banesco: 0, banfanb: 0, pct: '85,71%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Jose Mendoza', ventas: 24, cobradas: 23, plaza: 0, banesco: 0, banfanb: 0, pct: '95,83%', status: 'Egreso' },
@@ -27,7 +27,7 @@ const ASESORES_DATA_DEFAULT = [
   { mes: 'Agosto', asesor: 'Duvan moreno', ventas: 53, cobradas: 22, plaza: 0, banesco: 0, banfanb: 0, pct: '41,51%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Gabriela Barrios', ventas: 41, cobradas: 27, plaza: 0, banesco: 0, banfanb: 0, pct: '65,85%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Kariosqui Gomez', ventas: 37, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '51,35%', status: 'Activo' },
-  { mes: 'Agosto', asesor: 'Carolina rojas', ventas: 31, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '61,29%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Carolina Rojas', ventas: 31, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '61,29%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Roikel Suniaga', ventas: 29, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '65,52%', status: 'Activo' },
   
   // SEPTIEMBRE CARGADO DIRECTAMENTE CON TUS CIFRAS DEL SHEETS
@@ -321,7 +321,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Consorcio Biartet, C.A. & Seguros Horizonte
+            Biartet & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
