@@ -324,6 +324,39 @@ export default function App() {
             Plataforma Ejecutiva de Control Comercial & Cobranzas
           </h2>
 
+          <form onSubmit={manejarAcceso} style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock style={{ position: 'absolute', left: '16px', width: '18px', height: '18px', color: tema.subtexto }} />
+              <input 
+                type="password" 
+                placeholder="Ingrese la contraseña de acceso..." 
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px 14px 48px',
+                  borderRadius: '12px',
+                  border: `1px solid ${errorPassword ? '#ef4444' : tema.border}`,
+                  backgroundColor: temaOscuro ? '#0f172a' : '#f8fafc',
+                  color: tema.texto,
+                  fontSize: '14px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            {errorPassword && (
+              <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: '600', textAlign: 'left', paddingLeft: '4px' }}>
+                ⚠️ Contraseña incorrecta. Acceso denegado.
+              </div>
+            )}
+
+            <button type="submit" style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
+              Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
+            </button>
+          </form>
+
           <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
             Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
           </button>
