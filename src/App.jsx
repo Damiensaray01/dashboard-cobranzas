@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target, PieChart
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target, Lock
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -10,10 +10,11 @@ import {
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 
+// Datos iniciales idénticos a tu Google Sheets (Septiembre y Octubre con bancos exactos)
 const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, plaza: 0, banesco: 0, banfanb: 0, pct: '100,00%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, plaza: 0, banesco: 0, banfanb: 0, pct: '94,74%', status: 'Activo' },
-  { mes: 'Julio', asesor: 'Carolina Rojas', ventas: 26, cobradas: 20, plaza: 0, banesco: 0, banfanb: 0, pct: '76,92%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Carolina rojas', ventas: 26, cobradas: 20, plaza: 0, banesco: 0, banfanb: 0, pct: '76,92%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Duvan moreno', ventas: 38, cobradas: 25, plaza: 0, banesco: 0, banfanb: 0, pct: '65,79%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Gabriela Barrios', ventas: 28, cobradas: 24, plaza: 0, banesco: 0, banfanb: 0, pct: '85,71%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Jose Mendoza', ventas: 24, cobradas: 23, plaza: 0, banesco: 0, banfanb: 0, pct: '95,83%', status: 'Egreso' },
@@ -26,18 +27,20 @@ const ASESORES_DATA_DEFAULT = [
   { mes: 'Agosto', asesor: 'Duvan moreno', ventas: 53, cobradas: 22, plaza: 0, banesco: 0, banfanb: 0, pct: '41,51%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Gabriela Barrios', ventas: 41, cobradas: 27, plaza: 0, banesco: 0, banfanb: 0, pct: '65,85%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Kariosqui Gomez', ventas: 37, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '51,35%', status: 'Activo' },
-  { mes: 'Agosto', asesor: 'Carolina Rojas', ventas: 31, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '61,29%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Carolina rojas', ventas: 31, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '61,29%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Roikel Suniaga', ventas: 29, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '65,52%', status: 'Activo' },
   
-  { mes: 'Septiembre', asesor: 'Carlos Argort', ventas: 49, cobradas: 26, plaza: 0, banesco: 0, banfanb: 0, pct: '53,06%', status: 'Egreso' },
-  { mes: 'Septiembre', asesor: 'Duvan moreno', ventas: 49, cobradas: 31, plaza: 0, banesco: 0, banfanb: 0, pct: '63,27%', status: 'Egreso' },
-  { mes: 'Septiembre', asesor: 'Gabriela Barrios', ventas: 23, cobradas: 10, plaza: 0, banesco: 0, banfanb: 0, pct: '43,48%', status: 'Egreso' },
-  { mes: 'Septiembre', asesor: 'Kariosqui Gomez', ventas: 44, cobradas: 32, plaza: 0, banesco: 0, banfanb: 0, pct: '72,73%', status: 'Activo' },
-  { mes: 'Septiembre', asesor: 'Carolina Rojas', ventas: 35, cobradas: 13, plaza: 0, banesco: 0, banfanb: 0, pct: '37,14%', status: 'Activo' },
-  { mes: 'Septiembre', asesor: 'Roikel Suniaga', ventas: 31, cobradas: 11, plaza: 0, banesco: 0, banfanb: 0, pct: '35,48%', status: 'Activo' },
-  { mes: 'Septiembre', asesor: 'Evelyn La Rosa', ventas: 18, cobradas: 2, plaza: 0, banesco: 0, banfanb: 0, pct: '11,11%', status: 'Egreso' },
-  { mes: 'Septiembre', asesor: 'Yanfran Sanchez', ventas: 8, cobradas: 3, plaza: 0, banesco: 0, banfanb: 0, pct: '37,50%', status: 'Egreso' },
+  // SEPTIEMBRE CARGADO DIRECTAMENTE CON TUS CIFRAS DEL SHEETS
+  { mes: 'Septiembre', asesor: 'Carlos Argort', ventas: 49, cobradas: 26, plaza: 23, banesco: 0, banfanb: 3, pct: '53,06%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Duvan moreno', ventas: 49, cobradas: 31, plaza: 31, banesco: 0, banfanb: 0, pct: '63,27%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Gabriela Barrios', ventas: 23, cobradas: 10, plaza: 10, banesco: 0, banfanb: 0, pct: '43,48%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Kariosqui Gomez', ventas: 44, cobradas: 32, plaza: 31, banesco: 1, banfanb: 0, pct: '72,73%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Carolina Rojas', ventas: 35, cobradas: 13, plaza: 14, banesco: 0, banfanb: 0, pct: '37,14%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Roikel Suniaga', ventas: 31, cobradas: 11, plaza: 10, banesco: 0, banfanb: 1, pct: '35,48%', status: 'Activo' },
+  { mes: 'Septiembre', asesor: 'Evelyn La Rosa', ventas: 18, cobradas: 2, plaza: 2, banesco: 0, banfanb: 0, pct: '11,11%', status: 'Egreso' },
+  { mes: 'Septiembre', asesor: 'Yanfran Sanchez', ventas: 8, cobradas: 3, plaza: 2, banesco: 0, banfanb: 0, pct: '37,50%', status: 'Egreso' },
   
+  // OCTUBRE CARGADO DIRECTAMENTE CON TUS CIFRAS DEL SHEETS
   { mes: 'Octubre', asesor: 'Kariosqui Gomez', ventas: 84, cobradas: 43, plaza: 34, banesco: 3, banfanb: 6, pct: '51,19%', status: 'Activo' },
   { mes: 'Octubre', asesor: 'Kismar Hernandez', ventas: 53, cobradas: 18, plaza: 11, banesco: 1, banfanb: 6, pct: '33,96%', status: 'Activo' },
   { mes: 'Octubre', asesor: 'Roikel Suniaga', ventas: 45, cobradas: 21, plaza: 13, banesco: 2, banfanb: 6, pct: '46,67%', status: 'Activo' },
@@ -71,16 +74,30 @@ export default function App() {
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
-  const [mesActual, setMesActual] = useState("Octubre");
+  const [mesActual, setMesActual] = useState("Septiembre");
   const [subCategoria, setSubCategoria] = useState("asesores");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
-  
+  // Estados para la contraseña de acceso blindado
+  const [passwordInput, setPasswordInput] = useState("");
+  const [errorPassword, setErrorPassword] = useState(false);
+
+  const manejarAcceso = (e) => {
+    e.preventDefault();
+    if (passwordInput === "ADMB2027*1") {
+      setErrorPassword(false);
+      setModoInicio(false);
+    } else {
+      setErrorPassword(true);
+    }
+  };
+
   const fetchSheetData = async () => {
     setIsRefreshing(true);
     try {
-      const response = await fetch(APPS_SCRIPT_URL);
+      // Parámetro anticanché para que lea los cambios al instante
+      const response = await fetch(`${APPS_SCRIPT_URL}?t=${new Date().getTime()}`);
       const res = await response.json();
       
       const datosMeses = res.meses ? res.meses : Object.keys(res).reduce((acc, k) => {
@@ -245,7 +262,6 @@ export default function App() {
     }
   });
 
-  // Totales acumulados para organizar y llenar la tarjeta del Resumen Consolidado Mensual
   const totalVentasResumen = (asesoresData.resumen || []).reduce((acc, item) => acc + Number(item.ventas || 0), 0);
   const totalCobradasResumen = (asesoresData.resumen || []).reduce((acc, item) => acc + Number(item.cobradas || 0), 0);
   const efectividadGlobalResumen = totalVentasResumen > 0 ? ((totalCobradasResumen / totalVentasResumen) * 100).toFixed(2) + '%' : '0,00%';
@@ -301,21 +317,48 @@ export default function App() {
           </div>
 
           <div style={{ display: 'inline-block', backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
-            Presidencia & Junta Directiva
+            Presidencia & Junta Directiva — Acceso Blindado
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
           </h2>
 
-          
+          <form onSubmit={manejarAcceso} style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock style={{ position: 'absolute', left: '16px', width: '18px', height: '18px', color: tema.subtexto }} />
+              <input 
+                type="password" 
+                placeholder="Ingrese la contraseña de acceso..." 
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px 14px 48px',
+                  borderRadius: '12px',
+                  border: `1px solid ${errorPassword ? '#ef4444' : tema.border}`,
+                  backgroundColor: temaOscuro ? '#0f172a' : '#f8fafc',
+                  color: tema.texto,
+                  fontSize: '14px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
 
-          <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
-            Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
-          </button>
+            {errorPassword && (
+              <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: '600', textAlign: 'left', paddingLeft: '4px' }}>
+                ⚠️ Contraseña incorrecta. Acceso denegado.
+              </div>
+            )}
+
+            <button type="submit" style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
+              Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
+            </button>
+          </form>
         </div>
       </div>
     );
@@ -339,7 +382,7 @@ export default function App() {
       <div style={{ padding: '16px 20px', flex: 1, boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px', backgroundColor: tema.card, padding: '10px 16px', borderRadius: '12px', border: `1px solid ${tema.border}`, boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button onClick={() => setModoInicio(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.subtexto }} title="Volver a Inicio">
+            <button onClick={() => { setModoInicio(true); setPasswordInput(""); setErrorPassword(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.subtexto }} title="Bloquear / Volver a Inicio">
               <img src="/logo2.png" alt="Logo 2" style={{ height: '40px', objectFit: 'contain' }} />
             </button>
             <div>
@@ -1161,13 +1204,13 @@ export default function App() {
                               {formatearNumero(item.cobradas)}
                             </td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#3b82f6' }}>
-                              {item.plaza > 0 ? formatearNumero(item.plaza) : '-'}
+                              {Number(item.plaza) > 0 ? formatearNumero(item.plaza) : '-'}
                             </td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#0284c7' }}>
-                              {item.banesco > 0 ? formatearNumero(item.banesco) : '-'}
+                              {Number(item.banesco) > 0 ? formatearNumero(item.banesco) : '-'}
                             </td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>
-                              {item.banfanb > 0 ? formatearNumero(item.banfanb) : '-'}
+                              {Number(item.banfanb) > 0 ? formatearNumero(item.banfanb) : '-'}
                             </td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{item.pct}</td>
                             <td style={{ padding: '12px 10px' }}>
@@ -1388,7 +1431,7 @@ export default function App() {
 
                     <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '12px' }}>
-                        <Target style={{ width: '16px', height: '16px' }} />
+                        <Target style={{ width: '16px', height: '16px', color: '#eab308' }} />
                         Acciones Estratégicas a Tomar
                       </div>
                       
