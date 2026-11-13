@@ -76,6 +76,20 @@ export default function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
+// Estados para la contraseña de acceso blindado
+  const [passwordInput, setPasswordInput] = useState("");
+  const [errorPassword, setErrorPassword] = useState(false);
+
+  const manejarAcceso = (e) => {
+    e.preventDefault();
+    if (passwordInput === "ADMB2027*1") {
+      setErrorPassword(false);
+      setModoInicio(false);
+    } else {
+      setErrorPassword(true);
+    }
+  };
+
   const fetchSheetData = async () => {
     setIsRefreshing(true);
     try {
