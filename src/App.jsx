@@ -76,20 +76,7 @@ export default function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
-  // Estados para la contraseña de acceso blindado
-  const [passwordInput, setPasswordInput] = useState("");
-  const [errorPassword, setErrorPassword] = useState(false);
-
-  const manejarAcceso = (e) => {
-    e.preventDefault();
-    if (passwordInput === "ADMB2027*1") {
-      setErrorPassword(false);
-      setModoInicio(false);
-    } else {
-      setErrorPassword(true);
-    }
-  };
-
+  
   const fetchSheetData = async () => {
     setIsRefreshing(true);
     try {
@@ -106,6 +93,11 @@ export default function App() {
       if (res.asesoresData && res.asesoresData.ranking && res.asesoresData.ranking.length > 0) {
         setAsesoresData(res.asesoresData);
       }
+
+      const mesesDisponibles = Object.keys(datosMeses || {});
+      if (mesesDisponibles.length > 0 && !datosMeses[mesActual]) {
+        setMesActual(mesesDisponibles[mesesDisponibles.length - 1]);
+      }
     } catch (error) {
       console.error("Error cargando datos de Google Sheets:", error);
     } finally {
@@ -117,12 +109,160 @@ export default function App() {
     fetchSheetData();
   }, []);
 
+  const data = mesesData[mesActual] || {};
+  const cobD = data.cobranzasDetalle || {};
+
+  const ventasGeneradasActual = Number(data.ventasGeneradas ?? data.ventas ?? 0);
+  const montoPlazaActual = Number(cobD.pagosRecurrentesPlaza ?? 0);
+  const montoBanfanbActual = Number(cobD.montoBanfanb ?? 0);
+  const montoBanescoActual = Number(cobD.montoBanesco ?? 0);
+
+  const listaMeses = Object.keys(mesesData);
+
+  const obtenerNombreMes = (key) => {
+    const mapaMeses = {
+      "6": "Junio", "7": "Julio", "8": "Agosto", "9": "Septiembre", "10": "Octubre",
+      "Junio": "Junio", "Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre",
+      "Noviembre": "Noviembre", "Diciembre": "Diciembre"
+    };
+    return mapaMeses[String(key).trim()] || `Mes ${key}`;
+  };
+
+  const solventesMes = Number(cobD.solventes ?? 0);
+  const mora1Mes = Number(cobD.morosos1Mes ?? 0);
+  const mora2Meses = Number(cobD.morosos2Meses ?? 0);
+  const mora3Meses = Number(cobD.morosos3Meses ?? 0);
+  const moraMas3Meses = Number(cobD.morososMas3Meses ?? 0);
+  const moraTempranaMes = mora1Mes + mora2Meses + mora3Meses;
+
+  const cobradosBanescoActual = Number(cobD.cobradosBanesco ?? 0);
+  const cobradosBanfanbActual = Number(cobD.cobradosBanfanb ?? 0);
+  const bddRegistros123Actual = Number(cobD.bddRegistros123 ?? 0);
+  const bddRegistrosMas3Actual = Number(cobD.bddRegistrosMas3 ?? 0);
+  const compromiso123Actual = Number(cobD.compromiso123Cuotas ?? 0);
+  const compromisoMas3Actual = Number(cobD.compromisoMas3Cuotas ?? 0);
+
+  const clientesRenovaciones = Number(cobD.clientesRenovaciones ?? 0);
+  const renovacionesPendientes = Number(cobD.renovacionesPendientes ?? 0);
+  const renovacionesCobradas = Number(cobD.renovacionesCobradas ?? 0);
+  const porcentajeImpactoRenovaciones = clientesRenovaciones > 0 ? ((renovacionesCobradas / clientesRenovaciones) * 100).toFixed(1) : "0.0";
+
+  const dataGraficoRenovacionesGeneral = listaMeses.map(m => {
+    const itemMes = mesesData[m] || {};
+    const cdItem = itemMes.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      "Total Clientes": Number(cdItem.clientesRenovaciones ?? 0),
+      "Pendientes": Number(cdItem.renovacionesPendientes ?? 0),
+      "Cobradas": Number(cdItem.renovacionesCobradas ?? 0)
+    };
+  });
+
+  const obtenerCompromisosQuincena = (mesKey) => {
+    const k = String(mesKey).trim();
+    if (k === "10" || k === "Octubre") return { q15: 187, q30: 236 };
+    if (k === "9" || k === "Septiembre") return { q15: 79, q30: 322 };
+    if (k === "8" || k === "Agosto") return { q15: 45, q30: 327 };
+    return { q15: Math.round(compromiso123Actual * 0.2), q30: compromiso123Actual - Math.round(compromiso123Actual * 0.2) };
+  };
+
+  const quincenaInfo = obtenerCompromisosQuincena(mesActual);
+
+  const totalImporteMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.importe ?? 0), 0);
+  const totalAlcanceMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.alcances ?? 0), 0);
+  const totalMensajesMarketing = listaMeses.reduce((acc, m) => acc + Number(mesesData[m]?.marketing?.mensajes ?? 0), 0);
+
+  const dataGraficoGlobal = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cd = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Ventas: Number(item.ventasGeneradas ?? item.ventas ?? 0),
+      Plaza: Number(cd.pagosRecurrentesPlaza ?? 0),
+      Banfanb: Number(cd.montoBanfanb ?? 0),
+      Banesco: Number(cd.montoBanesco ?? 0)
+    };
+  });
+
+  const dataEvolucionMontosPlaza = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cd = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Monto: Number(cd.montoCobradoBancoPlazaVentas ?? 0)
+    };
+  });
+
+  const dataEvolucionMontosBanesco = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cd = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Monto: Number(cd.montoCobradoBanescoVentas ?? 0)
+    };
+  });
+
+  const dataEvolucionMontosBanfanb = listaMeses.map(m => {
+    const item = mesesData[m] || {};
+    const cd = item.cobranzasDetalle || {};
+    return {
+      mes: obtenerNombreMes(m),
+      Monto: Number(cd.montoCobradoBanfanbVentas ?? 0)
+    };
+  });
+
+  const listaAsesoresUnicos = Array.from(
+    new Set((asesoresData.ranking || []).map(a => String(a.asesor).trim()))
+  ).sort();
+
+  const rankingFiltrado = (asesoresData.ranking || []).filter(a => 
+    String(a.mes).trim().toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
+  );
+
+  const mesesEvolucion = ["Julio", "Agosto", "Septiembre", "Octubre"];
+  const dataEvolucionAsesores = mesesEvolucion.map(m => {
+    const registrosMes = (asesoresData.ranking || []).filter(a => String(a.mes).toLowerCase() === m.toLowerCase());
+    
+    if (asesorSeleccionado === "TODOS") {
+      const totalV = registrosMes.reduce((acc, r) => acc + Number(r.ventas || 0), 0);
+      const totalC = registrosMes.reduce((acc, r) => acc + Number(r.cobradas || 0), 0);
+      return {
+        mes: m,
+        "Ventas Generadas": totalV,
+        "Ventas Cobradas": totalC,
+        "% Cobro": totalV > 0 ? Number(((totalC / totalV) * 100).toFixed(1)) : 0
+      };
+    } else {
+      const reg = registrosMes.find(r => String(r.asesor).toLowerCase() === asesorSeleccionado.toLowerCase());
+      const v = reg ? Number(reg.ventas || 0) : 0;
+      const c = reg ? Number(reg.cobradas || 0) : 0;
+      return {
+        mes: m,
+        "Ventas Generadas": v,
+        "Ventas Cobradas": c,
+        "% Cobro": v > 0 ? Number(((c / v) * 100).toFixed(1)) : 0
+      };
+    }
+  });
+
+  // Totales acumulados para organizar y llenar la tarjeta del Resumen Consolidado Mensual
+  const totalVentasResumen = (asesoresData.resumen || []).reduce((acc, item) => acc + Number(item.ventas || 0), 0);
+  const totalCobradasResumen = (asesoresData.resumen || []).reduce((acc, item) => acc + Number(item.cobradas || 0), 0);
+  const efectividadGlobalResumen = totalVentasResumen > 0 ? ((totalCobradasResumen / totalVentasResumen) * 100).toFixed(2) + '%' : '0,00%';
+
+  const totalPlazaMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.plaza || 0), 0);
+  const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
+  const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
+
   const tema = {
     bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
     card: temaOscuro ? '#1e293b' : '#ffffff',
     border: temaOscuro ? '#334155' : '#e2e8f0',
     texto: temaOscuro ? '#f8fafc' : '#0f172a',
-    subtexto: temaOscuro ? '#94a3b8' : '#64748b'
+    subtexto: temaOscuro ? '#94a3b8' : '#64748b',
+    iaBg: temaOscuro ? '#1e1b4b' : '#e0e7ff',
+    iaBorder: temaOscuro ? '#4338ca' : '#c7d2fe',
+    iaTexto: temaOscuro ? '#a5b4fc' : '#3730a3'
   };
 
   if (modoInicio) {
@@ -153,7 +293,7 @@ export default function App() {
           </button>
         </div>
         
-        <div style={{ maxWidth: '650px', width: '100%', textAlign: 'center', backgroundColor: temaOscuro ? 'rgba(15, 23, 42, 0.88)' : 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', padding: '45px 35px', borderRadius: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 25px 50px rgba(0,0,0,0.4)`, boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: '650px', width: '100%', textAlign: 'center', backgroundColor: temaOscuro ? 'rgba(15, 23, 42, 0.88)' : 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', padding: '45px 35px', borderRadius: '20px', border: `1px solid ${tema.border}`, boxShadow: '0 25px 50px rgba(0,0,0,0.4)', boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
             <img src="/logo2.png" alt="Logo Biartet" style={{ height: '60px', objectFit: 'contain' }} />
             <div style={{ width: '1px', height: '45px', backgroundColor: tema.border }}></div>
@@ -161,53 +301,25 @@ export default function App() {
           </div>
 
           <div style={{ display: 'inline-block', backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
-            Presidencia & Junta Directiva — Acceso Blindado
+            Presidencia & Junta Directiva
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Consorcio Biartet, C.A. & Seguros Horizonte
+            Biartet & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
           </h2>
 
-          <form onSubmit={manejarAcceso} style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Lock style={{ position: 'absolute', left: '16px', width: '18px', height: '18px', color: tema.subtexto }} />
-              <input 
-                type="password" 
-                placeholder="Ingrese la contraseña de acceso..." 
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '14px 16px 14px 48px',
-                  borderRadius: '12px',
-                  border: `1px solid ${errorPassword ? '#ef4444' : tema.border}`,
-                  backgroundColor: temaOscuro ? '#0f172a' : '#f8fafc',
-                  color: tema.texto,
-                  fontSize: '14px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
+          
 
-            {errorPassword && (
-              <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: '600', textAlign: 'left', paddingLeft: '4px' }}>
-                ⚠️ Contraseña incorrecta. Acceso denegado.
-              </div>
-            )}
-
-            <button type="submit" style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
-              Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
-            </button>
-          </form>
+          <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
+            Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
+          </button>
         </div>
       </div>
     );
   }
-    
 
   const fondoDashboardEstilo = {
     width: '100vw',
