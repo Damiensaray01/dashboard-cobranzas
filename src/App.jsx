@@ -76,7 +76,7 @@ export default function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
-// Estados para la contraseña de acceso blindado
+  // Estados para la contraseña de acceso blindado
   const [passwordInput, setPasswordInput] = useState("");
   const [errorPassword, setErrorPassword] = useState(false);
 
@@ -324,15 +324,7 @@ export default function App() {
             Plataforma Ejecutiva de Control Comercial & Cobranzas
           </h2>
 
-          <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
-            Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-<form onSubmit={manejarAcceso} style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+          <form onSubmit={manejarAcceso} style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <Lock style={{ position: 'absolute', left: '16px', width: '18px', height: '18px', color: tema.subtexto }} />
               <input 
@@ -364,7 +356,19 @@ export default function App() {
               Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
             </button>
           </form>
-  
+        </div>
+      </div>
+    );
+  }
+
+          <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
+            Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const fondoDashboardEstilo = {
     width: '100vw',
     minHeight: '100vh',
