@@ -541,9 +541,9 @@ export default function App() {
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
-                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA (CLI)</th>
-                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB (CLI)</th>
-                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO (CLI)</th>
+                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB</th>
+                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO</th>
                         <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
                         <th style={{ padding: '10px' }}>MONTO PLAZA</th>
                         <th style={{ padding: '10px' }}>MONTO BANFANB</th>
