@@ -1,223 +1,7 @@
-
-Aquí tienes la solución completa a ambos requerimientos:
-
-1. **Acceso Blindado con Contraseña:** Se implementó una pantalla de seguridad de nivel ejecutivo protegida con la clave **`ADMB2027*1`**. Nadie puede visualizar ni interactuar con la plataforma sin ingresar esta clave. Incluye botón para mostrar/ocultar contraseña, alerta de error en caso de intento no autorizado, sesión persistente en el navegador y botón de **"Bloquear Plataforma"** en el encabezado.
-2. **Carga Automática de Noviembre y Meses Futuros:** El archivo `Appscript Actual.js` tenía una lista cerrada (`mesesPermitidos = ["6","7","8","9","10"]`) que **bloqueaba la lectura del número 11 (Noviembre) y de cualquier mes posterior**. Se eliminó esa restricción fija para que el script detecte de forma 100% automática **Noviembre, Diciembre y todos los meses que agregues de aquí en adelante**.
-
----
-
-### 1. `Appscript Actual.js` (Código Completo de Google Apps Script)
-
-Reemplaza tu archivo en Apps Script por este. Ahora reconoce tanto el número de mes (Columna A: `11`, `12`, etc.) como el nombre (Columna B: `Noviembre`, `Diciembre`, etc.) sin límites:
-
-```javascript
-function limpiarNumero(val) {
-  if (typeof val === 'number') return val;
-  if (!val) return 0;
-  var str = String(val).replace(/\$/g, '').replace(/%/g, '').replace(/\./g, '').replace(/,/g, '.').trim();
-  return Number(str) || 0;
-}
-
-function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var allSheets = ss.getSheets();
-  
-  var sheetConsolidado = null;
-  var sheetAsesores = null;
-
-  // Detección automática por ID o por encabezados
-  for (var s = 0; s < allSheets.length; s++) {
-    var sh = allSheets[s];
-    var gid = sh.getSheetId();
-    var lastCol = sh.getLastColumn();
-    var r1 = sh.getRange(1, 1, 1, Math.min(lastCol, 15)).getValues()[0].join(" ").toLowerCase();
-
-    // Hoja principal de consolidado (gid 0 o con columnas de marketing/recaudacion)
-    if (gid === 0 || lastCol >= 20 || r1.includes("marketing") || r1.includes("recaudacion")) {
-      if (!sheetConsolidado) sheetConsolidado = sh;
-    }
-    // Hoja de asesores
-    if (gid === 1353295928 || r1.includes("asesor delegado")) {
-      sheetAsesores = sh;
-    }
-  }
-
-  if (!sheetConsolidado) sheetConsolidado = ss.getActiveSheet();
-  if (!sheetAsesores) sheetAsesores = ss.getSheetByName("Asesores") || ss.getActiveSheet();
-
-  // 1. LEER CONSOLIDADO GENERAL (AUTOMÁTICO PARA NOVIEMBRE, DICIEMBRE Y MESES FUTUROS)
-  var dataConsolidado = sheetConsolidado.getDataRange().getValues();
-  var mesesObj = {};
-
-  for (var i = 1; i < dataConsolidado.length; i++) {
-    var fila = dataConsolidado[i];
-    var colA = String(fila[0] || '').trim(); // Número de mes (6, 7, 8, 9, 10, 11, etc.)
-    var colB = String(fila[1] || '').trim(); // Nombre de mes (Junio, Noviembre, etc.)
-    
-    // Ignorar filas de encabezado o vacías
-    if (!colA && !colB) continue;
-    if (colA.toLowerCase() === 'numero' || colB.toLowerCase() === 'mes') continue;
-
-    if (fila.length > 20) {
-      var itemMes = {
-        ventasGeneradas: limpiarNumero(fila[17]),    // Columna R
-        montoBancoPlaza: limpiarNumero(fila[18]),    // Columna S
-        montoBanfanbVentas: limpiarNumero(fila[19]),  // Columna T
-        montoBanescoVentas: limpiarNumero(fila[20]),  // Columna U
-        
-        presupuesto: Number(fila[2]) || 0,
-        cumplimiento: Number(fila[3]) || 0,
-        recaudacion: Number(fila[4]) || 0,
-        
-        marketing: {
-          importe: limpiarNumero(fila[26]),  // Columna AA
-          alcances: limpiarNumero(fila[27]), // Columna AB
-          mensajes: limpiarNumero(fila[28])  // Columna AC
-        },
-        
-        cobranzasDetalle: {
-          recaudacionMensual: limpiarNumero(fila[21]), // Columna V
-          clientesCobradosMes: limpiarNumero(fila[22]), // Columna W
-          
-          solventes: limpiarNumero(fila[29]),      // Columna AD
-          morosos1Mes: limpiarNumero(fila[30]),    // Columna AE
-          morosos2Meses: limpiarNumero(fila[31]),   // Columna AF
-          morosos3Meses: limpiarNumero(fila[32]),   // Columna AG
-          morososMas3Meses: limpiarNumero(fila[33]), // Columna AH
-          
-          cobradosBanesco: limpiarNumero(fila[34]),  // Columna AI
-          cobradosBanfanb: limpiarNumero(fila[35]),  // Columna AJ
-          montoBanesco: limpiarNumero(fila[36]),     // Columna AK
-          montoBanfanb: limpiarNumero(fila[37]),     // Columna AL
-          pagosRecurrentesPlaza: limpiarNumero(fila[38]), // Columna AM
-          
-          compromiso123Cuotas: limpiarNumero(fila[39]),  // Columna AN
-          compromisoMas3Cuotas: limpiarNumero(fila[40]), // Columna AO
-          
-          bddRegistros123: limpiarNumero(fila[41]),      // Columna AP
-          bddRegistrosMas3: limpiarNumero(fila[42]),     // Columna AQ
-
-          clientesRenovaciones: limpiarNumero(fila[43]),    // Columna AR
-          renovacionesPendientes: limpiarNumero(fila[44]),  // Columna AS
-          renovacionesCobradas: limpiarNumero(fila[45]),    // Columna AT
-          cobradasVentas: limpiarNumero(fila[46]),          // Columna AU
-          porcentajeImpacto: fila[47] !== undefined ? fila[47] : 0,  // Columna AV
-
-          clientesCobradosBancoPlazaVentas: limpiarNumero(fila[48]), // Columna AW
-          clientesCobradosBanescoVentas: limpiarNumero(fila[49]),     // Columna AX
-          clientesCobradosBanfanbVentas: limpiarNumero(fila[50]),    // Columna AY
-          montoCobradoBancoPlazaVentas: limpiarNumero(fila[51]),     // Columna AZ
-          montoCobradoBanescoVentas: limpiarNumero(fila[52]),      // Columna BA
-          montoCobradoBanfanbVentas: limpiarNumero(fila[53])       // Columna BB
-        },
-        
-        cartera: [
-          { name: 'Marketing', asignado: Number(fila[8]) || 0, cobrado: Number(fila[9]) || 0 },
-          { name: 'BDD Abierta', asignado: Number(fila[10]) || 0, cobrado: Number(fila[11]) || 0 },
-          { name: 'BDD General', asignado: Number(fila[12]) || 0, cobrado: Number(fila[13]) || 0 },
-          { name: 'BDD +3M', asignado: Number(fila[14]) || 0, cobrado: Number(fila[15]) || 0 }
-        ]
-      };
-
-      // Se registra tanto por nombre como por número para compatibilidad total
-      if (colB) mesesObj[colB] = itemMes;
-      if (colA) mesesObj[colA] = itemMes;
-    }
-  }
-
-  // 2. LEER HOJA DE ASESORES (DINÁMICO PARA TODOS LOS MESES)
-  var rankingAsesores = [];
-  var resumenAsesores = [];
-  var dataAsesores = sheetAsesores.getDataRange().getValues();
-
-  for (var j = 1; j < dataAsesores.length; j++) {
-    var row = dataAsesores[j];
-
-    // Columnas A hasta I: Ranking por Asesor
-    if (row[0] && String(row[0]).trim() !== "" && String(row[0]).trim().toLowerCase() !== "mes" && row[1]) {
-      var vAsesor = limpiarNumero(row[2]);
-      var cAsesor = limpiarNumero(row[3]);
-      var pctCalculado = '0,00%';
-
-      if (row[4]) {
-        if (typeof row[4] === 'number') {
-          var n = row[4] > 1 ? row[4] : row[4] * 100;
-          pctCalculado = n.toFixed(2).replace('.', ',') + '%';
-        } else {
-          pctCalculado = String(row[4]).trim();
-        }
-      } else if (vAsesor > 0) {
-        pctCalculado = ((cAsesor / vAsesor) * 100).toFixed(2).replace('.', ',') + '%';
-      }
-
-      rankingAsesores.push({
-        mes: String(row[0]).trim(),
-        asesor: String(row[1]).trim(),
-        ventas: vAsesor,
-        cobradas: cAsesor,
-        pct: pctCalculado,
-        status: String(row[5] || 'Activo').trim(),
-        plaza: limpiarNumero(row[6]),    // Columna G: Banco Plaza
-        banesco: limpiarNumero(row[7]),  // Columna H: Banesco
-        banfanb: limpiarNumero(row[8])   // Columna I: BANFANB
-      });
-    }
-
-    // Columnas L hasta O (Índices 11, 12, 13, 14): Resumen Consolidado Mensual
-    if (row.length > 13 && row[11] && String(row[11]).trim() !== "" && String(row[11]).trim().toLowerCase() !== "mes") {
-      var vRes = limpiarNumero(row[12]);
-      var cRes = limpiarNumero(row[13]);
-      var pctRes = '0,00%';
-
-      if (row[14]) {
-        if (typeof row[14] === 'number') {
-          var nr = row[14] > 1 ? row[14] : row[14] * 100;
-          pctRes = nr.toFixed(2).replace('.', ',') + '%';
-        } else {
-          pctRes = String(row[14]).trim();
-        }
-      } else if (vRes > 0) {
-        pctRes = ((cRes / vRes) * 100).toFixed(2).replace('.', ',') + '%';
-      }
-
-      resumenAsesores.push({
-        mes: String(row[11]).trim(),
-        ventas: vRes,
-        cobradas: cRes,
-        pct: pctRes
-      });
-    }
-  }
-
-  var respuesta = {
-    meses: mesesObj,
-    asesoresData: {
-      ranking: rankingAsesores,
-      resumen: resumenAsesores
-    }
-  };
-
-  Object.keys(mesesObj).forEach(function(mKey) {
-    respuesta[mKey] = mesesObj[mKey];
-  });
-  
-  return ContentService.createTextOutput(JSON.stringify(respuesta))
-                      .setMimeType(ContentService.MimeType.JSON);
-}
-```
-
-> 📌 **Recuerda en Apps Script:** Haz clic en **Implementar > Administrar implementaciones > Editar (icono del lápiz) > Versión: "Nueva versión" > Implementar**.
-
----
-
-### 2. `APPjsx.js` (Código Completo con Bloqueo de Acceso `ADMB2027*1` y Noviembre Automático)
-
-```jsx
 import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
-  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target,
-  Lock, Unlock, KeyRound, Eye, EyeOff, ShieldAlert
+  Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target, Lock
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -225,12 +9,12 @@ import {
 } from 'recharts';
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
-const CLAVE_ACCESO = "ADMB2027*1";
 
+// Datos iniciales idénticos a tu Google Sheets (Septiembre y Octubre con bancos exactos)
 const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, plaza: 0, banesco: 0, banfanb: 0, pct: '100,00%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, plaza: 0, banesco: 0, banfanb: 0, pct: '94,74%', status: 'Activo' },
-  { mes: 'Julio', asesor: 'Carolina rojas', ventas: 26, cobradas: 20, plaza: 0, banesco: 0, banfanb: 0, pct: '76,92%', status: 'Activo' },
+  { mes: 'Julio', asesor: 'Carolina Rojas', ventas: 26, cobradas: 20, plaza: 0, banesco: 0, banfanb: 0, pct: '76,92%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Duvan moreno', ventas: 38, cobradas: 25, plaza: 0, banesco: 0, banfanb: 0, pct: '65,79%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Gabriela Barrios', ventas: 28, cobradas: 24, plaza: 0, banesco: 0, banfanb: 0, pct: '85,71%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Jose Mendoza', ventas: 24, cobradas: 23, plaza: 0, banesco: 0, banfanb: 0, pct: '95,83%', status: 'Egreso' },
@@ -243,9 +27,10 @@ const ASESORES_DATA_DEFAULT = [
   { mes: 'Agosto', asesor: 'Duvan moreno', ventas: 53, cobradas: 22, plaza: 0, banesco: 0, banfanb: 0, pct: '41,51%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Gabriela Barrios', ventas: 41, cobradas: 27, plaza: 0, banesco: 0, banfanb: 0, pct: '65,85%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Kariosqui Gomez', ventas: 37, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '51,35%', status: 'Activo' },
-  { mes: 'Agosto', asesor: 'Carolina rojas', ventas: 31, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '61,29%', status: 'Activo' },
+  { mes: 'Agosto', asesor: 'Carolina Rojas', ventas: 31, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '61,29%', status: 'Activo' },
   { mes: 'Agosto', asesor: 'Roikel Suniaga', ventas: 29, cobradas: 19, plaza: 0, banesco: 0, banfanb: 0, pct: '65,52%', status: 'Activo' },
   
+  // SEPTIEMBRE CARGADO DIRECTAMENTE CON TUS CIFRAS DEL SHEETS
   { mes: 'Septiembre', asesor: 'Carlos Argort', ventas: 49, cobradas: 26, plaza: 23, banesco: 0, banfanb: 3, pct: '53,06%', status: 'Egreso' },
   { mes: 'Septiembre', asesor: 'Duvan moreno', ventas: 49, cobradas: 31, plaza: 31, banesco: 0, banfanb: 0, pct: '63,27%', status: 'Egreso' },
   { mes: 'Septiembre', asesor: 'Gabriela Barrios', ventas: 23, cobradas: 10, plaza: 10, banesco: 0, banfanb: 0, pct: '43,48%', status: 'Egreso' },
@@ -255,6 +40,7 @@ const ASESORES_DATA_DEFAULT = [
   { mes: 'Septiembre', asesor: 'Evelyn La Rosa', ventas: 18, cobradas: 2, plaza: 2, banesco: 0, banfanb: 0, pct: '11,11%', status: 'Egreso' },
   { mes: 'Septiembre', asesor: 'Yanfran Sanchez', ventas: 8, cobradas: 3, plaza: 2, banesco: 0, banfanb: 0, pct: '37,50%', status: 'Egreso' },
   
+  // OCTUBRE CARGADO DIRECTAMENTE CON TUS CIFRAS DEL SHEETS
   { mes: 'Octubre', asesor: 'Kariosqui Gomez', ventas: 84, cobradas: 43, plaza: 34, banesco: 3, banfanb: 6, pct: '51,19%', status: 'Activo' },
   { mes: 'Octubre', asesor: 'Kismar Hernandez', ventas: 53, cobradas: 18, plaza: 11, banesco: 1, banfanb: 6, pct: '33,96%', status: 'Activo' },
   { mes: 'Octubre', asesor: 'Roikel Suniaga', ventas: 45, cobradas: 21, plaza: 13, banesco: 2, banfanb: 6, pct: '46,67%', status: 'Activo' },
@@ -275,8 +61,6 @@ const RESUMEN_ASESORES_DEFAULT = [
   { mes: 'Diciembre', ventas: 0, cobradas: 0, pct: '0,00%' }
 ];
 
-const ordenCronologico = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-
 const formatearNumero = (valor) => {
   const num = Number(valor) || 0;
   return new Intl.NumberFormat('es-ES', { 
@@ -286,44 +70,33 @@ const formatearNumero = (valor) => {
 };
 
 export default function App() {
-  // Estado de acceso blindado por contraseña
-  const [autenticado, setAutenticado] = useState(() => {
-    return typeof window !== 'undefined' && sessionStorage.getItem('biartet_auth') === 'true';
-  });
-  const [passwordInput, setPasswordInput] = useState('');
-  const [mostrarPassword, setMostrarPassword] = useState(false);
-  const [errorPassword, setErrorPassword] = useState(false);
-
   const [modoInicio, setModoInicio] = useState(true);
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
-  const [mesActual, setMesActual] = useState("Noviembre");
-  const [subCategoria, setSubCategoria] = useState("ventas");
+  const [mesActual, setMesActual] = useState("Septiembre");
+  const [subCategoria, setSubCategoria] = useState("asesores");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
-  const handleLogin = (e) => {
-    if (e) e.preventDefault();
-    if (passwordInput.trim() === CLAVE_ACCESO) {
-      setAutenticado(true);
-      sessionStorage.setItem('biartet_auth', 'true');
+  // Estados para la contraseña de acceso blindado
+  const [passwordInput, setPasswordInput] = useState("");
+  const [errorPassword, setErrorPassword] = useState(false);
+
+  const manejarAcceso = (e) => {
+    e.preventDefault();
+    if (passwordInput === "ADMB2027*1") {
       setErrorPassword(false);
+      setModoInicio(false);
     } else {
       setErrorPassword(true);
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('biartet_auth');
-    setAutenticado(false);
-    setPasswordInput('');
-    setModoInicio(true);
-  };
-
   const fetchSheetData = async () => {
     setIsRefreshing(true);
     try {
+      // Parámetro anticanché para que lea los cambios al instante
       const response = await fetch(`${APPS_SCRIPT_URL}?t=${new Date().getTime()}`);
       const res = await response.json();
       
@@ -350,41 +123,27 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (autenticado) {
-      fetchSheetData();
-    }
-  }, [autenticado]);
+    fetchSheetData();
+  }, []);
 
-  const obtenerNombreMes = (key) => {
-    const mapaMeses = {
-      "1": "Enero", "2": "Febrero", "3": "Marzo", "4": "Abril", "5": "Mayo", "6": "Junio",
-      "7": "Julio", "8": "Agosto", "9": "Septiembre", "10": "Octubre", "11": "Noviembre", "12": "Diciembre",
-      "enero": "Enero", "febrero": "Febrero", "marzo": "Marzo", "abril": "Abril", "mayo": "Mayo", "junio": "Junio",
-      "julio": "Julio", "agosto": "Agosto", "septiembre": "Septiembre", "octubre": "Octubre", "noviembre": "Noviembre", "diciembre": "Diciembre",
-      "Enero": "Enero", "Febrero": "Febrero", "Marzo": "Marzo", "Abril": "Abril", "Mayo": "Mayo", "Junio": "Junio",
-      "Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre", "Noviembre": "Noviembre", "Diciembre": "Diciembre"
-    };
-    const norm = String(key || '').trim().toLowerCase();
-    return mapaMeses[norm] || mapaMeses[String(key || '').trim()] || String(key || '').trim();
-  };
-
-  // Lista ordenada cronológicamente de meses detectados
-  const listaMeses = Array.from(new Set(
-    Object.keys(mesesData).map(m => obtenerNombreMes(m))
-  )).sort((a, b) => {
-    const idxA = ordenCronologico.indexOf(a);
-    const idxB = ordenCronologico.indexOf(b);
-    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-    return a.localeCompare(b);
-  });
-
-  const data = mesesData[mesActual] || mesesData[String(ordenCronologico.indexOf(mesActual) + 1)] || {};
+  const data = mesesData[mesActual] || {};
   const cobD = data.cobranzasDetalle || {};
 
   const ventasGeneradasActual = Number(data.ventasGeneradas ?? data.ventas ?? 0);
   const montoPlazaActual = Number(cobD.pagosRecurrentesPlaza ?? 0);
   const montoBanfanbActual = Number(cobD.montoBanfanb ?? 0);
   const montoBanescoActual = Number(cobD.montoBanesco ?? 0);
+
+  const listaMeses = Object.keys(mesesData);
+
+  const obtenerNombreMes = (key) => {
+    const mapaMeses = {
+      "6": "Junio", "7": "Julio", "8": "Agosto", "9": "Septiembre", "10": "Octubre",
+      "Junio": "Junio", "Julio": "Julio", "Agosto": "Agosto", "Septiembre": "Septiembre", "Octubre": "Octubre",
+      "Noviembre": "Noviembre", "Diciembre": "Diciembre"
+    };
+    return mapaMeses[String(key).trim()] || `Mes ${key}`;
+  };
 
   const solventesMes = Number(cobD.solventes ?? 0);
   const mora1Mes = Number(cobD.morosos1Mes ?? 0);
@@ -409,7 +168,7 @@ export default function App() {
     const itemMes = mesesData[m] || {};
     const cdItem = itemMes.cobranzasDetalle || {};
     return {
-      mes: m,
+      mes: obtenerNombreMes(m),
       "Total Clientes": Number(cdItem.clientesRenovaciones ?? 0),
       "Pendientes": Number(cdItem.renovacionesPendientes ?? 0),
       "Cobradas": Number(cdItem.renovacionesCobradas ?? 0)
@@ -418,7 +177,6 @@ export default function App() {
 
   const obtenerCompromisosQuincena = (mesKey) => {
     const k = String(mesKey).trim();
-    if (k === "11" || k === "Noviembre") return { q15: Math.round(compromiso123Actual * 0.4), q30: Math.round(compromiso123Actual * 0.6) };
     if (k === "10" || k === "Octubre") return { q15: 187, q30: 236 };
     if (k === "9" || k === "Septiembre") return { q15: 79, q30: 322 };
     if (k === "8" || k === "Agosto") return { q15: 45, q30: 327 };
@@ -435,7 +193,7 @@ export default function App() {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
     return {
-      mes: m,
+      mes: obtenerNombreMes(m),
       Ventas: Number(item.ventasGeneradas ?? item.ventas ?? 0),
       Plaza: Number(cd.pagosRecurrentesPlaza ?? 0),
       Banfanb: Number(cd.montoBanfanb ?? 0),
@@ -447,7 +205,7 @@ export default function App() {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
     return {
-      mes: m,
+      mes: obtenerNombreMes(m),
       Monto: Number(cd.montoCobradoBancoPlazaVentas ?? 0)
     };
   });
@@ -456,7 +214,7 @@ export default function App() {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
     return {
-      mes: m,
+      mes: obtenerNombreMes(m),
       Monto: Number(cd.montoCobradoBanescoVentas ?? 0)
     };
   });
@@ -465,7 +223,7 @@ export default function App() {
     const item = mesesData[m] || {};
     const cd = item.cobranzasDetalle || {};
     return {
-      mes: m,
+      mes: obtenerNombreMes(m),
       Monto: Number(cd.montoCobradoBanfanbVentas ?? 0)
     };
   });
@@ -478,13 +236,7 @@ export default function App() {
     String(a.mes).trim().toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
   );
 
-  const mesesEvolucion = Array.from(new Set([
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre",
-    ...(asesoresData.ranking || []).map(a => obtenerNombreMes(a.mes)),
-    ...(asesoresData.resumen || []).map(r => obtenerNombreMes(r.mes))
-  ])).filter(m => m && m.toLowerCase() !== 'mes' && m.toLowerCase() !== 'total')
-    .sort((a, b) => ordenCronologico.indexOf(a) - ordenCronologico.indexOf(b));
-
+  const mesesEvolucion = ["Julio", "Agosto", "Septiembre", "Octubre"];
   const dataEvolucionAsesores = mesesEvolucion.map(m => {
     const registrosMes = (asesoresData.ranking || []).filter(a => String(a.mes).toLowerCase() === m.toLowerCase());
     
@@ -529,138 +281,6 @@ export default function App() {
     iaTexto: temaOscuro ? '#a5b4fc' : '#3730a3'
   };
 
-  // ==========================================
-  // PANTALLA 1: ACCESO BLINDADO POR CONTRASEÑA
-  // ==========================================
-  if (!autenticado) {
-    return (
-      <div style={{
-        width: '100vw',
-        minHeight: '100vh',
-        backgroundImage: `url('/Logo6.png')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
-        backgroundColor: '#0b0f19',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-        boxSizing: 'border-box',
-        fontFamily: 'sans-serif'
-      }}>
-        <div style={{
-          maxWidth: '460px',
-          width: '100%',
-          backgroundColor: 'rgba(15, 23, 42, 0.92)',
-          backdropFilter: 'blur(16px)',
-          padding: '40px 32px',
-          borderRadius: '20px',
-          border: '1px solid rgba(234, 179, 8, 0.4)',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.7)',
-          textAlign: 'center',
-          boxSizing: 'border-box'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-            <img src="/logo2.png" alt="Biartet" style={{ height: '48px', objectFit: 'contain' }} />
-            <div style={{ width: '1px', height: '36px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div>
-            <img src="/logo3.png" alt="Seguros Horizonte" style={{ height: '48px', objectFit: 'contain' }} />
-          </div>
-
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '14px', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
-            <ShieldAlert style={{ width: '14px', height: '14px' }} /> Acceso Blindado Restringido
-          </div>
-
-          <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma BI Directiva
-          </h2>
-          <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Consorcio Biartet, C.A. & Seguros Horizonte
-          </p>
-
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ position: 'relative', width: '100%' }}>
-              <input 
-                type={mostrarPassword ? "text" : "password"}
-                value={passwordInput}
-                onChange={(e) => {
-                  setPasswordInput(e.target.value);
-                  if (errorPassword) setErrorPassword(false);
-                }}
-                placeholder="Ingrese contraseña de seguridad"
-                style={{
-                  width: '100%',
-                  padding: '14px 44px 14px 16px',
-                  borderRadius: '10px',
-                  backgroundColor: '#1e293b',
-                  color: '#f8fafc',
-                  border: errorPassword ? '2px solid #ef4444' : '1px solid #475569',
-                  fontSize: '13px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={() => setMostrarPassword(!mostrarPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#94a3b8',
-                  padding: '4px'
-                }}
-              >
-                {mostrarPassword ? <EyeOff style={{ width: '16px', height: '16px' }} /> : <Eye style={{ width: '16px', height: '16px' }} />}
-              </button>
-            </div>
-
-            {errorPassword && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#ef4444', fontSize: '12px', fontWeight: 'bold' }}>
-                <AlertCircle style={{ width: '14px', height: '14px' }} /> Contraseña incorrecta. Acceso denegado.
-              </div>
-            )}
-
-            <button 
-              type="submit" 
-              style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: '#0f172a',
-                background: 'linear-gradient(135deg, #eab308, #ca8a04)',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 8px 20px rgba(234, 179, 8, 0.3)',
-                transition: 'transform 0.15s'
-              }}
-            >
-              <KeyRound style={{ width: '16px', height: '16px' }} /> Desbloquear Plataforma
-            </button>
-          </form>
-
-          <div style={{ marginTop: '22px', fontSize: '10px', color: '#64748b' }}>
-            🔒 Acceso encriptado exclusivo para Junta Directiva y Presidencia.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ==========================================
-  // PANTALLA 2: SPLASH DE BIENVENIDA (MODO INICIO)
-  // ==========================================
   if (modoInicio) {
     const entradaEstilo = {
       width: '100vw',
@@ -682,13 +302,10 @@ export default function App() {
 
     return (
       <div style={entradaEstilo}>
-        <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10, display: 'flex', gap: '10px' }}>
+        <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10 }}>
           <button onClick={() => setTemaOscuro(!temaOscuro)} style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(30, 41, 59, 0.85)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600', backdropFilter: 'blur(6px)' }}>
             {temaOscuro ? <Sun style={{ width: '16px', height: '16px', color: '#f59e0b' }} /> : <Moon style={{ width: '16px', height: '16px', color: '#6366f1' }} />}
             {temaOscuro ? 'Modo Claro' : 'Modo Oscuro'}
-          </button>
-          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.4)', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontWeight: '600' }}>
-            <Lock style={{ width: '14px', height: '14px' }} /> Bloquear
           </button>
         </div>
         
@@ -704,23 +321,49 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Consorcio Biartet, C.A. & Seguros Horizonte
+            Biartet & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
           </h2>
 
-          <button onClick={() => setModoInicio(false)} style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
-            Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
-          </button>
+          <form onSubmit={manejarAcceso} style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock style={{ position: 'absolute', left: '16px', width: '18px', height: '18px', color: tema.subtexto }} />
+              <input 
+                type="password" 
+                placeholder="Ingrese la contraseña de acceso..." 
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px 14px 48px',
+                  borderRadius: '12px',
+                  border: `1px solid ${errorPassword ? '#ef4444' : tema.border}`,
+                  backgroundColor: temaOscuro ? '#0f172a' : '#f8fafc',
+                  color: tema.texto,
+                  fontSize: '14px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            {errorPassword && (
+              <div style={{ color: '#ef4444', fontSize: '12px', fontWeight: '600', textAlign: 'left', paddingLeft: '4px' }}>
+                ⚠️ Contraseña incorrecta. Acceso denegado.
+              </div>
+            )}
+
+            <button type="submit" style={{ width: '100%', padding: '15px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold', color: '#0f172a', background: 'linear-gradient(135deg, #eab308, #ca8a04)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 10px 25px rgba(234, 179, 8, 0.3)', transition: 'transform 0.2s' }}>
+              Acceder al Dashboard Ejecutiva <ArrowRight style={{ width: '18px', height: '18px' }} />
+            </button>
+          </form>
         </div>
       </div>
     );
   }
 
-  // ==========================================
-  // PANTALLA 3: DASHBOARD PRINCIPAL
-  // ==========================================
   const fondoDashboardEstilo = {
     width: '100vw',
     minHeight: '100vh',
@@ -739,7 +382,7 @@ export default function App() {
       <div style={{ padding: '16px 20px', flex: 1, boxSizing: 'border-box', width: '100%', maxWidth: '100%' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px', backgroundColor: tema.card, padding: '10px 16px', borderRadius: '12px', border: `1px solid ${tema.border}`, boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button onClick={() => setModoInicio(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.subtexto }} title="Volver a Inicio">
+            <button onClick={() => { setModoInicio(true); setPasswordInput(""); setErrorPassword(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.subtexto }} title="Bloquear / Volver a Inicio">
               <img src="/logo2.png" alt="Logo 2" style={{ height: '40px', objectFit: 'contain' }} />
             </button>
             <div>
@@ -748,15 +391,12 @@ export default function App() {
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '8px' }}>
             <button onClick={() => setTemaOscuro(!temaOscuro)} style={{ padding: '6px 10px', borderRadius: '8px', backgroundColor: tema.bg, color: tema.texto, border: `1px solid ${tema.border}`, cursor: 'pointer' }}>
               {temaOscuro ? <Sun style={{ width: '14px', height: '14px', color: '#f59e0b' }} /> : <Moon style={{ width: '14px', height: '14px', color: '#1e3a8a' }} />}
             </button>
             <button onClick={fetchSheetData} disabled={isRefreshing} style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#1e3a8a', color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
               <RefreshCw style={{ width: '13px', height: '13px', animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} /> {isRefreshing ? 'Sincronizando...' : 'Actualizar'}
-            </button>
-            <button onClick={handleLogout} title="Bloquear y salir" style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', border: '1px solid rgba(239,68,68,0.3)', cursor: 'pointer' }}>
-              <Lock style={{ width: '13px', height: '13px' }} /> Bloquear
             </button>
           </div>
         </div>
@@ -772,7 +412,7 @@ export default function App() {
 
             <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               {listaMeses.map((mes) => (
-                <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#1e3a8a' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{mes}</button>
+                <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#1e3a8a' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{obtenerNombreMes(mes)}</button>
               ))}
             </div>
           </div>
@@ -874,7 +514,7 @@ export default function App() {
 
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{mes.toUpperCase()} {mes === mesActual && '⭐'}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
                             <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(vGen)}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>{formatearNumero(cobVentas)}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#10b981' }}>{pctImpacto}</td>
@@ -901,9 +541,9 @@ export default function App() {
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
-                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA (CLI)</th>
-                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB (CLI)</th>
-                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO (CLI)</th>
+                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB</th>
+                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO</th>
                         <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
                         <th style={{ padding: '10px' }}>MONTO PLAZA</th>
                         <th style={{ padding: '10px' }}>MONTO BANFANB</th>
@@ -932,7 +572,7 @@ export default function App() {
 
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{mes.toUpperCase()} {mes === mesActual && '⭐'}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
                             <td style={{ padding: '12px 10px', fontWeight: '600' }}>{formatearNumero(vGen)}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#eab308' }}>{formatearNumero(cobVentas)}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold', color: '#3b82f6' }}>{formatearNumero(cliPlaza)}</td>
@@ -977,12 +617,13 @@ export default function App() {
                             const itemMes = mesesData[mKey] || {};
                             const cdItem = itemMes.cobranzasDetalle || {};
                             const cantClientes = Number(cdItem.clientesCobradosBancoPlazaVentas ?? 0);
+                            const nombreM = obtenerNombreMes(mKey);
                             const esActual = mKey === mesActual;
 
                             return (
                               <div key={mKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.3)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
                                 <span style={{ fontSize: '12px', fontWeight: esActual ? 'bold' : 'normal', color: esActual ? '#3b82f6' : tema.texto }}>
-                                  {mKey.toUpperCase()} {esActual && '⭐'}
+                                  {nombreM.toUpperCase()} {esActual && '⭐'}
                                 </span>
                                 <span style={{ fontSize: '14px', fontWeight: 'bold', color: esActual ? '#3b82f6' : tema.texto }}>
                                   {formatearNumero(cantClientes)}
@@ -1037,12 +678,13 @@ export default function App() {
                             const itemMes = mesesData[mKey] || {};
                             const cdItem = itemMes.cobranzasDetalle || {};
                             const cantClientes = Number(cdItem.clientesCobradosBanescoVentas ?? 0);
+                            const nombreM = obtenerNombreMes(mKey);
                             const esActual = mKey === mesActual;
 
                             return (
                               <div key={mKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(2, 132, 199, 0.3)' : 'rgba(2, 132, 199, 0.08)') : 'transparent' }}>
                                 <span style={{ fontSize: '12px', fontWeight: esActual ? 'bold' : 'normal', color: esActual ? '#0284c7' : tema.texto }}>
-                                  {mKey.toUpperCase()} {esActual && '⭐'}
+                                  {nombreM.toUpperCase()} {esActual && '⭐'}
                                 </span>
                                 <span style={{ fontSize: '14px', fontWeight: 'bold', color: esActual ? '#0284c7' : tema.texto }}>
                                   {formatearNumero(cantClientes)}
@@ -1097,12 +739,13 @@ export default function App() {
                             const itemMes = mesesData[mKey] || {};
                             const cdItem = itemMes.cobranzasDetalle || {};
                             const cantClientes = Number(cdItem.clientesCobradosBanfanbVentas ?? 0);
+                            const nombreM = obtenerNombreMes(mKey);
                             const esActual = mKey === mesActual;
 
                             return (
                               <div key={mKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(234, 179, 8, 0.2)' : 'rgba(234, 179, 8, 0.1)') : 'transparent' }}>
                                 <span style={{ fontSize: '12px', fontWeight: esActual ? 'bold' : 'normal', color: esActual ? '#eab308' : tema.texto }}>
-                                  {mKey.toUpperCase()} {esActual && '⭐'}
+                                  {nombreM.toUpperCase()} {esActual && '⭐'}
                                 </span>
                                 <span style={{ fontSize: '14px', fontWeight: 'bold', color: esActual ? '#eab308' : tema.texto }}>
                                   {formatearNumero(cantClientes)}
@@ -1176,7 +819,7 @@ export default function App() {
                         }}
                       >
                         <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#1e3a8a', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
-                          {mes} {esActivo && '⭐'}
+                          {obtenerNombreMes(mes)} {esActivo && '⭐'}
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
@@ -1218,7 +861,7 @@ export default function App() {
                         const m = mesesData[mes]?.marketing || { importe: 0, alcances: 0, mensajes: 0 };
                         return (
                           <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: mes === mesActual ? (temaOscuro ? 'rgba(30, 58, 138, 0.25)' : 'rgba(30, 58, 138, 0.08)') : 'transparent' }}>
-                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{mes.toUpperCase()} {mes === mesActual && '⭐'}</td>
+                            <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 'bold', color: mes === mesActual ? '#eab308' : tema.texto }}>{obtenerNombreMes(mes).toUpperCase()} {mes === mesActual && '⭐'}</td>
                             <td style={{ padding: '12px 10px', fontWeight: '600' }}>${formatearNumero(m.importe)} $</td>
                             <td style={{ padding: '12px 10px' }}>{formatearNumero(m.alcances)}</td>
                             <td style={{ padding: '12px 10px', fontWeight: 'bold' }}>{formatearNumero(m.mensajes)}</td>
@@ -1274,7 +917,7 @@ export default function App() {
                         }}
                       >
                         <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#1e3a8a', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
-                          {mes} {esActivo && '⭐'}
+                          {obtenerNombreMes(mes)} {esActivo && '⭐'}
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', textAlign: 'center' }}>
@@ -1687,7 +1330,7 @@ export default function App() {
                         <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
                           Evolución Mensual del Desempeño por Asesor
                         </h3>
-                        <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento histórico comparativo de ventas vs cobranza (Julio - Noviembre)</p>
+                        <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento histórico comparativo de ventas vs cobranza (Julio - Octubre)</p>
                       </div>
                     </div>
 
@@ -1788,7 +1431,7 @@ export default function App() {
 
                     <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '12px' }}>
-                        <Target style={{ width: '16px', height: '16px' }} />
+                        <Target style={{ width: '16px', height: '16px', color: '#eab308' }} />
                         Acciones Estratégicas a Tomar
                       </div>
                       
@@ -1838,7 +1481,7 @@ export default function App() {
           <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
-          DEPARTAMENTO DE BUSINESS INTELLIGENCE 2026
+          DEPARTAMENTO DE INNOVACIÓN Y DESARROLLO 2026
         </div>
       </footer>
     </div>
