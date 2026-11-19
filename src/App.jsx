@@ -486,7 +486,7 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma BI Directiva
+            Plataforma de Operaciones Directiva Biartet
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
             Biartet & Seguros Horizonte
