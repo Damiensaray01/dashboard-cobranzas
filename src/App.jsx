@@ -1330,7 +1330,7 @@ export default function App() {
                         <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, margin: 0 }}>
                           Evolución Mensual del Desempeño por Asesor
                         </h3>
-                        <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento histórico comparativo de ventas vs cobranza (Julio - Octubre)</p>
+                        <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Seguimiento histórico comparativo de ventas vs cobranza (Julio - Diciembre)</p>
                       </div>
                     </div>
 
