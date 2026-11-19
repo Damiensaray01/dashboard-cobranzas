@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, RefreshCw, MessageSquare, DollarSignIcon, Share2, 
   Sparkles, Sun, Moon, ArrowRight, ShieldCheck, CreditCard, AlertCircle, BarChart3, LineChart as LineChartIcon, RefreshCw as RefreshIcon, Award, TrendingUp, Target,
-  Lock, KeyRound, Eye, EyeOff, ShieldAlert
+  Lock, KeyRound, Eye, EyeOff, ShieldAlert, CheckSquare, Square
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -61,6 +61,7 @@ const RESUMEN_ASESORES_DEFAULT = [
 ];
 
 const ordenCronologico = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const mesesRecurrenciaColumnas = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 const formatearNumero = (valor) => {
   const num = Number(valor) || 0;
@@ -82,8 +83,14 @@ export default function App() {
   const [temaOscuro, setTemaOscuro] = useState(true);
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
+  
+  // Estado para la sección de Emisiones y Recurrencia
+  const [recurrenciaClientes, setRecurrenciaClientes] = useState([]);
+  const [filtroStatusActivo, setFiltroStatusActivo] = useState("TODOS");
+  const [mesGestionSeleccionado, setMesGestionSeleccionado] = useState("TODOS");
+
   const [mesActual, setMesActual] = useState("Noviembre");
-  const [subCategoria, setSubCategoria] = useState("asesores");
+  const [subCategoria, setSubCategoria] = useState("ventas");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
@@ -140,6 +147,10 @@ export default function App() {
 
       if (res.asesoresData && res.asesoresData.ranking && res.asesoresData.ranking.length > 0) {
         setAsesoresData(res.asesoresData);
+      }
+
+      if (res.recurrenciaClientes && res.recurrenciaClientes.length > 0) {
+        setRecurrenciaClientes(res.recurrenciaClientes);
       }
 
       const mesesDisponibles = Object.keys(datosMeses).sort(
@@ -267,7 +278,6 @@ export default function App() {
     obtenerNombreMes(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
   );
 
-  // Histórico de desempeño: Julio a Diciembre
   const mesesEvolucion = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const dataEvolucionAsesores = mesesEvolucion.map(m => {
@@ -307,6 +317,122 @@ export default function App() {
   const totalPlazaMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.plaza || 0), 0);
   const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
+
+  // Lógica de cálculo dinámico para Emisiones y Recurrencia
+  const mesesGestionDisponibles = Array.from(new Set(
+    (recurrenciaClientes.length > 0 ? recurrenciaClientes : [
+      { mesGestion: "Julio", uds: 6.23, banco: "BANCO PLAZA", emision: 1, cuotas: { Julio: 1, Agosto: 1, Septiembre: 1, Octubre: 1, Noviembre: 1, Diciembre: 0 }, statusActivo: "Activo" }
+    ]).map(c => c.mesGestion)
+  )).filter(m => ordenCronologico.includes(m))
+    .sort((a, b) => ordenCronologico.indexOf(a) - ordenCronologico.indexOf(b));
+
+  const clientesFiltradosPorEstado = recurrenciaClientes.filter(c => {
+    if (filtroStatusActivo === "TODOS") return true;
+    const st = String(c.statusActivo || '').toLowerCase();
+    if (filtroStatusActivo === "ACTIVO") return st.includes('activo');
+    if (filtroStatusActivo === "DESAFILIACION") return st.includes('desafilia');
+    return true;
+  });
+
+  const construirEscenarioMesGestion = (mesG) => {
+    if (recurrenciaClientes.length === 0 && mesG === "Julio") {
+      return {
+        mes: "Julio",
+        emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
+        recurrencia: {
+          total: { Agosto: 46, Septiembre: 39, Octubre: 30, Noviembre: 12, Diciembre: 0 },
+          plaza: { Agosto: 46, Septiembre: 39, Octubre: 30, Noviembre: 12, Diciembre: 0 },
+          banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
+          banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
+        },
+        montoEmision: { total: { Julio: 423.93 }, plaza: { Julio: 423.93 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
+        montoRecurrencia: {
+          total: { Agosto: 291.36, Septiembre: 247.17, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
+          plaza: { Agosto: 291.36, Septiembre: 247.17, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
+          banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
+          banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
+        }
+      };
+    }
+
+    const clientesDelMes = clientesFiltradosPorEstado.filter(c => c.mesGestion === mesG);
+
+    const normalizarBanco = (b) => {
+      const bn = String(b || '').toUpperCase();
+      if (bn.includes('BANESCO')) return 'banesco';
+      if (bn.includes('BANFANB')) return 'banfanb';
+      return 'plaza';
+    };
+
+    const estructura = {
+      mes: mesG,
+      emision: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
+      recurrencia: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
+      montoEmision: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
+      montoRecurrencia: { total: {}, plaza: {}, banesco: {}, banfanb: {} }
+    };
+
+    mesesRecurrenciaColumnas.forEach(colMes => {
+      if (colMes === mesG) {
+        let cantTot = 0, cantPlaza = 0, cantBanesco = 0, cantBanfanb = 0;
+        let mTot = 0, mPlaza = 0, mBanesco = 0, mBanfanb = 0;
+
+        clientesDelMes.forEach(c => {
+          if (c.emision > 0) {
+            cantTot += 1;
+            mTot += c.uds;
+            const b = normalizarBanco(c.banco);
+            if (b === 'plaza') { cantPlaza += 1; mPlaza += c.uds; }
+            if (b === 'banesco') { cantBanesco += 1; mBanesco += c.uds; }
+            if (b === 'banfanb') { cantBanfanb += 1; mBanfanb += c.uds; }
+          }
+        });
+
+        estructura.emision.total[colMes] = cantTot;
+        estructura.emision.plaza[colMes] = cantPlaza;
+        estructura.emision.banesco[colMes] = cantBanesco;
+        estructura.emision.banfanb[colMes] = cantBanfanb;
+
+        estructura.montoEmision.total[colMes] = mTot;
+        estructura.montoEmision.plaza[colMes] = mPlaza;
+        estructura.montoEmision.banesco[colMes] = mBanesco;
+        estructura.montoEmision.banfanb[colMes] = mBanfanb;
+      }
+
+      if (ordenCronologico.indexOf(colMes) > ordenCronologico.indexOf(mesG)) {
+        let recTot = 0, recPlaza = 0, recBanesco = 0, recBanfanb = 0;
+        let mRecTot = 0, mRecPlaza = 0, mRecBanesco = 0, mRecBanfanb = 0;
+
+        clientesDelMes.forEach(c => {
+          const pagoCuota = Number(c.cuotas && c.cuotas[colMes] ? c.cuotas[colMes] : 0);
+          if (pagoCuota > 0) {
+            recTot += 1;
+            mRecTot += c.uds;
+            const b = normalizarBanco(c.banco);
+            if (b === 'plaza') { recPlaza += 1; mRecPlaza += c.uds; }
+            if (b === 'banesco') { recBanesco += 1; mRecBanesco += c.uds; }
+            if (b === 'banfanb') { recBanfanb += 1; mRecBanfanb += c.uds; }
+          }
+        });
+
+        estructura.recurrencia.total[colMes] = recTot;
+        estructura.recurrencia.plaza[colMes] = recPlaza;
+        estructura.recurrencia.banesco[colMes] = recBanesco;
+        estructura.recurrencia.banfanb[colMes] = recBanfanb;
+
+        estructura.montoRecurrencia.total[colMes] = mRecTot;
+        estructura.montoRecurrencia.plaza[colMes] = mRecPlaza;
+        estructura.montoRecurrencia.banesco[colMes] = mRecBanesco;
+        estructura.montoRecurrencia.banfanb[colMes] = mRecBanfanb;
+      }
+    });
+
+    return estructura;
+  };
+
+  const mesesAMostrar = mesGestionSeleccionado === "TODOS" 
+    ? (mesesGestionDisponibles.length > 0 ? mesesGestionDisponibles : ["Julio"])
+    : [mesGestionSeleccionado];
 
   const tema = {
     bg: temaOscuro ? 'rgba(15, 23, 42, 0.92)' : 'rgba(248, 250, 252, 0.92)',
@@ -360,10 +486,10 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Biartet & Seguros Horizonte
+            Plataforma BI Directiva
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Plataforma Operativa Biartet 2026
+            Biartet & Seguros Horizonte
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -483,7 +609,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            CBiartet & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -527,19 +653,263 @@ export default function App() {
 
         <div>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
-            <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+            <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
               <button onClick={() => setSubCategoria("marketing")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "marketing" ? '#1e3a8a' : 'transparent', color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto }}>📢 Marketing</button>
               <button onClick={() => setSubCategoria("cobranzas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "cobranzas" ? '#1e3a8a' : 'transparent', color: subCategoria === "cobranzas" ? '#ffffff' : tema.subtexto }}>💳 Cobranzas</button>
               <button onClick={() => setSubCategoria("asesores")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "asesores" ? '#1e3a8a' : 'transparent', color: subCategoria === "asesores" ? '#ffffff' : tema.subtexto }}>👥 Asesores</button>
+              <button onClick={() => setSubCategoria("recurrencia")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "recurrencia" ? '#eab308' : 'transparent', color: subCategoria === "recurrencia" ? '#0f172a' : '#eab308' }}>🔄 Emisiones y Recurrencia</button>
             </div>
 
-            <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
-              {listaMeses.map((mes) => (
-                <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#1e3a8a' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{mes}</button>
-              ))}
-            </div>
+            {subCategoria !== "recurrencia" && (
+              <div style={{ display: 'flex', gap: '4px', backgroundColor: tema.card, padding: '3px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
+                {listaMeses.map((mes) => (
+                  <button key={mes} onClick={() => setMesActual(mes)} style={{ padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '500', cursor: 'pointer', border: 'none', backgroundColor: mesActual === mes ? '#1e3a8a' : 'transparent', color: mesActual === mes ? '#ffffff' : tema.subtexto }}>{mes}</button>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* 5. NUEVA SECCIÓN: EMISIONES Y RECURRENCIA */}
+          {subCategoria === "recurrencia" && (
+            <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
+              <div style={{ backgroundColor: tema.card, borderRadius: '14px', padding: '16px 20px', border: `1px solid ${tema.border}`, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
+                    Emisiones y Recurrencia de Cartera
+                  </h3>
+                  <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>
+                    Sincronizado en tiempo real con la pestaña "Seguimiento Recurrencia"
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.subtexto, textTransform: 'uppercase' }}>Filtro de Estado:</span>
+                  
+                  <button 
+                    onClick={() => setFiltroStatusActivo("TODOS")}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
+                      backgroundColor: filtroStatusActivo === "TODOS" ? '#1e3a8a' : tema.bg,
+                      color: filtroStatusActivo === "TODOS" ? '#fff' : tema.subtexto,
+                      border: filtroStatusActivo === "TODOS" ? '1px solid #3b82f6' : `1px solid ${tema.border}`
+                    }}
+                  >
+                    {filtroStatusActivo === "TODOS" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
+                    Todos
+                  </button>
+
+                  <button 
+                    onClick={() => setFiltroStatusActivo("ACTIVO")}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
+                      backgroundColor: filtroStatusActivo === "ACTIVO" ? 'rgba(16, 185, 129, 0.2)' : tema.bg,
+                      color: filtroStatusActivo === "ACTIVO" ? '#10b981' : tema.subtexto,
+                      border: filtroStatusActivo === "ACTIVO" ? '1px solid #10b981' : `1px solid ${tema.border}`
+                    }}
+                  >
+                    {filtroStatusActivo === "ACTIVO" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
+                    Activo
+                  </button>
+
+                  <button 
+                    onClick={() => setFiltroStatusActivo("DESAFILIACION")}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
+                      backgroundColor: filtroStatusActivo === "DESAFILIACION" ? 'rgba(239, 68, 68, 0.2)' : tema.bg,
+                      color: filtroStatusActivo === "DESAFILIACION" ? '#ef4444' : tema.subtexto,
+                      border: filtroStatusActivo === "DESAFILIACION" ? '1px solid #ef4444' : `1px solid ${tema.border}`
+                    }}
+                  >
+                    {filtroStatusActivo === "DESAFILIACION" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
+                    Desafiliación
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: tema.subtexto }}>Mes de Gestión:</label>
+                  <select 
+                    value={mesGestionSeleccionado}
+                    onChange={(e) => setMesGestionSeleccionado(e.target.value)}
+                    style={{ backgroundColor: tema.bg, color: tema.texto, border: `1px solid ${tema.border}`, padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
+                  >
+                    <option value="TODOS">📅 TODOS LOS MESES</option>
+                    {mesesGestionDisponibles.map(mG => (
+                      <option key={mG} value={mG}>{mG}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {mesesAMostrar.map(mesG => {
+                const esc = construirEscenarioMesGestion(mesG);
+
+                return (
+                  <div key={mesG} style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                      <span style={{ backgroundColor: '#1e3a8a', color: '#93c5fd', padding: '4px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', textTransform: 'uppercase' }}>
+                        Mes de Gestión: {mesG}
+                      </span>
+                      <span style={{ fontSize: '12px', color: tema.subtexto }}>
+                        Filtro Activo: <strong style={{ color: filtroStatusActivo === 'ACTIVO' ? '#10b981' : filtroStatusActivo === 'DESAFILIACION' ? '#ef4444' : '#eab308' }}>{filtroStatusActivo}</strong>
+                      </span>
+                    </div>
+
+                    <div style={{ overflowX: 'auto', width: '100%' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.texto, fontWeight: 'bold' }}>
+                            <th style={{ padding: '12px 10px', width: '140px', backgroundColor: '#5b9bd5', color: '#000', fontSize: '13px' }}>Mes de Gestion</th>
+                            <th style={{ padding: '12px 10px', textAlign: 'left', minWidth: '240px', color: tema.subtexto }}>Seguimiento</th>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <th key={colM} style={{ padding: '12px 10px', color: tema.texto }}>{colM}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td rowSpan={16} style={{ backgroundColor: '#5b9bd5', color: '#000', fontWeight: '800', fontSize: '16px', verticalAlign: 'middle' }}>
+                              {mesG}
+                            </td>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>Emision</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#3b82f6' : tema.texto }}>
+                                {esc.emision.total[colM] !== undefined && esc.emision.total[colM] > 0 ? esc.emision.total[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.emision.plaza[colM] > 0 ? esc.emision.plaza[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.emision.banesco[colM] > 0 ? esc.emision.banesco[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.emision.banfanb[colM] > 0 ? esc.emision.banfanb[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#eab308' }}>Recurrencia</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#eab308' }}>
+                                {esc.recurrencia.total[colM] !== undefined ? esc.recurrencia.total[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.recurrencia.plaza[colM] !== undefined && esc.recurrencia.plaza[colM] > 0 ? esc.recurrencia.plaza[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.recurrencia.banesco[colM] !== undefined && esc.recurrencia.banesco[colM] > 0 ? esc.recurrencia.banesco[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.recurrencia.banfanb[colM] !== undefined && esc.recurrencia.banfanb[colM] > 0 ? esc.recurrencia.banfanb[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Emision</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#10b981' : tema.texto }}>
+                                {esc.montoEmision.total[colM] > 0 ? `$${formatearNumero(esc.montoEmision.total[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.montoEmision.plaza[colM] > 0 ? `$${formatearNumero(esc.montoEmision.plaza[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.montoEmision.banesco[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banesco[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.montoEmision.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banfanb[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Recurrencia</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#10b981' }}>
+                                {esc.montoRecurrencia.total[colM] !== undefined ? `$${formatearNumero(esc.montoRecurrencia.total[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.montoRecurrencia.plaza[colM] !== undefined && esc.montoRecurrencia.plaza[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.plaza[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.montoRecurrencia.banesco[colM] !== undefined && esc.montoRecurrencia.banesco[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banesco[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr style={{ borderBottom: '1px solid #475569' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {esc.montoRecurrencia.banfanb[colM] !== undefined && esc.montoRecurrencia.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banfanb[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* 1. SECCIÓN VENTAS */}
           {subCategoria === "ventas" && (
@@ -1416,7 +1786,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* EXPLICACIÓN DEL GRÁFICO Y ACCIONES ESTRATÉGICAS RESTAURADAS */}
+                  {/* EXPLICACIÓN DEL GRÁFICO Y ACCIONES ESTRATÉGICAS */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
                     <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '12px' }}>
@@ -1440,13 +1810,13 @@ export default function App() {
                       
                       <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: tema.texto, display: 'flex', flexDirection: 'column', gap: '5px', lineHeight: '1.3' }}>
                         <li>
-                          <strong>Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la emisión (Día 1 al 15) para evitar el arrastre hacia morosidad.
+                          <strong>Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la emisión (Día 1 al 15).
                         </li>
                         <li>
                           <strong>Incentivos por Recaudación:</strong> Condicionar bonos a una efectividad de recaudación superior al 70%.
                         </li>
                         <li>
-                          <strong>Reasignación Operativa:</strong> Trasladar casos sin gestión tras 30 días a cobranza especializada para proteger la cartera sólida.
+                          <strong>Reasignación Operativa:</strong> Trasladar casos sin gestión tras 30 días a cobranza especializada.
                         </li>
                       </ul>
                     </div>
