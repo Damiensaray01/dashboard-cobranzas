@@ -363,7 +363,7 @@ export default function App() {
             Biartet & Seguros Horizonte
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Consorcio Biartet, C.A. & Seguros Horizonte
+            Plataforma Operativa Biartet 2026
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
