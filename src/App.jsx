@@ -83,7 +83,7 @@ export default function App() {
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
   const [mesActual, setMesActual] = useState("Noviembre");
-  const [subCategoria, setSubCategoria] = useState("ventas");
+  const [subCategoria, setSubCategoria] = useState("asesores");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
@@ -267,6 +267,7 @@ export default function App() {
     obtenerNombreMes(a.mes).toLowerCase() === obtenerNombreMes(mesActual).toLowerCase()
   );
 
+  // Histórico de desempeño: Julio a Diciembre
   const mesesEvolucion = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const dataEvolucionAsesores = mesesEvolucion.map(m => {
@@ -701,14 +702,13 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SEGMENTACIÓN POR BANCO — CON LOS 3 GRÁFICOS RESTAURADOS */}
+              {/* SEGMENTACIÓN POR BANCO CON SUS 3 GRÁFICOS */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {mesActual.toUpperCase()}
                 </h3>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-                  
                   {/* BANCO PLAZA */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                     <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -732,13 +732,10 @@ export default function App() {
                           ))}
                         </div>
                       </div>
-                      
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO PLAZA (BSF) - {mesActual.toUpperCase()}</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBancoPlazaVentas ?? 0)}</span>
                       </div>
-
-                      {/* GRÁFICO BANCO PLAZA RESTAURADO */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
@@ -780,13 +777,10 @@ export default function App() {
                           ))}
                         </div>
                       </div>
-                      
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO BANESCO (BSF) - {mesActual.toUpperCase()}</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanescoVentas ?? 0)}</span>
                       </div>
-
-                      {/* GRÁFICO BANESCO RESTAURADO */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
@@ -828,13 +822,10 @@ export default function App() {
                           ))}
                         </div>
                       </div>
-                      
                       <div style={{ backgroundColor: tema.card, padding: '14px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '10px', color: tema.subtexto, textTransform: 'uppercase', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MONTO BANFANB (BSF) - {mesActual.toUpperCase()}</span>
                         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>BsF {formatearNumero(data.cobranzasDetalle?.montoCobradoBanfanbVentas ?? 0)}</span>
                       </div>
-
-                      {/* GRÁFICO BANFANB RESTAURADO */}
                       <div style={{ backgroundColor: tema.card, padding: '12px', borderRadius: '10px', border: `1px solid ${tema.border}` }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.texto, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>📈 EVOLUCIÓN MONTOS (BSF) POR MES</span>
                         <div style={{ height: '170px', width: '100%' }}>
@@ -852,7 +843,6 @@ export default function App() {
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -1186,7 +1176,7 @@ export default function App() {
             </div>
           )}
 
-          {/* 4. SECCIÓN ASESORES */}
+          {/* 4. SECCIÓN ASESORES CON EXPLICACIÓN Y NÚMEROS EN LAS BARRAS */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1342,7 +1332,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR (COMPLETO) */}
+                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR (CON EXPLICACIÓN COMPLETA Y LABELS EN BARRAS) */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1370,20 +1360,99 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div style={{ height: '240px', width: '100%' }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={dataEvolucionAsesores} margin={{ top: 20, right: 10, left: -10, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
-                        <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} fontWeight="bold" />
-                        <YAxis stroke={tema.subtexto} fontSize={11} />
-                        <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
-                        <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '6px' }} />
-                        <Bar dataKey="Ventas Generadas" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Ventas Generadas" />
-                        <Bar dataKey="Ventas Cobradas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Cobradas" />
-                      </BarChart>
-                    </ResponsiveContainer>
+                  {/* GRÁFICO CON LABELS + MÉTRICAS ACUMULADAS */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
+                    <div style={{ height: '250px', width: '100%' }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={dataEvolucionAsesores} margin={{ top: 22, right: 10, left: -10, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke={tema.border} />
+                          <XAxis dataKey="mes" stroke={tema.subtexto} fontSize={11} fontWeight="bold" />
+                          <YAxis stroke={tema.subtexto} fontSize={11} />
+                          <Tooltip contentStyle={{ backgroundColor: tema.card, borderColor: tema.border, borderRadius: '8px', color: tema.texto, fontSize: '12px' }} />
+                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '6px' }} />
+                          <Bar dataKey="Ventas Generadas" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Ventas Generadas">
+                            <LabelList dataKey="Ventas Generadas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" formatter={(val) => (val > 0 ? formatearNumero(val) : '')} />
+                          </Bar>
+                          <Bar dataKey="Ventas Cobradas" fill="#eab308" radius={[4, 4, 0, 0]} name="Ventas Cobradas">
+                            <LabelList dataKey="Ventas Cobradas" position="top" fill={tema.texto} fontSize={10} fontWeight="bold" formatter={(val) => (val > 0 ? formatearNumero(val) : '')} />
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    <div style={{ backgroundColor: tema.bg, padding: '16px', borderRadius: '12px', border: `1px solid ${tema.border}`, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Métricas Acumuladas ({asesorSeleccionado})
+                      </div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                          <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Ventas</span>
+                          <p style={{ fontSize: '17px', fontWeight: 'bold', margin: '2px 0 0 0', color: tema.texto }}>
+                            {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0))}
+                          </p>
+                        </div>
+
+                        <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                          <span style={{ fontSize: '10px', color: tema.subtexto }}>Total Cobradas</span>
+                          <p style={{ fontSize: '17px', fontWeight: 'bold', margin: '2px 0 0 0', color: '#eab308' }}>
+                            {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0))}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style={{ backgroundColor: tema.card, padding: '10px', borderRadius: '8px', border: `1px solid ${tema.border}` }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '11px', color: tema.subtexto, fontWeight: 'bold' }}>Efectividad Promedio Cobro</span>
+                          <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>
+                            {(() => {
+                              const tv = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0);
+                              const tc = dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0);
+                              return tv > 0 ? ((tc / tv) * 100).toFixed(1) + '%' : '0%';
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* EXPLICACIÓN DEL GRÁFICO Y ACCIONES ESTRATÉGICAS RESTAURADAS */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                    <div style={{ backgroundColor: tema.iaBg, border: `1px solid ${tema.iaBorder}`, borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: tema.iaTexto, fontWeight: 'bold', fontSize: '12px' }}>
+                        <Sparkles style={{ width: '16px', height: '16px' }} />
+                        Observación Inteligente de Desempeño
+                      </div>
+                      <p style={{ fontSize: '11px', color: tema.texto, margin: 0, lineHeight: '1.4' }}>
+                        {asesorSeleccionado === "TODOS" ? (
+                          <>El equipo comercial mantiene un crecimiento continuo en volumen de ventas desde Julio (242) hasta Noviembre (438). Sin embargo, la tasa de cobro efectivo presentó una desaceleración gradual, indicando la necesidad de reforzar la cobranza al cierre de las pólizas expedidas.</>
+                        ) : (
+                          <>El seguimiento de <strong>{asesorSeleccionado}</strong> registra una contribución constante con {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0))} ventas emitidas y {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0))} cobradas efectivas. Mantener un control de cierres asistidos en las primeras semanas post-emisión permitirá estabilizar su efectividad de cobro por encima del 60% promedio.</>
+                        )}
+                      </p>
+                    </div>
+
+                    <div style={{ backgroundColor: tema.bg, border: `1px solid ${tema.border}`, borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', fontWeight: 'bold', fontSize: '12px' }}>
+                        <Target style={{ width: '16px', height: '16px' }} />
+                        Acciones Estratégicas a Tomar
+                      </div>
+                      
+                      <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: tema.texto, display: 'flex', flexDirection: 'column', gap: '5px', lineHeight: '1.3' }}>
+                        <li>
+                          <strong>Cobranza Temprana en Quincena:</strong> Sincronizar el cobro de la primera cuota inmediatamente tras la emisión (Día 1 al 15) para evitar el arrastre hacia morosidad.
+                        </li>
+                        <li>
+                          <strong>Incentivos por Recaudación:</strong> Condicionar bonos a una efectividad de recaudación superior al 70%.
+                        </li>
+                        <li>
+                          <strong>Reasignación Operativa:</strong> Trasladar casos sin gestión tras 30 días a cobranza especializada para proteger la cartera sólida.
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
+
               </div>
             </div>
           )}
