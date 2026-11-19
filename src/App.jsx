@@ -71,6 +71,19 @@ const formatearNumero = (valor) => {
   }).format(num);
 };
 
+const formatearPorcentaje = (val) => {
+  if (!val && val !== 0) return '0,00%';
+  if (typeof val === 'string') {
+    if (val.includes('%')) return val.trim();
+    val = Number(val.replace(',', '.')) || 0;
+  }
+  if (typeof val === 'number') {
+    const num = val > 1 ? val : val * 100;
+    return num.toFixed(2).replace('.', ',') + '%';
+  }
+  return '0,00%';
+};
+
 export default function App() {
   const [autenticado, setAutenticado] = useState(() => {
     return typeof window !== 'undefined' && sessionStorage.getItem('biartet_auth') === 'true';
@@ -84,13 +97,12 @@ export default function App() {
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
   
-  // Matriz de cohortes de Recurrencia
   const [recurrenciaMatriz, setRecurrenciaMatriz] = useState({});
   const [filtroStatusActivo, setFiltroStatusActivo] = useState("TODOS");
   const [mesGestionSeleccionado, setMesGestionSeleccionado] = useState("Julio");
 
   const [mesActual, setMesActual] = useState("Noviembre");
-  const [subCategoria, setSubCategoria] = useState("recurrencia");
+  const [subCategoria, setSubCategoria] = useState("ventas");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
@@ -318,16 +330,13 @@ export default function App() {
   const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
-  // =========================================================================
-  // MATRIZ DE RECURRENCIA (LECTURA DIRECTA DESDE GOOGLE APPS SCRIPT)
-  // =========================================================================
+  // Matriz de recurrencia
   const mesesGestionDisponibles = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const obtenerDatosEscenario = (mesG, estadoKey) => {
     if (recurrenciaMatriz[mesG] && recurrenciaMatriz[mesG][estadoKey]) {
       return recurrenciaMatriz[mesG][estadoKey];
     }
-    // Fallback exacto con las cifras oficiales de Julio (Captura 1)
     if (mesG === "Julio") {
       return {
         emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
@@ -410,10 +419,10 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma de Operaciones Directiva Bartet
+            Plataforma BI Directiva
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -533,7 +542,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -596,277 +605,8 @@ export default function App() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 5. SECCIÓN: EMISIONES Y RECURRENCIA (COHORTES REALES POR MES DE INICIO)    */}
+          {/* 1. SECCIÓN VENTAS (CON TABLA GENERAL Y TABLAS POR BANCO SEPARADO)         */}
           {/* ========================================================================= */}
-          {subCategoria === "recurrencia" && (
-            <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
-              <div style={{ backgroundColor: tema.card, borderRadius: '14px', padding: '16px 20px', border: `1px solid ${tema.border}`, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
-                    Emisiones y Recurrencia de Cartera
-                  </h3>
-                  <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>
-                    Sincronizado en tiempo real con la pestaña "Seguimiento Recurrencia"
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.subtexto, textTransform: 'uppercase' }}>Filtro de Estado:</span>
-                  
-                  <button 
-                    onClick={() => setFiltroStatusActivo("TODOS")}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
-                      backgroundColor: filtroStatusActivo === "TODOS" ? '#1e3a8a' : tema.bg,
-                      color: filtroStatusActivo === "TODOS" ? '#fff' : tema.subtexto,
-                      border: filtroStatusActivo === "TODOS" ? '1px solid #3b82f6' : `1px solid ${tema.border}`
-                    }}
-                  >
-                    {filtroStatusActivo === "TODOS" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
-                    Todos
-                  </button>
-
-                  <button 
-                    onClick={() => setFiltroStatusActivo("ACTIVO")}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
-                      backgroundColor: filtroStatusActivo === "ACTIVO" ? 'rgba(16, 185, 129, 0.2)' : tema.bg,
-                      color: filtroStatusActivo === "ACTIVO" ? '#10b981' : tema.subtexto,
-                      border: filtroStatusActivo === "ACTIVO" ? '1px solid #10b981' : `1px solid ${tema.border}`
-                    }}
-                  >
-                    {filtroStatusActivo === "ACTIVO" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
-                    Activo
-                  </button>
-
-                  <button 
-                    onClick={() => setFiltroStatusActivo("DESAFILIACION")}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
-                      backgroundColor: filtroStatusActivo === "DESAFILIACION" ? 'rgba(239, 68, 68, 0.2)' : tema.bg,
-                      color: filtroStatusActivo === "DESAFILIACION" ? '#ef4444' : tema.subtexto,
-                      border: filtroStatusActivo === "DESAFILIACION" ? '1px solid #ef4444' : `1px solid ${tema.border}`
-                    }}
-                  >
-                    {filtroStatusActivo === "DESAFILIACION" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
-                    Desafiliación
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: tema.subtexto }}>Mes de Gestión:</label>
-                  <select 
-                    value={mesGestionSeleccionado}
-                    onChange={(e) => setMesGestionSeleccionado(e.target.value)}
-                    style={{ backgroundColor: tema.bg, color: tema.texto, border: `1px solid ${tema.border}`, padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
-                  >
-                    <option value="TODOS">📅 TODOS LOS MESES</option>
-                    {mesesGestionDisponibles.map(mG => (
-                      <option key={mG} value={mG}>{mG}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {mesesAMostrarRecurrencia.map(mesG => {
-                const esc = obtenerDatosEscenario(mesG, filtroStatusActivo);
-
-                return (
-                  <div key={mesG} style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
-                      <span style={{ backgroundColor: '#1e3a8a', color: '#93c5fd', padding: '4px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', textTransform: 'uppercase' }}>
-                        Mes de Gestión: {mesG}
-                      </span>
-                      <span style={{ fontSize: '12px', color: tema.subtexto }}>
-                        Filtro Activo: <strong style={{ color: filtroStatusActivo === 'ACTIVO' ? '#10b981' : filtroStatusActivo === 'DESAFILIACION' ? '#ef4444' : '#eab308' }}>{filtroStatusActivo}</strong>
-                      </span>
-                    </div>
-
-                    <div style={{ overflowX: 'auto', width: '100%' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
-                        <thead>
-                          <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.texto, fontWeight: 'bold' }}>
-                            <th style={{ padding: '12px 10px', width: '140px', backgroundColor: '#5b9bd5', color: '#000', fontSize: '13px' }}>Mes de Gestion</th>
-                            <th style={{ padding: '12px 10px', textAlign: 'left', minWidth: '240px', color: tema.subtexto }}>Seguimiento</th>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <th key={colM} style={{ padding: '12px 10px', color: tema.texto }}>{colM}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {/* BLOQUE 1: EMISION (Clientes que comenzaron en ese mes) */}
-                          <tr style={{ borderTop: '1px dotted #64748b' }}>
-                            <td rowSpan={16} style={{ backgroundColor: '#5b9bd5', color: '#000', fontWeight: '800', fontSize: '16px', verticalAlign: 'middle' }}>
-                              {mesG}
-                            </td>
-                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>Emision</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#3b82f6' : tema.texto }}>
-                                {colM === mesG && esc.emision.total[colM] > 0 ? esc.emision.total[colM] : ''}
-                              </td>
-                            ))}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banco Plaza</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.emision.plaza[colM] > 0 ? esc.emision.plaza[colM] : ''}
-                              </td>
-                            ))}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banesco</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.emision.banesco[colM] > 0 ? esc.emision.banesco[colM] : ''}
-                              </td>
-                            ))}
-                          </tr>
-                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banfanb</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.emision.banfanb[colM] > 0 ? esc.emision.banfanb[colM] : ''}
-                              </td>
-                            ))}
-                          </tr>
-
-                          {/* BLOQUE 2: RECURRENCIA (Meses siguientes) */}
-                          <tr style={{ borderTop: '1px dotted #64748b' }}>
-                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#eab308' }}>Recurrencia</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#eab308' }}>
-                                  {esPosterior ? (esc.recurrencia.total[colM] !== undefined ? esc.recurrencia.total[colM] : 0) : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banco Plaza</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esPosterior && esc.recurrencia.plaza[colM] > 0 ? esc.recurrencia.plaza[colM] : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banesco</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esPosterior && esc.recurrencia.banesco[colM] > 0 ? esc.recurrencia.banesco[colM] : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banfanb</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esPosterior && esc.recurrencia.banfanb[colM] > 0 ? esc.recurrencia.banfanb[colM] : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-
-                          {/* BLOQUE 3: MONTO $ EMISION */}
-                          <tr style={{ borderTop: '1px dotted #64748b' }}>
-                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Emision</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#10b981' : tema.texto }}>
-                                {colM === mesG && esc.montoEmision.total[colM] > 0 ? `$${formatearNumero(esc.montoEmision.total[colM])}` : ''}
-                              </td>
-                            ))}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banco Plaza</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.montoEmision.plaza[colM] > 0 ? `$${formatearNumero(esc.montoEmision.plaza[colM])}` : ''}
-                              </td>
-                            ))}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banesco</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.montoEmision.banesco[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banesco[colM])}` : ''}
-                              </td>
-                            ))}
-                          </tr>
-                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banfanb</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.montoEmision.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banfanb[colM])}` : ''}
-                              </td>
-                            ))}
-                          </tr>
-
-                          {/* BLOQUE 4: MONTO $ RECURRENCIA */}
-                          <tr style={{ borderTop: '1px dotted #64748b' }}>
-                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Recurrencia</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#10b981' }}>
-                                  {esPosterior ? `$${formatearNumero(esc.montoRecurrencia.total[colM] || 0)}` : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banco Plaza</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esPosterior && esc.montoRecurrencia.plaza[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.plaza[colM])}` : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                          <tr>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banesco</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esPosterior && esc.montoRecurrencia.banesco[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banesco[colM])}` : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                          <tr style={{ borderBottom: '1px solid #475569' }}>
-                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banfanb</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
-                              return (
-                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esPosterior && esc.montoRecurrencia.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banfanb[colM])}` : ''}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* 1. SECCIÓN VENTAS */}
           {subCategoria === "ventas" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -927,7 +667,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN */}
+              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS) */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}` }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS BSF)
@@ -974,7 +714,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CONSOLIDADO DE VENTAS COBRADAS POR BANCO */}
+              {/* CONSOLIDADO GENERAL DE VENTAS COBRADAS POR BANCO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}` }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS COBRADAS POR BANCO (CANTIDAD Y MONTOS)
@@ -1027,13 +767,167 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SEGMENTACIÓN POR BANCO */}
+              {/* ========================================================================= */}
+              {/* NUEVO BLOQUE: EFECTIVIDAD DE VENTAS POR BANCO SEPARADO (COLUMNAS BC A BH)  */}
+              {/* ========================================================================= */}
+              <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textTransform: 'uppercase', margin: 0, letterSpacing: '1px' }}>
+                    EFECTIVIDAD Y CONSOLIDADO DE VENTAS POR BANCO SEPARADO
+                  </h3>
+                  <p style={{ fontSize: '11px', color: tema.subtexto, margin: '4px 0 0 0' }}>
+                    Ventas generadas vs Clientes cobrados y % de impacto (Columnas BC a BH del Google Sheets)
+                  </p>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+                  
+                  {/* TABLA BANCO PLAZA SEPARADO */}
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.3)', overflow: 'hidden' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img src="/LogoPlaza.png" alt="Plaza" style={{ height: '24px', objectFit: 'contain' }} />
+                        <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '13px' }}>BANCO PLAZA</span>
+                      </div>
+                      <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '10px' }}>Activo</span>
+                    </div>
+
+                    <div style={{ overflowX: 'auto', padding: '10px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '11px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
+                            <th style={{ padding: '6px', textAlign: 'left' }}>MES</th>
+                            <th style={{ padding: '6px' }}>GEN.</th>
+                            <th style={{ padding: '6px', color: '#3b82f6' }}>COB.</th>
+                            <th style={{ padding: '6px', color: '#10b981' }}>% IMP</th>
+                            <th style={{ padding: '6px' }}>MONTO BSF</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {listaMeses.map((mes) => {
+                            const cd = mesesData[mes]?.cobranzasDetalle || {};
+                            const gen = Number(cd.ventasGeneradasBancoPlaza ?? 0);
+                            const cob = Number(cd.clientesCobradosBancoPlazaVentas ?? 0);
+                            const imp = formatearPorcentaje(cd.porcentajeImpactoBancoPlaza);
+                            const mto = Number(cd.montoCobradoBancoPlazaVentas ?? 0);
+                            const esActual = mes === mesActual;
+
+                            return (
+                              <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.08)') : 'transparent' }}>
+                                <td style={{ padding: '8px 6px', textAlign: 'left', fontWeight: 'bold', color: esActual ? '#3b82f6' : tema.texto }}>{mes.toUpperCase()} {esActual && '⭐'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: '600' }}>{gen > 0 ? formatearNumero(gen) : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: 'bold', color: '#3b82f6' }}>{cob > 0 ? formatearNumero(cob) : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: 'bold', color: '#10b981' }}>{gen > 0 ? imp : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontSize: '10px' }}>{mto > 0 ? `BsF ${formatearNumero(mto)}` : '-'}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* TABLA BANESCO SEPARADO */}
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '12px', border: '1px solid rgba(2, 132, 199, 0.3)', overflow: 'hidden' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #0f172a, #0284c7)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img src="/LogoBanesco.png" alt="Banesco" style={{ height: '24px', objectFit: 'contain' }} />
+                        <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '13px' }}>BANESCO</span>
+                      </div>
+                      <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '10px' }}>Activo</span>
+                    </div>
+
+                    <div style={{ overflowX: 'auto', padding: '10px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '11px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
+                            <th style={{ padding: '6px', textAlign: 'left' }}>MES</th>
+                            <th style={{ padding: '6px' }}>GEN.</th>
+                            <th style={{ padding: '6px', color: '#0284c7' }}>COB.</th>
+                            <th style={{ padding: '6px', color: '#10b981' }}>% IMP</th>
+                            <th style={{ padding: '6px' }}>MONTO BSF</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {listaMeses.map((mes) => {
+                            const cd = mesesData[mes]?.cobranzasDetalle || {};
+                            const gen = Number(cd.ventasGeneradasBanesco ?? 0);
+                            const cob = Number(cd.clientesCobradosBanescoVentas ?? 0);
+                            const imp = formatearPorcentaje(cd.porcentajeImpactoBanesco);
+                            const mto = Number(cd.montoCobradoBanescoVentas ?? 0);
+                            const esActual = mes === mesActual;
+
+                            return (
+                              <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(2, 132, 199, 0.2)' : 'rgba(2, 132, 199, 0.08)') : 'transparent' }}>
+                                <td style={{ padding: '8px 6px', textAlign: 'left', fontWeight: 'bold', color: esActual ? '#0284c7' : tema.texto }}>{mes.toUpperCase()} {esActual && '⭐'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: '600' }}>{gen > 0 ? formatearNumero(gen) : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: 'bold', color: '#0284c7' }}>{cob > 0 ? formatearNumero(cob) : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: 'bold', color: '#10b981' }}>{gen > 0 ? imp : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontSize: '10px' }}>{mto > 0 ? `BsF ${formatearNumero(mto)}` : '-'}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* TABLA BANFANB SEPARADO */}
+                  <div style={{ backgroundColor: tema.bg, borderRadius: '12px', border: '1px solid rgba(234, 179, 8, 0.3)', overflow: 'hidden' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #ca8a04, #eab308)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img src="/LogoBANFANB.png" alt="BANFANB" style={{ height: '24px', objectFit: 'contain' }} />
+                        <span style={{ color: '#0f172a', fontWeight: 'bold', fontSize: '13px' }}>BANFANB</span>
+                      </div>
+                      <span style={{ backgroundColor: 'rgba(15,23,42,0.2)', color: '#0f172a', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '10px' }}>Activo</span>
+                    </div>
+
+                    <div style={{ overflowX: 'auto', padding: '10px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '11px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: `1px solid ${tema.border}`, color: tema.subtexto }}>
+                            <th style={{ padding: '6px', textAlign: 'left' }}>MES</th>
+                            <th style={{ padding: '6px' }}>GEN.</th>
+                            <th style={{ padding: '6px', color: '#eab308' }}>COB.</th>
+                            <th style={{ padding: '6px', color: '#10b981' }}>% IMP</th>
+                            <th style={{ padding: '6px' }}>MONTO BSF</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {listaMeses.map((mes) => {
+                            const cd = mesesData[mes]?.cobranzasDetalle || {};
+                            const gen = Number(cd.ventasGeneradasBanfanb ?? 0);
+                            const cob = Number(cd.clientesCobradosBanfanbVentas ?? 0);
+                            const imp = formatearPorcentaje(cd.porcentajeImpactoBanfanb);
+                            const mto = Number(cd.montoCobradoBanfanbVentas ?? 0);
+                            const esActual = mes === mesActual;
+
+                            return (
+                              <tr key={mes} onClick={() => setMesActual(mes)} style={{ cursor: 'pointer', borderBottom: `1px solid ${tema.border}`, backgroundColor: esActual ? (temaOscuro ? 'rgba(234, 179, 8, 0.2)' : 'rgba(234, 179, 8, 0.08)') : 'transparent' }}>
+                                <td style={{ padding: '8px 6px', textAlign: 'left', fontWeight: 'bold', color: esActual ? '#eab308' : tema.texto }}>{mes.toUpperCase()} {esActual && '⭐'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: '600' }}>{gen > 0 ? formatearNumero(gen) : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: 'bold', color: '#eab308' }}>{cob > 0 ? formatearNumero(cob) : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontWeight: 'bold', color: '#10b981' }}>{gen > 0 ? imp : '-'}</td>
+                                <td style={{ padding: '8px 6px', fontSize: '10px' }}>{mto > 0 ? `BsF ${formatearNumero(mto)}` : '-'}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* SEGMENTACIÓN POR BANCO CON GRÁFICAS DE EVOLUCIÓN */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {mesActual.toUpperCase()}
                 </h3>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+                  
                   {/* BANCO PLAZA */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                     <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1497,7 +1391,6 @@ export default function App() {
                   </div>
                 </div>
               </div>
-
             </div>
           )}
 
