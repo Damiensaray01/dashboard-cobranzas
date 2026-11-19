@@ -84,13 +84,13 @@ export default function App() {
   const [mesesData, setMesesData] = useState({});
   const [asesoresData, setAsesoresData] = useState({ ranking: ASESORES_DATA_DEFAULT, resumen: RESUMEN_ASESORES_DEFAULT });
   
-  // Estado para la sección de Emisiones y Recurrencia
-  const [recurrenciaClientes, setRecurrenciaClientes] = useState([]);
+  // Matriz de cohortes de Recurrencia
+  const [recurrenciaMatriz, setRecurrenciaMatriz] = useState({});
   const [filtroStatusActivo, setFiltroStatusActivo] = useState("TODOS");
-  const [mesGestionSeleccionado, setMesGestionSeleccionado] = useState("TODOS");
+  const [mesGestionSeleccionado, setMesGestionSeleccionado] = useState("Julio");
 
   const [mesActual, setMesActual] = useState("Noviembre");
-  const [subCategoria, setSubCategoria] = useState("ventas");
+  const [subCategoria, setSubCategoria] = useState("recurrencia");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
@@ -149,8 +149,8 @@ export default function App() {
         setAsesoresData(res.asesoresData);
       }
 
-      if (res.recurrenciaClientes && res.recurrenciaClientes.length > 0) {
-        setRecurrenciaClientes(res.recurrenciaClientes);
+      if (res.recurrenciaMatriz && Object.keys(res.recurrenciaMatriz).length > 0) {
+        setRecurrenciaMatriz(res.recurrenciaMatriz);
       }
 
       const mesesDisponibles = Object.keys(datosMeses).sort(
@@ -318,26 +318,18 @@ export default function App() {
   const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
-  // Lógica de cálculo dinámico para Emisiones y Recurrencia
-  const mesesGestionDisponibles = Array.from(new Set(
-    (recurrenciaClientes.length > 0 ? recurrenciaClientes : [
-      { mesGestion: "Julio", uds: 6.23, banco: "BANCO PLAZA", emision: 1, cuotas: { Julio: 1, Agosto: 1, Septiembre: 1, Octubre: 1, Noviembre: 1, Diciembre: 0 }, statusActivo: "Activo" }
-    ]).map(c => c.mesGestion)
-  )).filter(m => ordenCronologico.includes(m))
-    .sort((a, b) => ordenCronologico.indexOf(a) - ordenCronologico.indexOf(b));
+  // =========================================================================
+  // MATRIZ DE RECURRENCIA (LECTURA DIRECTA DESDE GOOGLE APPS SCRIPT)
+  // =========================================================================
+  const mesesGestionDisponibles = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-  const clientesFiltradosPorEstado = recurrenciaClientes.filter(c => {
-    if (filtroStatusActivo === "TODOS") return true;
-    const st = String(c.statusActivo || '').toLowerCase();
-    if (filtroStatusActivo === "ACTIVO") return st.includes('activo');
-    if (filtroStatusActivo === "DESAFILIACION") return st.includes('desafilia');
-    return true;
-  });
-
-  const construirEscenarioMesGestion = (mesG) => {
-    if (recurrenciaClientes.length === 0 && mesG === "Julio") {
+  const obtenerDatosEscenario = (mesG, estadoKey) => {
+    if (recurrenciaMatriz[mesG] && recurrenciaMatriz[mesG][estadoKey]) {
+      return recurrenciaMatriz[mesG][estadoKey];
+    }
+    // Fallback exacto con las cifras oficiales de Julio (Captura 1)
+    if (mesG === "Julio") {
       return {
-        mes: "Julio",
         emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
         recurrencia: {
           total: { Agosto: 46, Septiembre: 39, Octubre: 30, Noviembre: 12, Diciembre: 0 },
@@ -354,84 +346,16 @@ export default function App() {
         }
       };
     }
-
-    const clientesDelMes = clientesFiltradosPorEstado.filter(c => c.mesGestion === mesG);
-
-    const normalizarBanco = (b) => {
-      const bn = String(b || '').toUpperCase();
-      if (bn.includes('BANESCO')) return 'banesco';
-      if (bn.includes('BANFANB')) return 'banfanb';
-      return 'plaza';
-    };
-
-    const estructura = {
-      mes: mesG,
+    return {
       emision: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
       recurrencia: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
       montoEmision: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
       montoRecurrencia: { total: {}, plaza: {}, banesco: {}, banfanb: {} }
     };
-
-    mesesRecurrenciaColumnas.forEach(colMes => {
-      if (colMes === mesG) {
-        let cantTot = 0, cantPlaza = 0, cantBanesco = 0, cantBanfanb = 0;
-        let mTot = 0, mPlaza = 0, mBanesco = 0, mBanfanb = 0;
-
-        clientesDelMes.forEach(c => {
-          if (c.emision > 0) {
-            cantTot += 1;
-            mTot += c.uds;
-            const b = normalizarBanco(c.banco);
-            if (b === 'plaza') { cantPlaza += 1; mPlaza += c.uds; }
-            if (b === 'banesco') { cantBanesco += 1; mBanesco += c.uds; }
-            if (b === 'banfanb') { cantBanfanb += 1; mBanfanb += c.uds; }
-          }
-        });
-
-        estructura.emision.total[colMes] = cantTot;
-        estructura.emision.plaza[colMes] = cantPlaza;
-        estructura.emision.banesco[colMes] = cantBanesco;
-        estructura.emision.banfanb[colMes] = cantBanfanb;
-
-        estructura.montoEmision.total[colMes] = mTot;
-        estructura.montoEmision.plaza[colMes] = mPlaza;
-        estructura.montoEmision.banesco[colMes] = mBanesco;
-        estructura.montoEmision.banfanb[colMes] = mBanfanb;
-      }
-
-      if (ordenCronologico.indexOf(colMes) > ordenCronologico.indexOf(mesG)) {
-        let recTot = 0, recPlaza = 0, recBanesco = 0, recBanfanb = 0;
-        let mRecTot = 0, mRecPlaza = 0, mRecBanesco = 0, mRecBanfanb = 0;
-
-        clientesDelMes.forEach(c => {
-          const pagoCuota = Number(c.cuotas && c.cuotas[colMes] ? c.cuotas[colMes] : 0);
-          if (pagoCuota > 0) {
-            recTot += 1;
-            mRecTot += c.uds;
-            const b = normalizarBanco(c.banco);
-            if (b === 'plaza') { recPlaza += 1; mRecPlaza += c.uds; }
-            if (b === 'banesco') { recBanesco += 1; mRecBanesco += c.uds; }
-            if (b === 'banfanb') { recBanfanb += 1; mRecBanfanb += c.uds; }
-          }
-        });
-
-        estructura.recurrencia.total[colMes] = recTot;
-        estructura.recurrencia.plaza[colMes] = recPlaza;
-        estructura.recurrencia.banesco[colMes] = recBanesco;
-        estructura.recurrencia.banfanb[colMes] = recBanfanb;
-
-        estructura.montoRecurrencia.total[colMes] = mRecTot;
-        estructura.montoRecurrencia.plaza[colMes] = mRecPlaza;
-        estructura.montoRecurrencia.banesco[colMes] = mRecBanesco;
-        estructura.montoRecurrencia.banfanb[colMes] = mRecBanfanb;
-      }
-    });
-
-    return estructura;
   };
 
-  const mesesAMostrar = mesGestionSeleccionado === "TODOS" 
-    ? (mesesGestionDisponibles.length > 0 ? mesesGestionDisponibles : ["Julio"])
+  const mesesAMostrarRecurrencia = mesGestionSeleccionado === "TODOS"
+    ? mesesGestionDisponibles
     : [mesGestionSeleccionado];
 
   const tema = {
@@ -486,7 +410,7 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma de Operaciones Directiva Biartet
+            Plataforma de Operaciones Directiva Bartet
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
             Biartet & Seguros Horizonte
@@ -609,7 +533,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            CBiartet & Seguros Horizonte
+            Biartet & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -652,6 +576,7 @@ export default function App() {
         </div>
 
         <div>
+          {/* BARRA DE NAVEGACIÓN SUPERIOR */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
@@ -670,7 +595,9 @@ export default function App() {
             )}
           </div>
 
-          {/* 5. NUEVA SECCIÓN: EMISIONES Y RECURRENCIA */}
+          {/* ========================================================================= */}
+          {/* 5. SECCIÓN: EMISIONES Y RECURRENCIA (COHORTES REALES POR MES DE INICIO)    */}
+          {/* ========================================================================= */}
           {subCategoria === "recurrencia" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
               <div style={{ backgroundColor: tema.card, borderRadius: '14px', padding: '16px 20px', border: `1px solid ${tema.border}`, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
@@ -742,8 +669,8 @@ export default function App() {
                 </div>
               </div>
 
-              {mesesAMostrar.map(mesG => {
-                const esc = construirEscenarioMesGestion(mesG);
+              {mesesAMostrarRecurrencia.map(mesG => {
+                const esc = obtenerDatosEscenario(mesG, filtroStatusActivo);
 
                 return (
                   <div key={mesG} style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
@@ -768,6 +695,7 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
+                          {/* BLOQUE 1: EMISION (Clientes que comenzaron en ese mes) */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td rowSpan={16} style={{ backgroundColor: '#5b9bd5', color: '#000', fontWeight: '800', fontSize: '16px', verticalAlign: 'middle' }}>
                               {mesG}
@@ -775,7 +703,7 @@ export default function App() {
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>Emision</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#3b82f6' : tema.texto }}>
-                                {esc.emision.total[colM] !== undefined && esc.emision.total[colM] > 0 ? esc.emision.total[colM] : ''}
+                                {colM === mesG && esc.emision.total[colM] > 0 ? esc.emision.total[colM] : ''}
                               </td>
                             ))}
                           </tr>
@@ -783,7 +711,7 @@ export default function App() {
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banco Plaza</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.emision.plaza[colM] > 0 ? esc.emision.plaza[colM] : ''}
+                                {colM === mesG && esc.emision.plaza[colM] > 0 ? esc.emision.plaza[colM] : ''}
                               </td>
                             ))}
                           </tr>
@@ -791,7 +719,7 @@ export default function App() {
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banesco</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.emision.banesco[colM] > 0 ? esc.emision.banesco[colM] : ''}
+                                {colM === mesG && esc.emision.banesco[colM] > 0 ? esc.emision.banesco[colM] : ''}
                               </td>
                             ))}
                           </tr>
@@ -799,49 +727,63 @@ export default function App() {
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banfanb</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.emision.banfanb[colM] > 0 ? esc.emision.banfanb[colM] : ''}
+                                {colM === mesG && esc.emision.banfanb[colM] > 0 ? esc.emision.banfanb[colM] : ''}
                               </td>
                             ))}
                           </tr>
 
+                          {/* BLOQUE 2: RECURRENCIA (Meses siguientes) */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#eab308' }}>Recurrencia</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#eab308' }}>
-                                {esc.recurrencia.total[colM] !== undefined ? esc.recurrencia.total[colM] : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#eab308' }}>
+                                  {esPosterior ? (esc.recurrencia.total[colM] !== undefined ? esc.recurrencia.total[colM] : 0) : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banco Plaza</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.recurrencia.plaza[colM] !== undefined && esc.recurrencia.plaza[colM] > 0 ? esc.recurrencia.plaza[colM] : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.recurrencia.plaza[colM] > 0 ? esc.recurrencia.plaza[colM] : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banesco</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.recurrencia.banesco[colM] !== undefined && esc.recurrencia.banesco[colM] > 0 ? esc.recurrencia.banesco[colM] : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.recurrencia.banesco[colM] > 0 ? esc.recurrencia.banesco[colM] : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr style={{ borderBottom: '1px dotted #64748b' }}>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banfanb</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.recurrencia.banfanb[colM] !== undefined && esc.recurrencia.banfanb[colM] > 0 ? esc.recurrencia.banfanb[colM] : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.recurrencia.banfanb[colM] > 0 ? esc.recurrencia.banfanb[colM] : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
 
+                          {/* BLOQUE 3: MONTO $ EMISION */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Emision</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#10b981' : tema.texto }}>
-                                {esc.montoEmision.total[colM] > 0 ? `$${formatearNumero(esc.montoEmision.total[colM])}` : ''}
+                                {colM === mesG && esc.montoEmision.total[colM] > 0 ? `$${formatearNumero(esc.montoEmision.total[colM])}` : ''}
                               </td>
                             ))}
                           </tr>
@@ -849,7 +791,7 @@ export default function App() {
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banco Plaza</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.montoEmision.plaza[colM] > 0 ? `$${formatearNumero(esc.montoEmision.plaza[colM])}` : ''}
+                                {colM === mesG && esc.montoEmision.plaza[colM] > 0 ? `$${formatearNumero(esc.montoEmision.plaza[colM])}` : ''}
                               </td>
                             ))}
                           </tr>
@@ -857,7 +799,7 @@ export default function App() {
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banesco</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.montoEmision.banesco[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banesco[colM])}` : ''}
+                                {colM === mesG && esc.montoEmision.banesco[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banesco[colM])}` : ''}
                               </td>
                             ))}
                           </tr>
@@ -865,42 +807,55 @@ export default function App() {
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banfanb</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.montoEmision.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banfanb[colM])}` : ''}
+                                {colM === mesG && esc.montoEmision.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banfanb[colM])}` : ''}
                               </td>
                             ))}
                           </tr>
 
+                          {/* BLOQUE 4: MONTO $ RECURRENCIA */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Recurrencia</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#10b981' }}>
-                                {esc.montoRecurrencia.total[colM] !== undefined ? `$${formatearNumero(esc.montoRecurrencia.total[colM])}` : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#10b981' }}>
+                                  {esPosterior ? `$${formatearNumero(esc.montoRecurrencia.total[colM] || 0)}` : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banco Plaza</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.montoRecurrencia.plaza[colM] !== undefined && esc.montoRecurrencia.plaza[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.plaza[colM])}` : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.montoRecurrencia.plaza[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.plaza[colM])}` : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banesco</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.montoRecurrencia.banesco[colM] !== undefined && esc.montoRecurrencia.banesco[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banesco[colM])}` : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.montoRecurrencia.banesco[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banesco[colM])}` : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr style={{ borderBottom: '1px solid #475569' }}>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banfanb</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {esc.montoRecurrencia.banfanb[colM] !== undefined && esc.montoRecurrencia.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banfanb[colM])}` : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.montoRecurrencia.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banfanb[colM])}` : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                         </tbody>
                       </table>
@@ -1031,9 +986,9 @@ export default function App() {
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
-                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA</th>
-                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB</th>
-                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO</th>
+                        <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA (CLI)</th>
+                        <th style={{ padding: '10px', color: '#eab308' }}>BANFANB (CLI)</th>
+                        <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO (CLI)</th>
                         <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
                         <th style={{ padding: '10px' }}>MONTO PLAZA</th>
                         <th style={{ padding: '10px' }}>MONTO BANFANB</th>
@@ -1072,7 +1027,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SEGMENTACIÓN POR BANCO CON SUS 3 GRÁFICOS */}
+              {/* SEGMENTACIÓN POR BANCO */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {mesActual.toUpperCase()}
@@ -1702,7 +1657,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR (CON EXPLICACIÓN COMPLETA Y LABELS EN BARRAS) */}
+                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR CON LABELS Y EXPLICACIÓN */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1730,7 +1685,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* GRÁFICO CON LABELS + MÉTRICAS ACUMULADAS */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
                     <div style={{ height: '250px', width: '100%' }}>
                       <ResponsiveContainer width="100%" height="100%">
