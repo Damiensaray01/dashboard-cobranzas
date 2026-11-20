@@ -330,7 +330,7 @@ export default function App() {
   const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
-  // Matriz de recurrencia
+  // Lógica de cohortes para Emisiones y Recurrencia
   const mesesGestionDisponibles = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const obtenerDatosEscenario = (mesG, estadoKey) => {
@@ -419,10 +419,10 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma Directiva de Operaciones Biartet
+            Plataforma BI Directiva
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -542,7 +542,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -585,14 +585,14 @@ export default function App() {
         </div>
 
         <div>
-          {/* BARRA DE NAVEGACIÓN SUPERIOR */}
+          {/* BARRA DE NAVEGACIÓN SUPERIOR CON TODAS LAS 5 PESTAÑAS */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
               <button onClick={() => setSubCategoria("marketing")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "marketing" ? '#1e3a8a' : 'transparent', color: subCategoria === "marketing" ? '#ffffff' : tema.subtexto }}>📢 Marketing</button>
               <button onClick={() => setSubCategoria("cobranzas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "cobranzas" ? '#1e3a8a' : 'transparent', color: subCategoria === "cobranzas" ? '#ffffff' : tema.subtexto }}>💳 Cobranzas</button>
               <button onClick={() => setSubCategoria("asesores")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "asesores" ? '#1e3a8a' : 'transparent', color: subCategoria === "asesores" ? '#ffffff' : tema.subtexto }}>👥 Asesores</button>
-              <button onClick={() => setSubCategoria("recurrencia")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "recurrencia" ? '#eab308' : 'transparent', color: subCategoria === "recurrencia" ? '#0f172a' : '#eab308' }}>🔄 Emisiones y Recurrencia</button>
+              <button onClick={() => setSubCategoria("recurrencia")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "recurrencia" ? '#eab308' : 'transparent', color: subCategoria === "recurrencia" ? '#0f172a' : '#eab308' }}>🔄 Seguimiento de Emisiones y Recurrencia</button>
             </div>
 
             {subCategoria !== "recurrencia" && (
@@ -605,7 +605,274 @@ export default function App() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 1. SECCIÓN VENTAS (CON TABLA GENERAL Y TABLAS POR BANCO SEPARADO)         */}
+          {/* 5. SECCIÓN: SEGUIMIENTO DE EMISIONES Y RECURRENCIA (COHORTES REALES)       */}
+          {/* ========================================================================= */}
+          {subCategoria === "recurrencia" && (
+            <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
+              <div style={{ backgroundColor: tema.card, borderRadius: '14px', padding: '16px 20px', border: `1px solid ${tema.border}`, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: tema.texto, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <RefreshIcon style={{ width: '18px', height: '18px', color: '#eab308' }} />
+                    Seguimiento de Emisiones y Recurrencia de Cartera
+                  </h3>
+                  <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>
+                    Emisiones correspondientes al mes de ingreso y recurrencia en cuotas de los meses posteriores
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: tema.subtexto, textTransform: 'uppercase' }}>Filtro de Estado:</span>
+                  
+                  <button 
+                    onClick={() => setFiltroStatusActivo("TODOS")}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
+                      backgroundColor: filtroStatusActivo === "TODOS" ? '#1e3a8a' : tema.bg,
+                      color: filtroStatusActivo === "TODOS" ? '#fff' : tema.subtexto,
+                      border: filtroStatusActivo === "TODOS" ? '1px solid #3b82f6' : `1px solid ${tema.border}`
+                    }}
+                  >
+                    {filtroStatusActivo === "TODOS" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
+                    Todos
+                  </button>
+
+                  <button 
+                    onClick={() => setFiltroStatusActivo("ACTIVO")}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
+                      backgroundColor: filtroStatusActivo === "ACTIVO" ? 'rgba(16, 185, 129, 0.2)' : tema.bg,
+                      color: filtroStatusActivo === "ACTIVO" ? '#10b981' : tema.subtexto,
+                      border: filtroStatusActivo === "ACTIVO" ? '1px solid #10b981' : `1px solid ${tema.border}`
+                    }}
+                  >
+                    {filtroStatusActivo === "ACTIVO" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
+                    Activo
+                  </button>
+
+                  <button 
+                    onClick={() => setFiltroStatusActivo("DESAFILIACION")}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer',
+                      backgroundColor: filtroStatusActivo === "DESAFILIACION" ? 'rgba(239, 68, 68, 0.2)' : tema.bg,
+                      color: filtroStatusActivo === "DESAFILIACION" ? '#ef4444' : tema.subtexto,
+                      border: filtroStatusActivo === "DESAFILIACION" ? '1px solid #ef4444' : `1px solid ${tema.border}`
+                    }}
+                  >
+                    {filtroStatusActivo === "DESAFILIACION" ? <CheckSquare style={{ width: '14px', height: '14px' }} /> : <Square style={{ width: '14px', height: '14px' }} />}
+                    Desafiliación
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <label style={{ fontSize: '11px', fontWeight: 'bold', color: tema.subtexto }}>Mes de Gestión:</label>
+                  <select 
+                    value={mesGestionSeleccionado}
+                    onChange={(e) => setMesGestionSeleccionado(e.target.value)}
+                    style={{ backgroundColor: tema.bg, color: tema.texto, border: `1px solid ${tema.border}`, padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
+                  >
+                    <option value="TODOS">📅 TODOS LOS MESES</option>
+                    {mesesGestionDisponibles.map(mG => (
+                      <option key={mG} value={mG}>{mG}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {mesesAMostrarRecurrencia.map(mesG => {
+                const esc = obtenerDatosEscenario(mesG, filtroStatusActivo);
+
+                return (
+                  <div key={mesG} style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
+                      <span style={{ backgroundColor: '#1e3a8a', color: '#93c5fd', padding: '4px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', textTransform: 'uppercase' }}>
+                        Mes de Gestión: {mesG}
+                      </span>
+                      <span style={{ fontSize: '12px', color: tema.subtexto }}>
+                        Filtro Activo: <strong style={{ color: filtroStatusActivo === 'ACTIVO' ? '#10b981' : filtroStatusActivo === 'DESAFILIACION' ? '#ef4444' : '#eab308' }}>{filtroStatusActivo}</strong>
+                      </span>
+                    </div>
+
+                    <div style={{ overflowX: 'auto', width: '100%' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
+                        <thead>
+                          <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.texto, fontWeight: 'bold' }}>
+                            <th style={{ padding: '12px 10px', width: '140px', backgroundColor: '#5b9bd5', color: '#000', fontSize: '13px' }}>Mes de Gestion</th>
+                            <th style={{ padding: '12px 10px', textAlign: 'left', minWidth: '240px', color: tema.subtexto }}>Seguimiento</th>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <th key={colM} style={{ padding: '12px 10px', color: tema.texto }}>{colM}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td rowSpan={16} style={{ backgroundColor: '#5b9bd5', color: '#000', fontWeight: '800', fontSize: '16px', verticalAlign: 'middle' }}>
+                              {mesG}
+                            </td>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>Emision</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#3b82f6' : tema.texto }}>
+                                {colM === mesG && esc.emision.total[colM] > 0 ? esc.emision.total[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {colM === mesG && esc.emision.plaza[colM] > 0 ? esc.emision.plaza[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {colM === mesG && esc.emision.banesco[colM] > 0 ? esc.emision.banesco[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {colM === mesG && esc.emision.banfanb[colM] > 0 ? esc.emision.banfanb[colM] : ''}
+                              </td>
+                            ))}
+                          </tr>
+
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#eab308' }}>Recurrencia</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#eab308' }}>
+                                  {esPosterior ? (esc.recurrencia.total[colM] !== undefined ? esc.recurrencia.total[colM] : 0) : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.recurrencia.plaza[colM] > 0 ? esc.recurrencia.plaza[colM] : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.recurrencia.banesco[colM] > 0 ? esc.recurrencia.banesco[colM] : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Recurrencia Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.recurrencia.banfanb[colM] > 0 ? esc.recurrencia.banfanb[colM] : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Emision</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#10b981' : tema.texto }}>
+                                {colM === mesG && esc.montoEmision.total[colM] > 0 ? `$${formatearNumero(esc.montoEmision.total[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {colM === mesG && esc.montoEmision.plaza[colM] > 0 ? `$${formatearNumero(esc.montoEmision.plaza[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {colM === mesG && esc.montoEmision.banesco[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banesco[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr style={{ borderBottom: '1px dotted #64748b' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                {colM === mesG && esc.montoEmision.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banfanb[colM])}` : ''}
+                              </td>
+                            ))}
+                          </tr>
+
+                          <tr style={{ borderTop: '1px dotted #64748b' }}>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Recurrencia</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#10b981' }}>
+                                  {esPosterior ? `$${formatearNumero(esc.montoRecurrencia.total[colM] || 0)}` : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.montoRecurrencia.plaza[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.plaza[colM])}` : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.montoRecurrencia.banesco[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banesco[colM])}` : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr style={{ borderBottom: '1px solid #475569' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Recurrencia Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esPosterior && esc.montoRecurrencia.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoRecurrencia.banfanb[colM])}` : ''}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* 1. SECCIÓN VENTAS (CON TABLAS SEPARADAS POR BANCO COLUMNAS BC A BH)       */}
           {/* ========================================================================= */}
           {subCategoria === "ventas" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
@@ -667,7 +934,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS) */}
+              {/* CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS BSF) */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '20px', border: `1px solid ${tema.border}` }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>
                   CONSOLIDADO DE VENTAS Y RECAUDACIÓN (MONTOS BSF)
@@ -767,9 +1034,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* ========================================================================= */}
-              {/* NUEVO BLOQUE: EFECTIVIDAD DE VENTAS POR BANCO SEPARADO (COLUMNAS BC A BH)  */}
-              {/* ========================================================================= */}
+              {/* BLOQUE: EFECTIVIDAD DE VENTAS POR BANCO SEPARADO (COLUMNAS BC A BH) */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                   <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textTransform: 'uppercase', margin: 0, letterSpacing: '1px' }}>
@@ -920,7 +1185,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SEGMENTACIÓN POR BANCO CON GRÁFICAS DE EVOLUCIÓN */}
+              {/* SEGMENTACIÓN POR BANCO CON GRÁFICAS */}
               <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: tema.texto, textAlign: 'center', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>
                   SEGMENTACIÓN DE VENTAS POR BANCO — {mesActual.toUpperCase()}
@@ -1391,10 +1656,11 @@ export default function App() {
                   </div>
                 </div>
               </div>
+
             </div>
           )}
 
-          {/* 4. SECCIÓN ASESORES CON EXPLICACIÓN Y NÚMEROS EN LAS BARRAS */}
+          {/* 4. SECCIÓN ASESORES */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1550,7 +1816,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR CON LABELS Y EXPLICACIÓN */}
+                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
