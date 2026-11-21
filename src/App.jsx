@@ -48,7 +48,18 @@ const ASESORES_DATA_DEFAULT = [
   { mes: 'Octubre', asesor: 'Luisiana Nacero', ventas: 26, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Egreso' },
   { mes: 'Octubre', asesor: 'Cindy Suarez', ventas: 18, cobradas: 10, plaza: 3, banesco: 2, banfanb: 5, pct: '55,56%', status: 'Activo' },
   { mes: 'Octubre', asesor: 'Angi Torres', ventas: 3, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Egreso' },
-  { mes: 'Octubre', asesor: 'Daniel Diaz', ventas: 1, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Egreso' }
+  { mes: 'Octubre', asesor: 'Daniel Diaz', ventas: 1, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Egreso' },
+
+  { mes: 'Noviembre', asesor: 'Kismar Hernandez', ventas: 90, cobradas: 27, plaza: 13, banesco: 14, banfanb: 0, pct: '30,00%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Yerlis Vasquez', ventas: 84, cobradas: 6, plaza: 4, banesco: 2, banfanb: 0, pct: '7,14%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Kariosqui Gomez', ventas: 74, cobradas: 17, plaza: 15, banesco: 2, banfanb: 0, pct: '22,97%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Danielis Villegas', ventas: 71, cobradas: 19, plaza: 18, banesco: 1, banfanb: 0, pct: '26,76%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Roikel Suniaga', ventas: 40, cobradas: 10, plaza: 9, banesco: 1, banfanb: 0, pct: '25,00%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Keisy Plaza', ventas: 33, cobradas: 12, plaza: 6, banesco: 6, banfanb: 0, pct: '36,36%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Carolina Rojas', ventas: 26, cobradas: 8, plaza: 8, banesco: 0, banfanb: 0, pct: '30,77%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Oriana Aponte', ventas: 14, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Cindy Suarez', ventas: 8, cobradas: 5, plaza: 2, banesco: 3, banfanb: 0, pct: '62,50%', status: 'Activo' },
+  { mes: 'Noviembre', asesor: 'Krisbel Ramos', ventas: 7, cobradas: 0, plaza: 0, banesco: 0, banfanb: 0, pct: '0,00%', status: 'Activo' }
 ];
 
 const RESUMEN_ASESORES_DEFAULT = [
@@ -56,7 +67,7 @@ const RESUMEN_ASESORES_DEFAULT = [
   { mes: 'Agosto', ventas: 257, cobradas: 135, pct: '52,53%' },
   { mes: 'Septiembre', ventas: 257, cobradas: 128, pct: '49,81%' },
   { mes: 'Octubre', ventas: 305, cobradas: 127, pct: '41,64%' },
-  { mes: 'Noviembre', ventas: 438, cobradas: 98, pct: '22,37%' },
+  { mes: 'Noviembre', ventas: 447, cobradas: 104, pct: '23,27%' },
   { mes: 'Diciembre', ventas: 0, cobradas: 0, pct: '0,00%' }
 ];
 
@@ -102,7 +113,7 @@ export default function App() {
   const [mesGestionSeleccionado, setMesGestionSeleccionado] = useState("Julio");
 
   const [mesActual, setMesActual] = useState("Noviembre");
-  const [subCategoria, setSubCategoria] = useState("ventas");
+  const [subCategoria, setSubCategoria] = useState("recurrencia");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [asesorSeleccionado, setAsesorSeleccionado] = useState("TODOS");
 
@@ -330,26 +341,29 @@ export default function App() {
   const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
-  // Lógica de cohortes para Emisiones y Recurrencia
+  // =========================================================================
+  // MATRIZ DE RECURRENCIA (LECTURA DIRECTA DESDE GOOGLE APPS SCRIPT)
+  // =========================================================================
   const mesesGestionDisponibles = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const obtenerDatosEscenario = (mesG, estadoKey) => {
     if (recurrenciaMatriz[mesG] && recurrenciaMatriz[mesG][estadoKey]) {
       return recurrenciaMatriz[mesG][estadoKey];
     }
+    // Fallback exacto con las cifras oficiales de la captura (Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12)
     if (mesG === "Julio") {
       return {
         emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
         recurrencia: {
-          total: { Agosto: 46, Septiembre: 39, Octubre: 30, Noviembre: 12, Diciembre: 0 },
-          plaza: { Agosto: 46, Septiembre: 39, Octubre: 30, Noviembre: 12, Diciembre: 0 },
+          total: { Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12, Diciembre: 0 },
+          plaza: { Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12, Diciembre: 0 },
           banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
           banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
         },
         montoEmision: { total: { Julio: 423.93 }, plaza: { Julio: 423.93 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
         montoRecurrencia: {
-          total: { Agosto: 291.36, Septiembre: 247.17, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
-          plaza: { Agosto: 291.36, Septiembre: 247.17, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
+          total: { Agosto: 267.40, Septiembre: 226.94, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
+          plaza: { Agosto: 267.40, Septiembre: 226.94, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
           banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
           banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
         }
@@ -419,10 +433,10 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma Directiva de Operaciones Biartet
+            Plataforma BI Directiva
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -542,7 +556,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -585,7 +599,7 @@ export default function App() {
         </div>
 
         <div>
-          {/* BARRA DE NAVEGACIÓN SUPERIOR CON TODAS LAS 5 PESTAÑAS */}
+          {/* BARRA DE NAVEGACIÓN SUPERIOR CON LAS 5 PESTAÑAS */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
@@ -605,7 +619,7 @@ export default function App() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 5. SECCIÓN: SEGUIMIENTO DE EMISIONES Y RECURRENCIA (COHORTES REALES)       */}
+          {/* 5. SECCIÓN: RECURRENCIA (AMARILLO CORPORATIVO Y % DE EVOLUCIÓN COMPLETO)   */}
           {/* ========================================================================= */}
           {subCategoria === "recurrencia" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
@@ -616,7 +630,7 @@ export default function App() {
                     Seguimiento de Emisiones y Recurrencia de Cartera
                   </h3>
                   <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>
-                    Emisiones correspondientes al mes de ingreso y recurrencia en cuotas de los meses posteriores
+                    Emisiones correspondientes al mes de ingreso, cuotas de recurrencia y % de evolución de cobro
                   </p>
                 </div>
 
@@ -680,11 +694,20 @@ export default function App() {
 
               {mesesAMostrarRecurrencia.map(mesG => {
                 const esc = obtenerDatosEscenario(mesG, filtroStatusActivo);
+                const emiTotalBase = esc.emision.total[mesG] || 0;
+                const emiPlazaBase = esc.emision.plaza[mesG] || 0;
+                const emiBanescoBase = esc.emision.banesco[mesG] || 0;
+                const emiBanfanbBase = esc.emision.banfanb[mesG] || 0;
+
+                const calcPct = (recVal, emiBase) => {
+                  if (!emiBase || emiBase === 0) return '';
+                  return ((recVal / emiBase) * 100).toFixed(2).replace('.', ',') + '%';
+                };
 
                 return (
                   <div key={mesG} style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}`, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '12px' }}>
-                      <span style={{ backgroundColor: '#1e3a8a', color: '#93c5fd', padding: '4px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', textTransform: 'uppercase' }}>
+                      <span style={{ backgroundColor: 'rgba(234, 179, 8, 0.2)', color: '#eab308', border: '1px solid rgba(234, 179, 8, 0.4)', padding: '4px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', textTransform: 'uppercase' }}>
                         Mes de Gestión: {mesG}
                       </span>
                       <span style={{ fontSize: '12px', color: tema.subtexto }}>
@@ -696,7 +719,9 @@ export default function App() {
                       <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '12px' }}>
                         <thead>
                           <tr style={{ borderBottom: `2px solid ${tema.border}`, color: tema.texto, fontWeight: 'bold' }}>
-                            <th style={{ padding: '12px 10px', width: '140px', backgroundColor: '#5b9bd5', color: '#000', fontSize: '13px' }}>Mes de Gestion</th>
+                            <th style={{ padding: '12px 10px', width: '140px', backgroundColor: '#eab308', color: '#0f172a', fontSize: '13px', fontWeight: '800', borderRight: '1px solid rgba(15, 23, 42, 0.2)' }}>
+                              Mes de Gestion
+                            </th>
                             <th style={{ padding: '12px 10px', textAlign: 'left', minWidth: '240px', color: tema.subtexto }}>Seguimiento</th>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <th key={colM} style={{ padding: '12px 10px', color: tema.texto }}>{colM}</th>
@@ -704,8 +729,9 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
+                          {/* 1. EMISIÓN */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
-                            <td rowSpan={16} style={{ backgroundColor: '#5b9bd5', color: '#000', fontWeight: '800', fontSize: '16px', verticalAlign: 'middle' }}>
+                            <td rowSpan={20} style={{ backgroundColor: '#eab308', color: '#0f172a', fontWeight: '900', fontSize: '18px', verticalAlign: 'middle', borderRight: '1px solid rgba(15, 23, 42, 0.2)', letterSpacing: '0.5px' }}>
                               {mesG}
                             </td>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>Emision</td>
@@ -740,6 +766,7 @@ export default function App() {
                             ))}
                           </tr>
 
+                          {/* 2. RECURRENCIA */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#eab308' }}>Recurrencia</td>
                             {mesesRecurrenciaColumnas.map(colM => {
@@ -785,6 +812,61 @@ export default function App() {
                             })}
                           </tr>
 
+                          {/* 3. % DE EVOLUCIÓN DE RECURRENCIA (NUEVO BLOQUE INCORPORADO) */}
+                          <tr style={{ borderTop: '1px dotted #64748b', backgroundColor: temaOscuro ? 'rgba(56, 189, 248, 0.05)' : 'rgba(56, 189, 248, 0.04)' }}>
+                            <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#38bdf8' }}>% Evolución Recurrencia</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esInicio = colM === mesG;
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              const recVal = esc.recurrencia.total[colM] || 0;
+                              return (
+                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#38bdf8' }}>
+                                  {esInicio ? (emiTotalBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiTotalBase) : '')}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr style={{ backgroundColor: temaOscuro ? 'rgba(56, 189, 248, 0.05)' : 'rgba(56, 189, 248, 0.04)' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>% Evolución Banco Plaza</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esInicio = colM === mesG;
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              const recVal = esc.recurrencia.plaza[colM] || 0;
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esInicio ? (emiPlazaBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiPlazaBase) : '')}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr style={{ backgroundColor: temaOscuro ? 'rgba(56, 189, 248, 0.05)' : 'rgba(56, 189, 248, 0.04)' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>% Evolución Banesco</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esInicio = colM === mesG;
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              const recVal = esc.recurrencia.banesco[colM] || 0;
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esInicio ? (emiBanescoBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiBanescoBase) : '')}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          <tr style={{ borderBottom: '1px dotted #64748b', backgroundColor: temaOscuro ? 'rgba(56, 189, 248, 0.05)' : 'rgba(56, 189, 248, 0.04)' }}>
+                            <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>% Evolución Banfanb</td>
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              const esInicio = colM === mesG;
+                              const esPosterior = ordenCronologico.indexOf(colM) > ordenCronologico.indexOf(mesG);
+                              const recVal = esc.recurrencia.banfanb[colM] || 0;
+                              return (
+                                <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
+                                  {esInicio ? (emiBanfanbBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiBanfanbBase) : '')}
+                                </td>
+                              );
+                            })}
+                          </tr>
+
+                          {/* 4. MONTO $ EMISIÓN */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Emision</td>
                             {mesesRecurrenciaColumnas.map(colM => (
@@ -818,6 +900,7 @@ export default function App() {
                             ))}
                           </tr>
 
+                          {/* 5. MONTO $ RECURRENCIA */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Recurrencia</td>
                             {mesesRecurrenciaColumnas.map(colM => {
@@ -871,9 +954,7 @@ export default function App() {
             </div>
           )}
 
-          {/* ========================================================================= */}
-          {/* 1. SECCIÓN VENTAS (CON TABLAS SEPARADAS POR BANCO COLUMNAS BC A BH)       */}
-          {/* ========================================================================= */}
+          {/* 1. SECCIÓN VENTAS */}
           {subCategoria === "ventas" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1046,8 +1127,7 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-                  
-                  {/* TABLA BANCO PLAZA SEPARADO */}
+                  {/* TABLA BANCO PLAZA */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.3)', overflow: 'hidden' }}>
                     <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1092,7 +1172,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* TABLA BANESCO SEPARADO */}
+                  {/* TABLA BANESCO */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '12px', border: '1px solid rgba(2, 132, 199, 0.3)', overflow: 'hidden' }}>
                     <div style={{ background: 'linear-gradient(135deg, #0f172a, #0284c7)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1137,7 +1217,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* TABLA BANFANB SEPARADO */}
+                  {/* TABLA BANFANB */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '12px', border: '1px solid rgba(234, 179, 8, 0.3)', overflow: 'hidden' }}>
                     <div style={{ background: 'linear-gradient(135deg, #ca8a04, #eab308)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1181,7 +1261,6 @@ export default function App() {
                       </table>
                     </div>
                   </div>
-
                 </div>
               </div>
 
@@ -1192,7 +1271,6 @@ export default function App() {
                 </h3>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-                  
                   {/* BANCO PLAZA */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '14px', border: `1px solid ${tema.border}`, overflow: 'hidden' }}>
                     <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1656,11 +1734,10 @@ export default function App() {
                   </div>
                 </div>
               </div>
-
             </div>
           )}
 
-          {/* 4. SECCIÓN ASESORES */}
+          {/* 4. SECCIÓN ASESORES CON EXPLICACIÓN Y NÚMEROS EN LAS BARRAS */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1844,6 +1921,7 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* GRÁFICO CON LABELS + MÉTRICAS */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
                     <div style={{ height: '250px', width: '100%' }}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -1967,7 +2045,7 @@ export default function App() {
           <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
-          DEPARTAMENTO DE INNOVACIÓN Y DESARROLLO 2026
+          DEPARTAMENTO DE BUSINESS INTELLIGENCE 2026
         </div>
       </footer>
     </div>
