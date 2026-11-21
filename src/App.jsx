@@ -433,10 +433,10 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma BI Directiva
+            Plataforma de Operaciones y Directiva
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Consorcio Biartet, C.A. & Seguros Horizonte
+            Biartet & Seguros Horizonte
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -556,7 +556,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Consorcio Biartet, C.A. & Seguros Horizonte
+            Biartet & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
