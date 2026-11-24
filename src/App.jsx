@@ -351,16 +351,14 @@ export default function App() {
   const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
-  // =========================================================================
-  // MATRIZ DE RECURRENCIA
-  // =========================================================================
+  // Matriz de cohortes de Recurrencia
   const mesesGestionDisponibles = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const obtenerDatosEscenario = (mesG, estadoKey) => {
     if (recurrenciaMatriz[mesG] && recurrenciaMatriz[mesG][estadoKey]) {
       return recurrenciaMatriz[mesG][estadoKey];
     }
-    // Fallback oficial con los valores exactos de emisión y montos Banfanb
+    // Fallback oficial con los valores exactos
     if (mesG === "Julio") {
       return {
         emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 150 } },
@@ -443,10 +441,10 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma Directiva de Operaciones
+            Plataforma BI Directiva
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -566,7 +564,7 @@ export default function App() {
           </div>
 
           <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 10px 0', color: tema.texto, letterSpacing: '-0.5px' }}>
-            Biartet & Seguros Horizonte
+            Consorcio Biartet, C.A. & Seguros Horizonte
           </h1>
           <h2 style={{ fontSize: '14px', fontWeight: '500', color: tema.subtexto, margin: '0 0 28px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Plataforma Ejecutiva de Control Comercial & Cobranzas
@@ -609,7 +607,7 @@ export default function App() {
         </div>
 
         <div>
-          {/* BARRA DE NAVEGACIÓN SUPERIOR CON TODAS LAS PESTAÑAS */}
+          {/* BARRA DE NAVEGACIÓN SUPERIOR */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
@@ -629,7 +627,7 @@ export default function App() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 5. SECCIÓN: RECURRENCIA (CON EMISIÓN Y MONTOS BANFANB CONECTADOS)         */}
+          {/* 5. SECCIÓN: RECURRENCIA (SUMATORIA DE LOS 3 BANCOS EN EMISIÓN)            */}
           {/* ========================================================================= */}
           {subCategoria === "recurrencia" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
@@ -705,7 +703,7 @@ export default function App() {
               {mesesAMostrarRecurrencia.map(mesG => {
                 const esc = obtenerDatosEscenario(mesG, filtroStatusActivo);
                 
-                // Mapeo dinámico de Banfanb desde Sheets o fallback oficial
+                // Mapeo dinámico de Banfanb desde Sheets o fallback
                 const banfanbEmisionFila = Number(mesesData[mesG]?.emisionBanfanb ?? 0) > 0 
                   ? Number(mesesData[mesG].emisionBanfanb)
                   : Number(DATOS_BANFANB_EMISION[mesG]?.emision ?? 0);
@@ -714,10 +712,11 @@ export default function App() {
                   ? Number(mesesData[mesG].montoEmisionBanfanb)
                   : Number(DATOS_BANFANB_EMISION[mesG]?.monto ?? 0);
 
-                const emiTotalBase = esc.emision.total[mesG] || 0;
-                const emiPlazaBase = esc.emision.plaza[mesG] || 0;
-                const emiBanescoBase = esc.emision.banesco[mesG] || 0;
-                const emiBanfanbBase = banfanbEmisionFila > 0 ? banfanbEmisionFila : (esc.emision.banfanb[mesG] || 0);
+                // SUMATORIA DE LOS 3 BANCOS PARA LA BASE DE EMISIÓN
+                const pEmiBase = Number(esc.emision.plaza[mesG] ?? 0);
+                const bEmiBase = Number(esc.emision.banesco[mesG] ?? 0);
+                const bfEmiBase = banfanbEmisionFila > 0 ? banfanbEmisionFila : Number(esc.emision.banfanb[mesG] ?? 0);
+                const emiTotalBase = pEmiBase + bEmiBase + bfEmiBase;
 
                 const calcPct = (recVal, emiBase) => {
                   if (!emiBase || emiBase === 0) return '';
@@ -749,17 +748,26 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
-                          {/* 1. EMISIÓN */}
+                          {/* 1. EMISIÓN (SUMATORIA DE LOS 3 BANCOS) */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td rowSpan={20} style={{ backgroundColor: '#eab308', color: '#0f172a', fontWeight: '900', fontSize: '18px', verticalAlign: 'middle', borderRight: '1px solid rgba(15, 23, 42, 0.2)', letterSpacing: '0.5px' }}>
                               {mesG}
                             </td>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>Emision</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#3b82f6' : tema.texto }}>
-                                {colM === mesG && esc.emision.total[colM] > 0 ? esc.emision.total[colM] : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              if (colM !== mesG) return <td key={colM} style={{ padding: '8px 10px' }}></td>;
+
+                              const pE = Number(esc.emision.plaza[colM] ?? 0);
+                              const bE = Number(esc.emision.banesco[colM] ?? 0);
+                              const bfE = banfanbEmisionFila > 0 ? banfanbEmisionFila : Number(esc.emision.banfanb[colM] ?? 0);
+                              const totalEmiTresBancos = pE + bE + bfE;
+
+                              return (
+                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#3b82f6', fontSize: '13px' }}>
+                                  {totalEmiTresBancos > 0 ? formatearNumero(totalEmiTresBancos) : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banco Plaza</td>
@@ -855,7 +863,7 @@ export default function App() {
                               const recVal = esc.recurrencia.plaza[colM] || 0;
                               return (
                                 <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esInicio ? (emiPlazaBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiPlazaBase) : '')}
+                                  {esInicio ? (pEmiBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, pEmiBase) : '')}
                                 </td>
                               );
                             })}
@@ -868,7 +876,7 @@ export default function App() {
                               const recVal = esc.recurrencia.banesco[colM] || 0;
                               return (
                                 <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esInicio ? (emiBanescoBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiBanescoBase) : '')}
+                                  {esInicio ? (bEmiBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, bEmiBase) : '')}
                                 </td>
                               );
                             })}
@@ -881,20 +889,29 @@ export default function App() {
                               const recVal = esc.recurrencia.banfanb[colM] || 0;
                               return (
                                 <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esInicio ? (emiBanfanbBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiBanfanbBase) : '')}
+                                  {esInicio ? (bfEmiBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, bfEmiBase) : '')}
                                 </td>
                               );
                             })}
                           </tr>
 
-                          {/* 4. MONTO $ EMISIÓN */}
+                          {/* 4. MONTO $ EMISIÓN (SUMATORIA DE LOS 3 BANCOS) */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Emision</td>
-                            {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#10b981' : tema.texto }}>
-                                {colM === mesG && esc.montoEmision.total[colM] > 0 ? `$${formatearNumero(esc.montoEmision.total[colM])}` : ''}
-                              </td>
-                            ))}
+                            {mesesRecurrenciaColumnas.map(colM => {
+                              if (colM !== mesG) return <td key={colM} style={{ padding: '8px 10px' }}></td>;
+
+                              const pM = Number(esc.montoEmision.plaza[colM] ?? 0);
+                              const bM = Number(esc.montoEmision.banesco[colM] ?? 0);
+                              const bfM = banfanbMontoFila > 0 ? banfanbMontoFila : Number(esc.montoEmision.banfanb[colM] ?? 0);
+                              const totalMtoTresBancos = pM + bM + bfM;
+
+                              return (
+                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#10b981', fontSize: '12px' }}>
+                                  {totalMtoTresBancos > 0 ? `$${formatearNumero(totalMtoTresBancos)}` : ''}
+                                </td>
+                              );
+                            })}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banco Plaza</td>
@@ -1756,7 +1773,6 @@ export default function App() {
                   </div>
                 </div>
               </div>
-
             </div>
           )}
 
@@ -2067,7 +2083,7 @@ export default function App() {
           <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
-          DEPARTAMENTO DE INNOVACIÓN Y DESARROLLO
+          DEPARTAMENTO DE BUSINESS INTELLIGENCE 2026
         </div>
       </footer>
     </div>
