@@ -12,6 +12,16 @@ import {
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 const CLAVE_ACCESO = "ADMB2027*1";
 
+// Cifras oficiales de columnas BI y BJ de Consolidado Mensual
+const DATOS_BANFANB_EMISION = {
+  "Julio": { emision: 150, monto: 992.56 },
+  "Agosto": { emision: 98, monto: 2098.90 },
+  "Septiembre": { emision: 32, monto: 4026.38 },
+  "Octubre": { emision: 52, monto: 394.31 },
+  "Noviembre": { emision: 82, monto: 503.35 },
+  "Diciembre": { emision: 0, monto: 0.00 }
+};
+
 const ASESORES_DATA_DEFAULT = [
   { mes: 'Julio', asesor: 'Berenice troconiz', ventas: 8, cobradas: 8, plaza: 0, banesco: 0, banfanb: 0, pct: '100,00%', status: 'Activo' },
   { mes: 'Julio', asesor: 'Carlos Argort', ventas: 38, cobradas: 36, plaza: 0, banesco: 0, banfanb: 0, pct: '94,74%', status: 'Activo' },
@@ -342,7 +352,7 @@ export default function App() {
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
   // =========================================================================
-  // MATRIZ DE RECURRENCIA (LECTURA DIRECTA DESDE GOOGLE APPS SCRIPT)
+  // MATRIZ DE RECURRENCIA
   // =========================================================================
   const mesesGestionDisponibles = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
@@ -350,17 +360,17 @@ export default function App() {
     if (recurrenciaMatriz[mesG] && recurrenciaMatriz[mesG][estadoKey]) {
       return recurrenciaMatriz[mesG][estadoKey];
     }
-    // Fallback exacto con las cifras oficiales de la captura (Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12)
+    // Fallback oficial con los valores exactos de emisión y montos Banfanb
     if (mesG === "Julio") {
       return {
-        emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
+        emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 150 } },
         recurrencia: {
           total: { Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12, Diciembre: 0 },
           plaza: { Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12, Diciembre: 0 },
           banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
           banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
         },
-        montoEmision: { total: { Julio: 423.93 }, plaza: { Julio: 423.93 }, banesco: { Julio: 0 }, banfanb: { Julio: 0 } },
+        montoEmision: { total: { Julio: 423.93 }, plaza: { Julio: 423.93 }, banesco: { Julio: 0 }, banfanb: { Julio: 992.56 } },
         montoRecurrencia: {
           total: { Agosto: 267.40, Septiembre: 226.94, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
           plaza: { Agosto: 267.40, Septiembre: 226.94, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
@@ -433,7 +443,7 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma de Operaciones y Directiva
+            Plataforma Directiva de Operaciones
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
             Biartet & Seguros Horizonte
@@ -599,7 +609,7 @@ export default function App() {
         </div>
 
         <div>
-          {/* BARRA DE NAVEGACIÓN SUPERIOR CON LAS 5 PESTAÑAS */}
+          {/* BARRA DE NAVEGACIÓN SUPERIOR CON TODAS LAS PESTAÑAS */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '6px', backgroundColor: tema.card, padding: '4px', borderRadius: '8px', border: `1px solid ${tema.border}`, flexWrap: 'wrap' }}>
               <button onClick={() => setSubCategoria("ventas")} style={{ padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', border: 'none', backgroundColor: subCategoria === "ventas" ? '#1e3a8a' : 'transparent', color: subCategoria === "ventas" ? '#ffffff' : tema.subtexto }}>📈 Ventas</button>
@@ -619,7 +629,7 @@ export default function App() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 5. SECCIÓN: RECURRENCIA (AMARILLO CORPORATIVO Y % DE EVOLUCIÓN COMPLETO)   */}
+          {/* 5. SECCIÓN: RECURRENCIA (CON EMISIÓN Y MONTOS BANFANB CONECTADOS)         */}
           {/* ========================================================================= */}
           {subCategoria === "recurrencia" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
@@ -694,10 +704,20 @@ export default function App() {
 
               {mesesAMostrarRecurrencia.map(mesG => {
                 const esc = obtenerDatosEscenario(mesG, filtroStatusActivo);
+                
+                // Mapeo dinámico de Banfanb desde Sheets o fallback oficial
+                const banfanbEmisionFila = Number(mesesData[mesG]?.emisionBanfanb ?? 0) > 0 
+                  ? Number(mesesData[mesG].emisionBanfanb)
+                  : Number(DATOS_BANFANB_EMISION[mesG]?.emision ?? 0);
+
+                const banfanbMontoFila = Number(mesesData[mesG]?.montoEmisionBanfanb ?? 0) > 0 
+                  ? Number(mesesData[mesG].montoEmisionBanfanb)
+                  : Number(DATOS_BANFANB_EMISION[mesG]?.monto ?? 0);
+
                 const emiTotalBase = esc.emision.total[mesG] || 0;
                 const emiPlazaBase = esc.emision.plaza[mesG] || 0;
                 const emiBanescoBase = esc.emision.banesco[mesG] || 0;
-                const emiBanfanbBase = esc.emision.banfanb[mesG] || 0;
+                const emiBanfanbBase = banfanbEmisionFila > 0 ? banfanbEmisionFila : (esc.emision.banfanb[mesG] || 0);
 
                 const calcPct = (recVal, emiBase) => {
                   if (!emiBase || emiBase === 0) return '';
@@ -757,11 +777,12 @@ export default function App() {
                               </td>
                             ))}
                           </tr>
+                          {/* EMISIÓN BANFANB CONECTADA CON EL DRIVE */}
                           <tr style={{ borderBottom: '1px dotted #64748b' }}>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banfanb</td>
                             {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.emision.banfanb[colM] > 0 ? esc.emision.banfanb[colM] : ''}
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px', fontWeight: colM === mesG ? 'bold' : 'normal' }}>
+                                {colM === mesG ? (banfanbEmisionFila > 0 ? formatearNumero(banfanbEmisionFila) : '0') : ''}
                               </td>
                             ))}
                           </tr>
@@ -812,7 +833,7 @@ export default function App() {
                             })}
                           </tr>
 
-                          {/* 3. % DE EVOLUCIÓN DE RECURRENCIA (NUEVO BLOQUE INCORPORADO) */}
+                          {/* 3. % DE EVOLUCIÓN DE RECURRENCIA */}
                           <tr style={{ borderTop: '1px dotted #64748b', backgroundColor: temaOscuro ? 'rgba(56, 189, 248, 0.05)' : 'rgba(56, 189, 248, 0.04)' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#38bdf8' }}>% Evolución Recurrencia</td>
                             {mesesRecurrenciaColumnas.map(colM => {
@@ -891,11 +912,12 @@ export default function App() {
                               </td>
                             ))}
                           </tr>
+                          {/* MONTO EMISIÓN BANFANB CONECTADO CON EL DRIVE */}
                           <tr style={{ borderBottom: '1px dotted #64748b' }}>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banfanb</td>
                             {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.montoEmision.banfanb[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banfanb[colM])}` : ''}
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px', fontWeight: colM === mesG ? 'bold' : 'normal' }}>
+                                {colM === mesG ? (banfanbMontoFila > 0 ? `$${formatearNumero(banfanbMontoFila)}` : '$0,00') : ''}
                               </td>
                             ))}
                           </tr>
@@ -1734,10 +1756,11 @@ export default function App() {
                   </div>
                 </div>
               </div>
+
             </div>
           )}
 
-          {/* 4. SECCIÓN ASESORES CON EXPLICACIÓN Y NÚMEROS EN LAS BARRAS */}
+          {/* 4. SECCIÓN ASESORES */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1781,7 +1804,7 @@ export default function App() {
                         <th style={{ padding: '10px', color: '#3b82f6' }}>COBRADA PLAZA</th>
                         <th style={{ padding: '10px', color: '#0284c7' }}>COBRADA BANESCO</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADA BANFANB</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>% COBRO </th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
                         <th style={{ padding: '10px' }}>STATUS</th>
                       </tr>
                     </thead>
@@ -1893,7 +1916,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR */}
+                {/* EVOLUCIÓN MENSUAL DEL DESEMPEÑO POR ASESOR CON LABELS Y EXPLICACIÓN */}
                 <div style={{ backgroundColor: tema.card, borderRadius: '16px', padding: '24px', border: `1px solid ${tema.border}` }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', borderBottom: `1px solid ${tema.border}`, paddingBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1921,7 +1944,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* GRÁFICO CON LABELS + MÉTRICAS */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
                     <div style={{ height: '250px', width: '100%' }}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -2045,7 +2067,7 @@ export default function App() {
           <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
-          DEPARTAMENTO DE BUSINESS INTELLIGENCE 2026
+          DEPARTAMENTO DE INNOVACIÓN Y DESARROLLO
         </div>
       </footer>
     </div>
