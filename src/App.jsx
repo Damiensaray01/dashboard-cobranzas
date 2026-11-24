@@ -1820,7 +1820,7 @@ export default function App() {
                         <th style={{ padding: '10px', color: '#3b82f6' }}>COBRADA PLAZA</th>
                         <th style={{ padding: '10px', color: '#0284c7' }}>COBRADA BANESCO</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADA BANFANB</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>%COBRO</th>
                         <th style={{ padding: '10px' }}>STATUS</th>
                       </tr>
                     </thead>
