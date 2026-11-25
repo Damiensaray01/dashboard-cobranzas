@@ -1161,7 +1161,7 @@ export default function App() {
                     EFECTIVIDAD Y CONSOLIDADO DE VENTAS POR BANCO SEPARADO
                   </h3>
                   <p style={{ fontSize: '11px', color: tema.subtexto, margin: '4px 0 0 0' }}>
-                    Ventas generadas vs Clientes cobrados y % de impacto (Columnas BC a BH del Google Sheets)
+                    Ventas generadas vs Clientes cobrados y % de impacto
                   </p>
                 </div>
 
