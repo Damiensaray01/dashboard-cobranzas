@@ -12,14 +12,38 @@ import {
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl6kWt93RDqV9m8TRKD1BaS_VClcsByvDu15ELIj75jqByUab9pEtxJDdHMGWdXABC5w/exec";
 const CLAVE_ACCESO = "ADMB2027*1";
 
-// Cifras oficiales de columnas BI y BJ de Consolidado Mensual
-const DATOS_BANFANB_EMISION = {
-  "Julio": { emision: 150, monto: 992.56 },
-  "Agosto": { emision: 98, monto: 2098.90 },
-  "Septiembre": { emision: 32, monto: 4026.38 },
-  "Octubre": { emision: 52, monto: 394.31 },
-  "Noviembre": { emision: 82, monto: 503.35 },
-  "Diciembre": { emision: 0, monto: 0.00 }
+// Cifras oficiales de columnas BI, BJ, BK, BL, BM, BN del Drive
+const DATOS_EMISION_OFICIAL_DRIVE = {
+  "Julio": {
+    plaza: 72, montoPlaza: 426.19,
+    banesco: 6, montoBanesco: 71.88,
+    banfanb: 128, montoBanfanb: 992.56
+  },
+  "Agosto": {
+    plaza: 68, montoPlaza: 456.37,
+    banesco: 15, montoBanesco: 133.35,
+    banfanb: 52, montoBanfanb: 2098.90
+  },
+  "Septiembre": {
+    plaza: 125, montoPlaza: 840.69,
+    banesco: 22, montoBanesco: 152.58,
+    banfanb: 2, montoBanfanb: 11.98
+  },
+  "Octubre": {
+    plaza: 101, montoPlaza: 780.89,
+    banesco: 19, montoBanesco: 166.47,
+    banfanb: 18, montoBanfanb: 139.46
+  },
+  "Noviembre": {
+    plaza: 90, montoPlaza: 573.86,
+    banesco: 26, montoBanesco: 170.06,
+    banfanb: 91, montoBanfanb: 503.35
+  },
+  "Diciembre": {
+    plaza: 0, montoPlaza: 0.00,
+    banesco: 0, montoBanesco: 0.00,
+    banfanb: 0, montoBanfanb: 0.00
+  }
 };
 
 const ASESORES_DATA_DEFAULT = [
@@ -351,37 +375,42 @@ export default function App() {
   const totalBanescoMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banesco || 0), 0);
   const totalBanfanbMes = rankingFiltrado.reduce((acc, a) => acc + Number(a.banfanb || 0), 0);
 
-  // Matriz de cohortes de Recurrencia
+  // =========================================================================
+  // MATRIZ DE RECURRENCIA (SUPLANTACIÓN DIRECTA DESDE EL DRIVE)
+  // =========================================================================
   const mesesGestionDisponibles = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const obtenerDatosEscenario = (mesG, estadoKey) => {
     if (recurrenciaMatriz[mesG] && recurrenciaMatriz[mesG][estadoKey]) {
       return recurrenciaMatriz[mesG][estadoKey];
     }
-    // Fallback oficial con los valores exactos
-    if (mesG === "Julio") {
-      return {
-        emision: { total: { Julio: 68 }, plaza: { Julio: 68 }, banesco: { Julio: 0 }, banfanb: { Julio: 150 } },
-        recurrencia: {
-          total: { Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12, Diciembre: 0 },
-          plaza: { Agosto: 42, Septiembre: 36, Octubre: 30, Noviembre: 12, Diciembre: 0 },
-          banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
-          banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
-        },
-        montoEmision: { total: { Julio: 423.93 }, plaza: { Julio: 423.93 }, banesco: { Julio: 0 }, banfanb: { Julio: 992.56 } },
-        montoRecurrencia: {
-          total: { Agosto: 267.40, Septiembre: 226.94, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
-          plaza: { Agosto: 267.40, Septiembre: 226.94, Octubre: 191.00, Noviembre: 74.14, Diciembre: 0.00 },
-          banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
-          banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
-        }
-      };
-    }
+    // Fallback con las cifras exactas del Drive (cols BI, BJ, BK, BL, BM, BN)
+    const of = DATOS_EMISION_OFICIAL_DRIVE[mesG] || { plaza: 0, montoPlaza: 0, banesco: 0, montoBanesco: 0, banfanb: 0, montoBanfanb: 0 };
     return {
-      emision: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
-      recurrencia: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
-      montoEmision: { total: {}, plaza: {}, banesco: {}, banfanb: {} },
-      montoRecurrencia: { total: {}, plaza: {}, banesco: {}, banfanb: {} }
+      emision: { 
+        total: { [mesG]: of.plaza + of.banesco + of.banfanb }, 
+        plaza: { [mesG]: of.plaza }, 
+        banesco: { [mesG]: of.banesco }, 
+        banfanb: { [mesG]: of.banfanb } 
+      },
+      recurrencia: {
+        total: { Agosto: 42, Septiembre: 36, Octubre: 32, Noviembre: 14, Diciembre: 0 },
+        plaza: { Agosto: 42, Septiembre: 36, Octubre: 32, Noviembre: 14, Diciembre: 0 },
+        banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
+        banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
+      },
+      montoEmision: { 
+        total: { [mesG]: of.montoPlaza + of.montoBanesco + of.montoBanfanb }, 
+        plaza: { [mesG]: of.montoPlaza }, 
+        banesco: { [mesG]: of.montoBanesco }, 
+        banfanb: { [mesG]: of.montoBanfanb } 
+      },
+      montoRecurrencia: {
+        total: { Agosto: 267.40, Septiembre: 226.94, Octubre: 202.98, Noviembre: 86.12, Diciembre: 0.00 },
+        plaza: { Agosto: 267.40, Septiembre: 226.94, Octubre: 202.98, Noviembre: 86.12, Diciembre: 0.00 },
+        banesco: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 },
+        banfanb: { Agosto: 0, Septiembre: 0, Octubre: 0, Noviembre: 0, Diciembre: 0 }
+      }
     };
   };
 
@@ -441,7 +470,7 @@ export default function App() {
           </div>
 
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#f8fafc', margin: '0 0 6px 0' }}>
-            Plataforma Directiva de Operaciones
+            Plataforma de Operaciones Directivas
           </h2>
           <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 24px 0' }}>
             Biartet & Seguros Horizonte
@@ -627,7 +656,7 @@ export default function App() {
           </div>
 
           {/* ========================================================================= */}
-          {/* 5. SECCIÓN: RECURRENCIA (SUMATORIA DE LOS 3 BANCOS EN EMISIÓN)            */}
+          {/* 5. SECCIÓN: RECURRENCIA (EMISIONES SUPLANTADAS CON DATOS REALES DEL DRIVE) */}
           {/* ========================================================================= */}
           {subCategoria === "recurrencia" && (
             <div style={{ display: 'grid', gap: '20px', width: '100%' }}>
@@ -638,7 +667,7 @@ export default function App() {
                     Seguimiento de Emisiones y Recurrencia de Cartera
                   </h3>
                   <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>
-                    Emisiones correspondientes al mes de ingreso, cuotas de recurrencia y % de evolución de cobro
+                    Emisiones correspondientes al mes de ingreso (Drive cols BI a BN), cuotas de recurrencia y % de evolución de cobro
                   </p>
                 </div>
 
@@ -703,20 +732,36 @@ export default function App() {
               {mesesAMostrarRecurrencia.map(mesG => {
                 const esc = obtenerDatosEscenario(mesG, filtroStatusActivo);
                 
-                // Mapeo dinámico de Banfanb desde Sheets o fallback
-                const banfanbEmisionFila = Number(mesesData[mesG]?.emisionBanfanb ?? 0) > 0 
-                  ? Number(mesesData[mesG].emisionBanfanb)
-                  : Number(DATOS_BANFANB_EMISION[mesG]?.emision ?? 0);
+                // Mapeo dinámico y suplantación con datos oficiales del Drive (Cols BK, BL, BM, BN, BI, BJ)
+                const ofDrive = DATOS_EMISION_OFICIAL_DRIVE[mesG] || { plaza: 0, montoPlaza: 0, banesco: 0, montoBanesco: 0, banfanb: 0, montoBanfanb: 0 };
+                
+                const emiPlazaOficial = Number(mesesData[mesG]?.emisionBancoPlaza ?? 0) > 0 
+                  ? Number(mesesData[mesG].emisionBancoPlaza) 
+                  : (Number(esc.emision.plaza[mesG] ?? 0) > 0 ? Number(esc.emision.plaza[mesG]) : ofDrive.plaza);
 
-                const banfanbMontoFila = Number(mesesData[mesG]?.montoEmisionBanfanb ?? 0) > 0 
-                  ? Number(mesesData[mesG].montoEmisionBanfanb)
-                  : Number(DATOS_BANFANB_EMISION[mesG]?.monto ?? 0);
+                const mtoPlazaOficial = Number(mesesData[mesG]?.montoEmisionBancoPlaza ?? 0) > 0 
+                  ? Number(mesesData[mesG].montoEmisionBancoPlaza) 
+                  : (Number(esc.montoEmision.plaza[mesG] ?? 0) > 0 ? Number(esc.montoEmision.plaza[mesG]) : ofDrive.montoPlaza);
 
-                // SUMATORIA DE LOS 3 BANCOS PARA LA BASE DE EMISIÓN
-                const pEmiBase = Number(esc.emision.plaza[mesG] ?? 0);
-                const bEmiBase = Number(esc.emision.banesco[mesG] ?? 0);
-                const bfEmiBase = banfanbEmisionFila > 0 ? banfanbEmisionFila : Number(esc.emision.banfanb[mesG] ?? 0);
-                const emiTotalBase = pEmiBase + bEmiBase + bfEmiBase;
+                const emiBanescoOficial = Number(mesesData[mesG]?.emisionBanesco ?? 0) > 0 
+                  ? Number(mesesData[mesG].emisionBanesco) 
+                  : (Number(esc.emision.banesco[mesG] ?? 0) > 0 ? Number(esc.emision.banesco[mesG]) : ofDrive.banesco);
+
+                const mtoBanescoOficial = Number(mesesData[mesG]?.montoEmisionBanesco ?? 0) > 0 
+                  ? Number(mesesData[mesG].montoEmisionBanesco) 
+                  : (Number(esc.montoEmision.banesco[mesG] ?? 0) > 0 ? Number(esc.montoEmision.banesco[mesG]) : ofDrive.montoBanesco);
+
+                const emiBanfanbOficial = Number(mesesData[mesG]?.emisionBanfanb ?? 0) > 0 
+                  ? Number(mesesData[mesG].emisionBanfanb) 
+                  : (Number(esc.emision.banfanb[mesG] ?? 0) > 0 ? Number(esc.emision.banfanb[mesG]) : ofDrive.banfanb);
+
+                const mtoBanfanbOficial = Number(mesesData[mesG]?.montoEmisionBanfanb ?? 0) > 0 
+                  ? Number(mesesData[mesG].montoEmisionBanfanb) 
+                  : (Number(esc.montoEmision.banfanb[mesG] ?? 0) > 0 ? Number(esc.montoEmision.banfanb[mesG]) : ofDrive.montoBanfanb);
+
+                // Sumatorias exactas de los 3 bancos
+                const emiTotalTresBancos = emiPlazaOficial + emiBanescoOficial + emiBanfanbOficial;
+                const mtoTotalTresBancos = mtoPlazaOficial + mtoBanescoOficial + mtoBanfanbOficial;
 
                 const calcPct = (recVal, emiBase) => {
                   if (!emiBase || emiBase === 0) return '';
@@ -748,49 +793,39 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
-                          {/* 1. EMISIÓN (SUMATORIA DE LOS 3 BANCOS) */}
+                          {/* 1. EMISIÓN (SUPLANTADA POR MES CON LOS VALORES OFICIALES DEL DRIVE) */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td rowSpan={20} style={{ backgroundColor: '#eab308', color: '#0f172a', fontWeight: '900', fontSize: '18px', verticalAlign: 'middle', borderRight: '1px solid rgba(15, 23, 42, 0.2)', letterSpacing: '0.5px' }}>
                               {mesG}
                             </td>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: tema.texto }}>Emision</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              if (colM !== mesG) return <td key={colM} style={{ padding: '8px 10px' }}></td>;
-
-                              const pE = Number(esc.emision.plaza[colM] ?? 0);
-                              const bE = Number(esc.emision.banesco[colM] ?? 0);
-                              const bfE = banfanbEmisionFila > 0 ? banfanbEmisionFila : Number(esc.emision.banfanb[colM] ?? 0);
-                              const totalEmiTresBancos = pE + bE + bfE;
-
-                              return (
-                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#3b82f6', fontSize: '13px' }}>
-                                  {totalEmiTresBancos > 0 ? formatearNumero(totalEmiTresBancos) : ''}
-                                </td>
-                              );
-                            })}
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#3b82f6' : tema.texto, fontSize: colM === mesG ? '13px' : '12px' }}>
+                                {colM === mesG && emiTotalTresBancos > 0 ? formatearNumero(emiTotalTresBancos) : ''}
+                              </td>
+                            ))}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banco Plaza</td>
                             {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.emision.plaza[colM] > 0 ? esc.emision.plaza[colM] : ''}
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px', fontWeight: colM === mesG ? 'bold' : 'normal' }}>
+                                {colM === mesG && emiPlazaOficial > 0 ? formatearNumero(emiPlazaOficial) : ''}
                               </td>
                             ))}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banesco</td>
                             {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.emision.banesco[colM] > 0 ? esc.emision.banesco[colM] : ''}
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px', fontWeight: colM === mesG ? 'bold' : 'normal' }}>
+                                {colM === mesG && emiBanescoOficial > 0 ? formatearNumero(emiBanescoOficial) : ''}
                               </td>
                             ))}
                           </tr>
-                          {/* EMISIÓN BANFANB CONECTADA CON EL DRIVE */}
                           <tr style={{ borderBottom: '1px dotted #64748b' }}>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Emision Banfanb</td>
                             {mesesRecurrenciaColumnas.map(colM => (
                               <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px', fontWeight: colM === mesG ? 'bold' : 'normal' }}>
-                                {colM === mesG ? (banfanbEmisionFila > 0 ? formatearNumero(banfanbEmisionFila) : '0') : ''}
+                                {colM === mesG && emiBanfanbOficial > 0 ? formatearNumero(emiBanfanbOficial) : ''}
                               </td>
                             ))}
                           </tr>
@@ -850,7 +885,7 @@ export default function App() {
                               const recVal = esc.recurrencia.total[colM] || 0;
                               return (
                                 <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#38bdf8' }}>
-                                  {esInicio ? (emiTotalBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiTotalBase) : '')}
+                                  {esInicio ? (emiTotalTresBancos > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiPlazaOficial || emiTotalTresBancos) : '')}
                                 </td>
                               );
                             })}
@@ -863,7 +898,7 @@ export default function App() {
                               const recVal = esc.recurrencia.plaza[colM] || 0;
                               return (
                                 <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esInicio ? (pEmiBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, pEmiBase) : '')}
+                                  {esInicio ? (emiPlazaOficial > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiPlazaOficial) : '')}
                                 </td>
                               );
                             })}
@@ -876,7 +911,7 @@ export default function App() {
                               const recVal = esc.recurrencia.banesco[colM] || 0;
                               return (
                                 <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esInicio ? (bEmiBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, bEmiBase) : '')}
+                                  {esInicio ? (emiBanescoOficial > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiBanescoOficial) : '')}
                                 </td>
                               );
                             })}
@@ -889,52 +924,42 @@ export default function App() {
                               const recVal = esc.recurrencia.banfanb[colM] || 0;
                               return (
                                 <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                  {esInicio ? (bfEmiBase > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, bfEmiBase) : '')}
+                                  {esInicio ? (emiBanfanbOficial > 0 ? '100,00%' : '') : (esPosterior ? calcPct(recVal, emiBanfanbOficial) : '')}
                                 </td>
                               );
                             })}
                           </tr>
 
-                          {/* 4. MONTO $ EMISIÓN (SUMATORIA DE LOS 3 BANCOS) */}
+                          {/* 4. MONTO $ EMISIÓN (SUPLANTADA POR MES CON LOS VALORES OFICIALES DEL DRIVE) */}
                           <tr style={{ borderTop: '1px dotted #64748b' }}>
                             <td style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 'bold', color: '#10b981' }}>Monto $ Emision</td>
-                            {mesesRecurrenciaColumnas.map(colM => {
-                              if (colM !== mesG) return <td key={colM} style={{ padding: '8px 10px' }}></td>;
-
-                              const pM = Number(esc.montoEmision.plaza[colM] ?? 0);
-                              const bM = Number(esc.montoEmision.banesco[colM] ?? 0);
-                              const bfM = banfanbMontoFila > 0 ? banfanbMontoFila : Number(esc.montoEmision.banfanb[colM] ?? 0);
-                              const totalMtoTresBancos = pM + bM + bfM;
-
-                              return (
-                                <td key={colM} style={{ padding: '8px 10px', fontWeight: 'bold', color: '#10b981', fontSize: '12px' }}>
-                                  {totalMtoTresBancos > 0 ? `$${formatearNumero(totalMtoTresBancos)}` : ''}
-                                </td>
-                              );
-                            })}
+                            {mesesRecurrenciaColumnas.map(colM => (
+                              <td key={colM} style={{ padding: '8px 10px', fontWeight: colM === mesG ? 'bold' : 'normal', color: colM === mesG ? '#10b981' : tema.texto, fontSize: colM === mesG ? '12px' : '11px' }}>
+                                {colM === mesG && mtoTotalTresBancos > 0 ? `$${formatearNumero(mtoTotalTresBancos)}` : ''}
+                              </td>
+                            ))}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banco Plaza</td>
                             {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.montoEmision.plaza[colM] > 0 ? `$${formatearNumero(esc.montoEmision.plaza[colM])}` : ''}
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px' }}>
+                                {colM === mesG && mtoPlazaOficial > 0 ? `$${formatearNumero(mtoPlazaOficial)}` : ''}
                               </td>
                             ))}
                           </tr>
                           <tr>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banesco</td>
                             {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.subtexto, fontSize: '11px' }}>
-                                {colM === mesG && esc.montoEmision.banesco[colM] > 0 ? `$${formatearNumero(esc.montoEmision.banesco[colM])}` : ''}
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px' }}>
+                                {colM === mesG && mtoBanescoOficial > 0 ? `$${formatearNumero(mtoBanescoOficial)}` : ''}
                               </td>
                             ))}
                           </tr>
-                          {/* MONTO EMISIÓN BANFANB CONECTADO CON EL DRIVE */}
                           <tr style={{ borderBottom: '1px dotted #64748b' }}>
                             <td style={{ padding: '4px 10px 4px 24px', textAlign: 'left', color: tema.subtexto, fontSize: '11px' }}>Monto $ Emision Banfanb</td>
                             {mesesRecurrenciaColumnas.map(colM => (
-                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px', fontWeight: colM === mesG ? 'bold' : 'normal' }}>
-                                {colM === mesG ? (banfanbMontoFila > 0 ? `$${formatearNumero(banfanbMontoFila)}` : '$0,00') : ''}
+                              <td key={colM} style={{ padding: '4px 10px', color: tema.texto, fontSize: '11px' }}>
+                                {colM === mesG && mtoBanfanbOficial > 0 ? `$${formatearNumero(mtoBanfanbOficial)}` : ''}
                               </td>
                             ))}
                           </tr>
@@ -1116,7 +1141,7 @@ export default function App() {
                         <th style={{ padding: '10px', color: '#3b82f6' }}>PLAZA</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>BANFANB</th>
                         <th style={{ padding: '10px', color: '#0284c7' }}>BANESCO</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>%COBRO</th>
                         <th style={{ padding: '10px' }}>MONTO PLAZA</th>
                         <th style={{ padding: '10px' }}>MONTO BANFANB</th>
                         <th style={{ padding: '10px' }}>MONTO BANESCO</th>
@@ -1161,11 +1186,12 @@ export default function App() {
                     EFECTIVIDAD Y CONSOLIDADO DE VENTAS POR BANCO SEPARADO
                   </h3>
                   <p style={{ fontSize: '11px', color: tema.subtexto, margin: '4px 0 0 0' }}>
-                    Ventas generadas vs Clientes cobrados y % de impacto
+                    Ventas generadas vs Clientes cobrados y % de impacto (Columnas BC a BH del Google Sheets)
                   </p>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+                  
                   {/* TABLA BANCO PLAZA */}
                   <div style={{ backgroundColor: tema.bg, borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.3)', overflow: 'hidden' }}>
                     <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1776,7 +1802,7 @@ export default function App() {
             </div>
           )}
 
-          {/* 4. SECCIÓN ASESORES */}
+          {/* 4. SECCIÓN ASESORES CON EXPLICACIÓN Y NÚMEROS EN LAS BARRAS */}
           {subCategoria === "asesores" && (
             <div style={{ display: 'grid', gap: '20px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1806,7 +1832,7 @@ export default function App() {
                     <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       VENTAS COBRADAS POR ASESOR Y BANCO ({mesActual.toUpperCase()})
                     </h3>
-                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Valores exactos leídos directamente</p>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Valores exactos leídos directamente de las columnas G (Plaza), H (Banesco) e I (BANFANB)</p>
                   </div>
                 </div>
 
@@ -1820,7 +1846,7 @@ export default function App() {
                         <th style={{ padding: '10px', color: '#3b82f6' }}>COBRADA PLAZA</th>
                         <th style={{ padding: '10px', color: '#0284c7' }}>COBRADA BANESCO</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADA BANFANB</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>%COBRO</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>% COBRO</th>
                         <th style={{ padding: '10px' }}>STATUS</th>
                       </tr>
                     </thead>
@@ -1960,6 +1986,7 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* GRÁFICO CON CANTIDADES EN LAS BARRAS + MÉTRICAS ACUMULADAS */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', alignItems: 'center', marginBottom: '20px' }}>
                     <div style={{ height: '250px', width: '100%' }}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -2024,7 +2051,7 @@ export default function App() {
                       </div>
                       <p style={{ fontSize: '11px', color: tema.texto, margin: 0, lineHeight: '1.4' }}>
                         {asesorSeleccionado === "TODOS" ? (
-                          <>El equipo comercial mantiene un crecimiento continuo en volumen de ventas desde Julio (242) hasta Noviembre (438). Sin embargo, la tasa de cobro efectivo presentó una desaceleración gradual, indicando la necesidad de reforzar la cobranza al cierre de las pólizas expedidas.</>
+                          <>El equipo comercial mantiene un crecimiento continuo en volumen de ventas desde Julio (242) hasta Noviembre (447). Sin embargo, la tasa de cobro efectivo presentó una desaceleración gradual, indicando la necesidad de reforzar la cobranza al cierre de las pólizas expedidas.</>
                         ) : (
                           <>El seguimiento de <strong>{asesorSeleccionado}</strong> registra una contribución constante con {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Generadas"], 0))} ventas emitidas y {formatearNumero(dataEvolucionAsesores.reduce((acc, d) => acc + d["Ventas Cobradas"], 0))} cobradas efectivas. Mantener un control de cierres asistidos en las primeras semanas post-emisión permitirá estabilizar su efectividad de cobro por encima del 60% promedio.</>
                         )}
@@ -2083,7 +2110,7 @@ export default function App() {
           <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
-          DEPARTAMENTO DE INNOVACIÓN Y DESARROLLO 2026
+          DEPARTAMENTO DE INNOVACION Y DESAROLLO 2026
         </div>
       </footer>
     </div>
