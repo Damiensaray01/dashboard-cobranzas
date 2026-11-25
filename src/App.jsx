@@ -1066,7 +1066,7 @@ export default function App() {
                         <th style={{ padding: '10px', textAlign: 'left' }}>MES</th>
                         <th style={{ padding: '10px' }}>VENTAS GENERADAS</th>
                         <th style={{ padding: '10px', color: '#eab308' }}>COBRADAS VENTAS</th>
-                        <th style={{ padding: '10px', color: '#10b981' }}>% IMPACTO VENTAS</th>
+                        <th style={{ padding: '10px', color: '#10b981' }}>%COBRO</th>
                         <th style={{ padding: '10px' }}>BANCO PLAZA</th>
                         <th style={{ padding: '10px' }}>BANFANB VENTAS</th>
                         <th style={{ padding: '10px' }}>BANESCO VENTAS</th>
@@ -2083,7 +2083,7 @@ export default function App() {
           <strong style={{ color: '#fbbf24' }}>WhatsApp:</strong> <span style={{ color: tema.texto }}>(+58) 426-5101583</span>
         </div>
         <div style={{ fontWeight: 'bold', letterSpacing: '1px', marginTop: '4px', color: '#fbbf24' }}>
-          DEPARTAMENTO DE INTELIGENCIA Y DESARROLLO 2026
+          DEPARTAMENTO DE INNOVACIÓN Y DESARROLLO 2026
         </div>
       </footer>
     </div>
