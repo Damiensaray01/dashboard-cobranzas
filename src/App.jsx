@@ -1806,7 +1806,7 @@ export default function App() {
                     <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: tema.texto, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       VENTAS COBRADAS POR ASESOR Y BANCO ({mesActual.toUpperCase()})
                     </h3>
-                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Valores exactos leídos directamente de las columnas G (Plaza), H (Banesco) e I (BANFANB)</p>
+                    <p style={{ fontSize: '11px', color: tema.subtexto, margin: '2px 0 0 0' }}>Valores exactos leídos directamente</p>
                   </div>
                 </div>
 
